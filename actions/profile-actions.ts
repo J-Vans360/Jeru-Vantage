@@ -1,4 +1,5 @@
 'use server';
+
 import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 import type { StudentProfileFormData } from '@/types/profile-types';
@@ -10,7 +11,23 @@ export async function saveStudentProfile(
   userId: string,
   data: StudentProfileFormData
 ) {
+  console.log('=== SAVE PROFILE STARTED ===');
+  console.log('userId:', userId);
+  console.log('formData:', JSON.stringify(data, null, 2));
+
   try {
+    // First ensure user exists
+    let user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          id: userId,
+          email: `${userId}@placeholder.com`,
+          name: 'Test User',
+        },
+      });
+    }
+
     // Check if profile already exists
     const existingProfile = await prisma.studentProfile.findUnique({
       where: { userId },
@@ -22,24 +39,17 @@ export async function saveStudentProfile(
       const updatedProfile = await prisma.studentProfile.update({
         where: { userId },
         data: {
-          // A. Demographics & Residency
           studentName: data.studentName,
           currentGrade: data.currentGrade,
           targetEntryYear: data.targetEntryYear,
           citizenshipPrimary: data.citizenshipPrimary,
           citizenshipSecondary: data.citizenshipSecondary,
           countryResidence: data.countryResidence,
-          
-          // B. Financial Reality Check
           annualBudgetRange: data.annualBudgetRange,
           needBasedAid: data.needBasedAid,
           usApplicantStatus: data.usApplicantStatus,
-          
-          // C. Educational System Context
           primaryCurriculum: data.primaryCurriculum,
           curriculumOther: data.curriculumOther,
-          
-          // E. Standardized Testing
           ieltsScore: data.ieltsScore,
           toeflScore: data.toeflScore,
           duolingoScore: data.duolingoScore,
@@ -51,13 +61,9 @@ export async function saveStudentProfile(
           ucatBmatScore: data.ucatBmatScore,
           testPlanDate: data.testPlanDate,
           testOptional: data.testOptional,
-          
-          // F. Learning & Disciplinary Context
           learningSupport: data.learningSupport,
           learningSupportDetails: data.learningSupportDetails,
           disciplinaryRecord: data.disciplinaryRecord,
-          
-          // G. Student Aspirations
           careerInterest1: data.careerInterest1,
           careerInterest2: data.careerInterest2,
           careerInterest3: data.careerInterest3,
@@ -67,7 +73,6 @@ export async function saveStudentProfile(
           destinationUniversities2: data.destinationUniversities2,
           destinationCountry3: data.destinationCountry3,
           destinationUniversities3: data.destinationUniversities3,
-          
           completed: true,
         },
       });
@@ -104,24 +109,17 @@ export async function saveStudentProfile(
       const newProfile = await prisma.studentProfile.create({
         data: {
           userId,
-          // A. Demographics & Residency
           studentName: data.studentName,
           currentGrade: data.currentGrade,
           targetEntryYear: data.targetEntryYear,
           citizenshipPrimary: data.citizenshipPrimary,
           citizenshipSecondary: data.citizenshipSecondary,
           countryResidence: data.countryResidence,
-          
-          // B. Financial Reality Check
           annualBudgetRange: data.annualBudgetRange,
           needBasedAid: data.needBasedAid,
           usApplicantStatus: data.usApplicantStatus,
-          
-          // C. Educational System Context
           primaryCurriculum: data.primaryCurriculum,
           curriculumOther: data.curriculumOther,
-          
-          // E. Standardized Testing
           ieltsScore: data.ieltsScore,
           toeflScore: data.toeflScore,
           duolingoScore: data.duolingoScore,
@@ -133,13 +131,9 @@ export async function saveStudentProfile(
           ucatBmatScore: data.ucatBmatScore,
           testPlanDate: data.testPlanDate,
           testOptional: data.testOptional,
-          
-          // F. Learning & Disciplinary Context
           learningSupport: data.learningSupport,
           learningSupportDetails: data.learningSupportDetails,
           disciplinaryRecord: data.disciplinaryRecord,
-          
-          // G. Student Aspirations
           careerInterest1: data.careerInterest1,
           careerInterest2: data.careerInterest2,
           careerInterest3: data.careerInterest3,
@@ -149,7 +143,6 @@ export async function saveStudentProfile(
           destinationUniversities2: data.destinationUniversities2,
           destinationCountry3: data.destinationCountry3,
           destinationUniversities3: data.destinationUniversities3,
-          
           completed: true,
         },
       });
@@ -179,11 +172,14 @@ export async function saveStudentProfile(
       };
     }
   } catch (error) {
-    console.error('Error saving profile:', error);
+    console.error('=== SAVE PROFILE ERROR ===');
+    console.error('Error name:', (error as Error)?.name);
+    console.error('Error message:', (error as Error)?.message);
+    console.error('Error code:', (error as { code?: string })?.code);
+    console.error('Full error:', error);
     return {
       success: false,
-      message: 'Failed to save profile. Please try again.',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      message: (error as Error)?.message || 'Failed to save profile. Please try again.',
     };
   }
 }
@@ -240,32 +236,6 @@ export async function checkProfileCompleted(userId: string) {
     console.error('Error checking profile completion:', error);
     return {
       completed: false,
-    };
-  }
-}
-
-/**
- * Delete student profile
- */
-export async function deleteStudentProfile(userId: string) {
-  try {
-    await prisma.studentProfile.delete({
-      where: { userId },
-    });
-
-    revalidatePath('/profile');
-    revalidatePath('/dashboard');
-
-    return {
-      success: true,
-      message: 'Profile deleted successfully',
-    };
-  } catch (error) {
-    console.error('Error deleting profile:', error);
-    return {
-      success: false,
-      message: 'Failed to delete profile',
-      error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }
