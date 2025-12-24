@@ -1,10 +1,33 @@
 import { getStudentProfile } from '@/actions/profile-actions';
 import { getCurrentUserId } from '@/lib/auth-utils';
+import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 
 export default async function Dashboard() {
   const userId = await getCurrentUserId();
   const result = await getStudentProfile(userId);
+
+  // Fetch assessment results
+  let assessmentResults: any[] = [];
+  try {
+    assessmentResults = await prisma.assessmentResult.findMany({
+      where: {
+        userId,
+        completed: true,
+      },
+      orderBy: {
+        updatedAt: 'desc',
+      },
+    });
+  } catch (err) {
+    console.error('Error fetching assessment results:', err);
+  }
+
+  // Extract specific assessment results
+  const valuesResult = assessmentResults.find((r) => r.domainName === 'Values & Interests');
+  const personalityResult = assessmentResults.find((r) => r.domainName === 'Personality Architecture');
+  const hollandResult = assessmentResults.find((r) => r.domainName === 'Career Interests (Holland Code)');
+  const intelligencesResult = assessmentResults.find((r) => r.domainName === 'Multiple Intelligences');
 
   if (!result.success || !result.profile) {
     return (
@@ -277,6 +300,83 @@ export default async function Dashboard() {
               )}
             </div>
           </div>
+
+          {/* Assessment Results - Core Values */}
+          {valuesResult?.scores && (
+            <div className="border-2 border-pink-200 rounded-lg p-6 bg-pink-50">
+              <h2 className="text-xl font-bold text-pink-600 mb-4 border-b border-pink-300 pb-2 flex items-center gap-2">
+                <span>❤️</span> H. Assessment Results - Core Values & Interests
+              </h2>
+              <div className="bg-white rounded-lg p-4">
+                <div className="mb-3">
+                  <div className="text-lg font-semibold text-gray-700 mb-3">Your Top 3 Core Values:</div>
+                  <div className="flex flex-wrap gap-2">
+                    {valuesResult.scores.topValues?.slice(0, 3).map((value: any, idx: number) => (
+                      <div
+                        key={value.name}
+                        className={`px-4 py-2 rounded-full font-semibold ${
+                          idx === 0 ? 'bg-pink-600 text-white text-lg' :
+                          idx === 1 ? 'bg-pink-500 text-white' :
+                          'bg-pink-400 text-white'
+                        }`}
+                      >
+                        #{idx + 1} {value.name}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {valuesResult.scores.topValues?.length > 3 && (
+                  <div className="text-sm text-gray-600 mt-3">
+                    <span className="font-semibold">Also valued:</span> {valuesResult.scores.topValues.slice(3, 6).map((v: any) => v.name).join(', ')}
+                  </div>
+                )}
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <Link
+                    href="/results"
+                    className="inline-block px-4 py-2 bg-pink-600 text-white rounded-lg font-semibold hover:bg-pink-700 transition-all text-sm"
+                  >
+                    View Complete Assessment Results →
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Assessment Results Summary */}
+          {assessmentResults.length > 0 && !valuesResult && (
+            <div className="border-2 border-blue-200 rounded-lg p-6 bg-blue-50">
+              <h2 className="text-xl font-bold text-blue-600 mb-4 border-b border-blue-300 pb-2">
+                H. Assessment Results
+              </h2>
+              <p className="text-gray-700 mb-4">
+                You've completed {assessmentResults.length} assessment section{assessmentResults.length !== 1 ? 's' : ''}.
+              </p>
+              <Link
+                href="/results"
+                className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-all text-sm"
+              >
+                View Complete Assessment Results →
+              </Link>
+            </div>
+          )}
+
+          {/* No Assessment Results Yet */}
+          {assessmentResults.length === 0 && (
+            <div className="border-2 border-gray-200 rounded-lg p-6 bg-gray-50">
+              <h2 className="text-xl font-bold text-gray-600 mb-4 border-b border-gray-300 pb-2">
+                H. Assessment Results
+              </h2>
+              <p className="text-gray-600 mb-4">
+                You haven't completed any assessment sections yet.
+              </p>
+              <Link
+                href="/assessment"
+                className="inline-block px-4 py-2 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-all text-sm"
+              >
+                Start Assessment →
+              </Link>
+            </div>
+          )}
 
         </div>
 
