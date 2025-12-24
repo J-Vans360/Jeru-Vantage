@@ -1,10 +1,10 @@
 import { getStudentProfile } from '@/actions/profile-actions';
+import { getCurrentUserId } from '@/lib/auth-utils';
 import Link from 'next/link';
 
-const USER_ID = 'test-user-123';
-
 export default async function Dashboard() {
-  const result = await getStudentProfile(USER_ID);
+  const userId = await getCurrentUserId();
+  const result = await getStudentProfile(userId);
 
   if (!result.success || !result.profile) {
     return (

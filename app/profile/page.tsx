@@ -1,9 +1,7 @@
 import ProfileForm from '@/components/ProfileForm';
+import { getCurrentUserId } from '@/lib/auth-utils';
 
-// TODO: Replace with actual user authentication
-// For now, we'll use a test user ID
-const TEMP_USER_ID = 'test-user-123';
-
-export default function ProfilePage() {
-  return <ProfileForm userId={TEMP_USER_ID} />;
+export default async function ProfilePage() {
+  const userId = await getCurrentUserId();
+  return <ProfileForm userId={userId} />;
 }
