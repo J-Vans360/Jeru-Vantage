@@ -14,16 +14,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Ensure user exists (for test user)
-    await prisma.user.upsert({
+    // Verify user exists
+    const user = await prisma.user.findUnique({
       where: { id: userId },
-      update: {},
-      create: {
-        id: userId,
-        email: `${userId}@example.com`,
-        name: 'Test User',
-      },
     });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      );
+    }
 
     // Map sectionId to partName and domainName
     const sectionMapping: Record<string, { partName: string; domainName: string }> = {
