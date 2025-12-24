@@ -29,6 +29,11 @@ export default async function Dashboard() {
   const hollandResult = assessmentResults.find((r) => r.domainName === 'Career Interests (Holland Code)');
   const intelligencesResult = assessmentResults.find((r) => r.domainName === 'Multiple Intelligences');
 
+  // Ensure topValues exists for backward compatibility
+  if (valuesResult?.scores && !valuesResult.scores.topValues && valuesResult.scores.domains) {
+    valuesResult.scores.topValues = [...valuesResult.scores.domains].sort((a: any, b: any) => b.score - a.score);
+  }
+
   if (!result.success || !result.profile) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-600 to-indigo-700 py-8 px-4">

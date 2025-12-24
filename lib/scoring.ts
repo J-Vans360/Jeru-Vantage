@@ -150,8 +150,12 @@ export function calculateValuesScores(
     };
   });
 
+  // Sort domains by score (highest first) to get top values
+  const sortedValues = [...results].sort((a, b) => b.score - a.score);
+
   return {
     domains: results,
+    topValues: sortedValues,
     timestamp: new Date().toISOString(),
   };
 }
