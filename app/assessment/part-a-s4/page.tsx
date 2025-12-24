@@ -91,8 +91,8 @@ export default function PartAS4Page() {
         section={section}
         scores={scores}
         domains={domains}
-        onContinue={() => router.push('/assessment')}
-        continueButtonText="Complete Part A →"
+        onContinue={() => router.push('/assessment/part-b-s1')}
+        continueButtonText="Part A Complete! Continue to Part B: S1 (Cognitive Style) →"
         isSaving={isSaving}
       />
     );

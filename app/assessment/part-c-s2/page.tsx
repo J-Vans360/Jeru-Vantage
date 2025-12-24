@@ -59,7 +59,7 @@ export default function PartCS2Page() {
   const selectedValue = answers[currentQuestion?.id];
 
   if (isComplete && scores) {
-    return <ExecutionResultsDisplay section={section} scores={scores} domains={domains} onContinue={() => router.push('/assessment')} continueButtonText="Complete Assessment →" isSaving={isSaving} />;
+    return <ExecutionResultsDisplay section={section} scores={scores} domains={domains} onContinue={() => router.push('/results')} continueButtonText="All Parts Complete! View Your Results →" isSaving={isSaving} />;
   }
 
   return (

@@ -90,8 +90,8 @@ export default function PartBS4Page() {
       <SocialCheckResultsDisplay
         section={section}
         scores={scores}
-        onContinue={() => router.push('/assessment')}
-        continueButtonText="Return to Assessment Hub →"
+        onContinue={() => router.push('/assessment/part-c-s1')}
+        continueButtonText="Part B Complete! Continue to Part C: S1 (Environment) →"
         isSaving={isSaving}
       />
     );
