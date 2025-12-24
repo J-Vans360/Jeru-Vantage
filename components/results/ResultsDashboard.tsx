@@ -540,14 +540,24 @@ export default function ResultsDashboard({ assessmentResults }: ResultsDashboard
             >
               ← Back to Assessment Hub
             </Link>
-            {allPartsComplete && (
-              <button
-                className="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all"
-                onClick={handlePrint}
-              >
-                📄 Download PDF
-              </button>
-            )}
+            <div className="flex gap-3">
+              {allPartsComplete && (
+                <Link
+                  href="/ai-jeru"
+                  className="px-6 py-3 bg-gradient-to-r from-purple-600 to-amber-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all flex items-center gap-2"
+                >
+                  <span>🧙‍♂️</span> Get AI Guidance
+                </Link>
+              )}
+              {allPartsComplete && (
+                <button
+                  className="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all"
+                  onClick={handlePrint}
+                >
+                  📄 Download PDF
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
