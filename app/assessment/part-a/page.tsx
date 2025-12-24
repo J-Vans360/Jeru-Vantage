@@ -2,141 +2,196 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import assessmentData from '@/data/part-a-s1-personality.json';
+import { calculatePersonalityScores } from '@/lib/scoring';
+import ResultsDisplay from '@/components/assessment/ResultsDisplay';
 
 const USER_ID = 'test-user-123';
 
 export default function PartAPage() {
   const router = useRouter();
-  const [isCompleting, setIsCompleting] = useState(false);
+  const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [isComplete, setIsComplete] = useState(false);
+  const [scores, setScores] = useState<any>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleComplete = async () => {
-    setIsCompleting(true);
+  const { section, questions, domains } = assessmentData;
+  const currentQuestion = questions[currentQuestionIndex];
+  const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+  const answeredCount = Object.keys(answers).length;
 
-    try {
-      // Create or update the assessment result for Part A
-      const response = await fetch('/api/assessment/complete', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: USER_ID,
-          partName: 'Part A',
-          domainName: 'Personality & Values',
-          responses: {}, // Placeholder - will be replaced with actual responses
-          scores: {}, // Placeholder - will be replaced with actual scores
-          completed: true,
-        }),
-      });
+  const handleAnswer = (value: number) => {
+    const newAnswers = { ...answers, [currentQuestion.id]: value };
+    setAnswers(newAnswers);
 
-      if (response.ok) {
-        // Redirect back to assessment page
-        router.push('/assessment');
-      } else {
-        console.error('Failed to complete Part A');
-        setIsCompleting(false);
-      }
-    } catch (error) {
-      console.error('Error completing Part A:', error);
-      setIsCompleting(false);
+    // Auto-advance to next question
+    if (currentQuestionIndex < questions.length - 1) {
+      setTimeout(() => {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+      }, 300);
+    } else if (Object.keys(newAnswers).length === questions.length) {
+      // All questions answered, calculate scores
+      handleComplete(newAnswers);
     }
   };
 
+  const handleComplete = async (finalAnswers: Record<number, number>) => {
+    const calculatedScores = calculatePersonalityScores(finalAnswers, assessmentData);
+    setScores(calculatedScores);
+    setIsComplete(true);
+
+    // Save to database
+    setIsSaving(true);
+    try {
+      const response = await fetch('/api/assessment/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: USER_ID,
+          sectionId: section.id,
+          answers: finalAnswers,
+          scores: calculatedScores,
+        }),
+      });
+
+      if (!response.ok) {
+        console.error('Failed to save assessment results');
+      }
+    } catch (error) {
+      console.error('Error saving assessment:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleBack = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    }
+  };
+
+  const isCurrentAnswered = answers[currentQuestion?.id] !== undefined;
+  const selectedValue = answers[currentQuestion?.id];
+
+  if (isComplete && scores) {
+    return (
+      <ResultsDisplay
+        section={section}
+        scores={scores}
+        domains={domains}
+        onContinue={() => router.push('/assessment')}
+        isSaving={isSaving}
+      />
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 to-indigo-700 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+      <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="bg-white rounded-t-2xl p-8">
-          <div className="flex justify-between items-start">
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="text-4xl">{section.icon}</span>
             <div>
-              <h1 className="text-4xl font-bold text-purple-600 mb-2">
-                Part A: Personality & Values
-              </h1>
-              <p className="text-gray-600">
-                Big Five Personality Traits & Holland Code Career Assessment
-              </p>
+              <h1 className="text-3xl font-bold text-gray-900">{section.title}</h1>
+              <p className="text-lg text-gray-600">{section.subtitle}</p>
             </div>
-            <Link
-              href="/assessment"
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-all"
-            >
-              Back
-            </Link>
           </div>
+          <p className="text-gray-600 mb-4">{section.description}</p>
+          <p className="text-sm text-gray-500">⏱️ {section.estimatedTime}</p>
         </div>
 
         {/* Progress Bar */}
-        <div className="bg-white p-6 border-t border-gray-200">
-          <div className="mb-2 flex justify-between items-center">
-            <span className="text-sm font-semibold text-gray-700">Assessment Progress</span>
-            <span className="text-sm font-semibold text-purple-600">0%</span>
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-medium text-gray-700">
+              Question {currentQuestionIndex + 1} of {questions.length}
+            </span>
+            <span className="text-sm text-gray-500">
+              {answeredCount} / {questions.length} answered
+            </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-3">
             <div
-              className="bg-gradient-to-r from-purple-600 to-indigo-600 h-3 rounded-full transition-all"
-              style={{ width: '0%' }}
-            ></div>
+              className="bg-gradient-to-r from-indigo-600 to-purple-600 h-3 rounded-full transition-all duration-300"
+              style={{ width: `${progress}%` }}
+            />
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="bg-white p-8">
-          <div className="max-w-2xl mx-auto text-center space-y-6">
-            <div className="text-6xl mb-4">📋</div>
-
-            <h2 className="text-2xl font-bold text-gray-800">
-              Assessment Questions Coming Soon
-            </h2>
-
-            <p className="text-gray-600 text-lg">
-              The Big Five Personality and Holland Code assessments will be integrated here.
+        {/* Question Card */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-6">
+          <div className="mb-8">
+            <p className="text-2xl text-gray-800 font-medium leading-relaxed">
+              {currentQuestion.text}
             </p>
+          </div>
 
-            <div className="bg-purple-50 border-2 border-purple-200 rounded-xl p-6 mt-8">
-              <h3 className="font-bold text-purple-600 mb-3">What You'll Discover:</h3>
-              <ul className="text-left space-y-2 text-gray-700">
-                <li className="flex items-start">
-                  <span className="text-purple-600 mr-2">•</span>
-                  <span><strong>Big Five Traits:</strong> Your levels of Openness, Conscientiousness, Extraversion, Agreeableness, and Neuroticism</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-purple-600 mr-2">•</span>
-                  <span><strong>Holland Code:</strong> Your career interest areas (Realistic, Investigative, Artistic, Social, Enterprising, Conventional)</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-purple-600 mr-2">•</span>
-                  <span><strong>University Fit:</strong> How your personality aligns with different campus cultures and academic environments</span>
-                </li>
-              </ul>
-            </div>
-
-            <div className="pt-6">
-              <p className="text-sm text-gray-500 mb-4">
-                For testing purposes, you can mark this section as complete:
-              </p>
+          {/* Likert Scale Buttons */}
+          <div className="space-y-3">
+            {[1, 2, 3, 4, 5].map((value) => (
               <button
-                onClick={handleComplete}
-                disabled={isCompleting}
-                className={`px-8 py-4 rounded-lg font-semibold text-lg transition-all ${
-                  isCompleting
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:shadow-lg'
+                key={value}
+                onClick={() => handleAnswer(value)}
+                className={`w-full p-4 rounded-xl border-2 transition-all duration-200 text-left ${
+                  selectedValue === value
+                    ? 'border-indigo-600 bg-indigo-50 shadow-md'
+                    : 'border-gray-200 hover:border-indigo-300 hover:bg-gray-50'
                 }`}
               >
-                {isCompleting ? 'Completing...' : 'Complete Part A ✓'}
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-gray-700">
+                    {section.scale.labels[value.toString() as keyof typeof section.scale.labels]}
+                  </span>
+                  <div
+                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                      selectedValue === value
+                        ? 'border-indigo-600 bg-indigo-600'
+                        : 'border-gray-300'
+                    }`}
+                  >
+                    {selectedValue === value && (
+                      <div className="w-2 h-2 bg-white rounded-full" />
+                    )}
+                  </div>
+                </div>
               </button>
-            </div>
+            ))}
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="bg-white rounded-b-2xl p-6 border-t">
-          <div className="flex justify-between items-center text-sm text-gray-500">
-            <span>Part A of 3</span>
-            <span>Estimated time: 15-20 minutes</span>
-          </div>
+        {/* Navigation */}
+        <div className="flex justify-between items-center">
+          <button
+            onClick={handleBack}
+            disabled={currentQuestionIndex === 0}
+            className="px-6 py-3 rounded-lg border-2 border-gray-300 text-gray-700 font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          >
+            ← Back
+          </button>
+
+          <button
+            onClick={handleNext}
+            disabled={currentQuestionIndex === questions.length - 1}
+            className="px-6 py-3 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          >
+            Next →
+          </button>
         </div>
+
+        {/* Question answered indicator */}
+        {isCurrentAnswered && (
+          <div className="mt-4 text-center">
+            <p className="text-sm text-green-600 font-medium">✓ Answer saved</p>
+          </div>
+        )}
       </div>
     </div>
   );
