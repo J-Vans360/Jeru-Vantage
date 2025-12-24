@@ -27,16 +27,10 @@ export default function ResultsDashboard({ assessmentResults }: ResultsDashboard
   const environmentResult = partCResults.find((r) => r.domainName === 'Environment & Preferences');
   const executionResult = partCResults.find((r) => r.domainName === 'Execution & Grit');
 
-  // Debug: Log values result
-  console.log('Values Result:', valuesResult);
-  console.log('Values Scores:', valuesResult?.scores);
-  console.log('Top Values:', valuesResult?.scores?.topValues);
-
   // Ensure topValues exists for backward compatibility
   if (valuesResult?.scores && !valuesResult.scores.topValues && valuesResult.scores.domains) {
-    // Create topValues from domains if it doesn't exist
+    // Create topValues from domains if it doesn't exist (for old assessment data)
     valuesResult.scores.topValues = [...valuesResult.scores.domains].sort((a: any, b: any) => b.score - a.score);
-    console.log('Created topValues from domains:', valuesResult.scores.topValues);
   }
 
   const handlePrint = () => {
