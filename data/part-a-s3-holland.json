@@ -1,0 +1,451 @@
+{
+  "section": {
+    "id": "part-a-s3",
+    "title": "Part A: Career Interests",
+    "subtitle": "WHAT EXCITES YOU? - Discover your Holland Code (RIASEC)",
+    "description": "Answer based on what naturally interests you—not what you think you should like.",
+    "icon": "🔥",
+    "estimatedTime": "12-15 minutes",
+    "totalQuestions": 60,
+    "scale": {
+      "min": 1,
+      "max": 5,
+      "labels": {
+        "1": "Strongly Disagree",
+        "2": "Disagree",
+        "3": "Neutral",
+        "4": "Agree",
+        "5": "Strongly Agree"
+      }
+    }
+  },
+  "domains": [
+    {
+      "code": "REA",
+      "name": "Realistic",
+      "description": "Practical & Hands-on - Working with tools, machines, or nature",
+      "color": "#059669"
+    },
+    {
+      "code": "INV",
+      "name": "Investigative",
+      "description": "Analytical & Scientific - Researching, analyzing, problem-solving",
+      "color": "#7C3AED"
+    },
+    {
+      "code": "ART",
+      "name": "Artistic",
+      "description": "Creative & Expressive - Art, music, writing, design",
+      "color": "#EC4899"
+    },
+    {
+      "code": "SOC",
+      "name": "Social",
+      "description": "Helping & Teaching - Supporting, guiding, healing others",
+      "color": "#F59E0B"
+    },
+    {
+      "code": "ENT",
+      "name": "Enterprising",
+      "description": "Leading & Persuading - Business, sales, management",
+      "color": "#EF4444"
+    },
+    {
+      "code": "CON",
+      "name": "Conventional",
+      "description": "Organized & Detail-oriented - Data, records, procedures",
+      "color": "#3B82F6"
+    }
+  ],
+  "questions": [
+    {
+      "id": 1,
+      "text": "I enjoy solving practical problems by building, fixing, or putting things together.",
+      "domain": "REA",
+      "reverse": false
+    },
+    {
+      "id": 2,
+      "text": "I like questions that need careful logic and evidence to answer.",
+      "domain": "INV",
+      "reverse": false
+    },
+    {
+      "id": 3,
+      "text": "I feel energised when I can express ideas in an original way.",
+      "domain": "ART",
+      "reverse": false
+    },
+    {
+      "id": 4,
+      "text": "I find meaning in helping people learn, heal, or grow.",
+      "domain": "SOC",
+      "reverse": false
+    },
+    {
+      "id": 5,
+      "text": "I like persuading others and guiding a group toward a goal.",
+      "domain": "ENT",
+      "reverse": false
+    },
+    {
+      "id": 6,
+      "text": "I feel satisfied when information is organised and systems run smoothly.",
+      "domain": "CON",
+      "reverse": false
+    },
+    {
+      "id": 7,
+      "text": "I prefer hands-on tasks to long discussions about ideas.",
+      "domain": "REA",
+      "reverse": false
+    },
+    {
+      "id": 8,
+      "text": "I enjoy analysing data to understand patterns and causes.",
+      "domain": "INV",
+      "reverse": false
+    },
+    {
+      "id": 9,
+      "text": "I dislike work that requires imagination or creative risk.",
+      "domain": "ART",
+      "reverse": true
+    },
+    {
+      "id": 10,
+      "text": "I am not very interested in teaching or supporting others.",
+      "domain": "SOC",
+      "reverse": true
+    },
+    {
+      "id": 11,
+      "text": "I avoid taking charge or influencing group decisions.",
+      "domain": "ENT",
+      "reverse": true
+    },
+    {
+      "id": 12,
+      "text": "I find detailed paperwork and structured procedures calming.",
+      "domain": "CON",
+      "reverse": false
+    },
+    {
+      "id": 13,
+      "text": "I would rather work outdoors or with tools than sit in meetings all day.",
+      "domain": "REA",
+      "reverse": false
+    },
+    {
+      "id": 14,
+      "text": "I enjoy scientific thinking—testing ideas and checking what is true.",
+      "domain": "INV",
+      "reverse": false
+    },
+    {
+      "id": 15,
+      "text": "I prefer work that allows freedom over strict rules.",
+      "domain": "ART",
+      "reverse": false
+    },
+    {
+      "id": 16,
+      "text": "I notice when someone is struggling and want to support them.",
+      "domain": "SOC",
+      "reverse": false
+    },
+    {
+      "id": 17,
+      "text": "I'm motivated by achievement, competition, and measurable results.",
+      "domain": "ENT",
+      "reverse": false
+    },
+    {
+      "id": 18,
+      "text": "I like planning steps carefully and following a clear process.",
+      "domain": "CON",
+      "reverse": false
+    },
+    {
+      "id": 19,
+      "text": "I feel confident using equipment, tools, or technology in practical ways.",
+      "domain": "REA",
+      "reverse": false
+    },
+    {
+      "id": 20,
+      "text": "I enjoy complex problems that require deep concentration.",
+      "domain": "INV",
+      "reverse": false
+    },
+    {
+      "id": 21,
+      "text": "Repetitive routines drain me, even if they are efficient.",
+      "domain": "ART",
+      "reverse": false
+    },
+    {
+      "id": 22,
+      "text": "I enjoy explaining ideas in a way that helps others understand.",
+      "domain": "SOC",
+      "reverse": false
+    },
+    {
+      "id": 23,
+      "text": "I enjoy negotiating or selling an idea to win support.",
+      "domain": "ENT",
+      "reverse": false
+    },
+    {
+      "id": 24,
+      "text": "I prefer clear instructions and stable routines at work.",
+      "domain": "CON",
+      "reverse": false
+    },
+    {
+      "id": 25,
+      "text": "I like work where results are physical and visible.",
+      "domain": "REA",
+      "reverse": false
+    },
+    {
+      "id": 26,
+      "text": "I lose interest when a task lacks intellectual challenge.",
+      "domain": "INV",
+      "reverse": false
+    },
+    {
+      "id": 27,
+      "text": "I enjoy exploring music, design, writing, or performance.",
+      "domain": "ART",
+      "reverse": false
+    },
+    {
+      "id": 28,
+      "text": "I prefer working with machines or tools more than working with people.",
+      "domain": "SOC",
+      "reverse": true
+    },
+    {
+      "id": 29,
+      "text": "I often take initiative in groups and enjoy directing tasks.",
+      "domain": "ENT",
+      "reverse": false
+    },
+    {
+      "id": 30,
+      "text": "I naturally keep track of details, deadlines, and records.",
+      "domain": "CON",
+      "reverse": false
+    },
+    {
+      "id": 31,
+      "text": "I dislike getting my hands dirty or working with equipment.",
+      "domain": "REA",
+      "reverse": true
+    },
+    {
+      "id": 32,
+      "text": "I enjoy reading or researching to understand how things work.",
+      "domain": "INV",
+      "reverse": false
+    },
+    {
+      "id": 33,
+      "text": "I prefer flexible, unstructured work over strict routines.",
+      "domain": "ART",
+      "reverse": false
+    },
+    {
+      "id": 34,
+      "text": "I enjoy mentoring, coaching, or guiding someone step-by-step.",
+      "domain": "SOC",
+      "reverse": false
+    },
+    {
+      "id": 35,
+      "text": "I feel energised by leadership roles and responsibility.",
+      "domain": "ENT",
+      "reverse": false
+    },
+    {
+      "id": 36,
+      "text": "I like work that involves checking accuracy and preventing errors.",
+      "domain": "CON",
+      "reverse": false
+    },
+    {
+      "id": 37,
+      "text": "I enjoy learning how machines, vehicles, or systems operate.",
+      "domain": "REA",
+      "reverse": false
+    },
+    {
+      "id": 38,
+      "text": "I am more interested in theory and ideas than practical application.",
+      "domain": "INV",
+      "reverse": false
+    },
+    {
+      "id": 39,
+      "text": "I would be happy in a job that lets me create something new every day.",
+      "domain": "ART",
+      "reverse": false
+    },
+    {
+      "id": 40,
+      "text": "I am good at listening and understanding how others feel.",
+      "domain": "SOC",
+      "reverse": false
+    },
+    {
+      "id": 41,
+      "text": "I enjoy setting goals and pushing myself to achieve them.",
+      "domain": "ENT",
+      "reverse": false
+    },
+    {
+      "id": 42,
+      "text": "I prefer following established methods rather than creating new ones.",
+      "domain": "CON",
+      "reverse": false
+    },
+    {
+      "id": 43,
+      "text": "I feel satisfied when I complete a physical task or project.",
+      "domain": "REA",
+      "reverse": false
+    },
+    {
+      "id": 44,
+      "text": "I enjoy asking questions and finding answers through research.",
+      "domain": "INV",
+      "reverse": false
+    },
+    {
+      "id": 45,
+      "text": "I value originality and self-expression in my work.",
+      "domain": "ART",
+      "reverse": false
+    },
+    {
+      "id": 46,
+      "text": "I would enjoy a career focused on helping people solve personal problems.",
+      "domain": "SOC",
+      "reverse": false
+    },
+    {
+      "id": 47,
+      "text": "I am comfortable making quick decisions under pressure.",
+      "domain": "ENT",
+      "reverse": false
+    },
+    {
+      "id": 48,
+      "text": "I enjoy tasks that require attention to detail and precision.",
+      "domain": "CON",
+      "reverse": false
+    },
+    {
+      "id": 49,
+      "text": "I like being active and moving around rather than sitting at a desk.",
+      "domain": "REA",
+      "reverse": false
+    },
+    {
+      "id": 50,
+      "text": "I am curious about why things happen and how systems work.",
+      "domain": "INV",
+      "reverse": false
+    },
+    {
+      "id": 51,
+      "text": "I prefer tasks with clear rules over open-ended creative projects.",
+      "domain": "ART",
+      "reverse": true
+    },
+    {
+      "id": 52,
+      "text": "I enjoy working in teams where I can collaborate with others.",
+      "domain": "SOC",
+      "reverse": false
+    },
+    {
+      "id": 53,
+      "text": "I like convincing people to see things my way.",
+      "domain": "ENT",
+      "reverse": false
+    },
+    {
+      "id": 54,
+      "text": "I feel comfortable working with numbers, spreadsheets, and databases.",
+      "domain": "CON",
+      "reverse": false
+    },
+    {
+      "id": 55,
+      "text": "I would enjoy working in construction, engineering, or manufacturing.",
+      "domain": "REA",
+      "reverse": false
+    },
+    {
+      "id": 56,
+      "text": "I find abstract theories and concepts fascinating.",
+      "domain": "INV",
+      "reverse": false
+    },
+    {
+      "id": 57,
+      "text": "I would love a career in the arts, entertainment, or creative industries.",
+      "domain": "ART",
+      "reverse": false
+    },
+    {
+      "id": 58,
+      "text": "I am drawn to careers in education, healthcare, or social services.",
+      "domain": "SOC",
+      "reverse": false
+    },
+    {
+      "id": 59,
+      "text": "I am attracted to business, entrepreneurship, or management roles.",
+      "domain": "ENT",
+      "reverse": false
+    },
+    {
+      "id": 60,
+      "text": "I would enjoy a career in finance, administration, or data management.",
+      "domain": "CON",
+      "reverse": false
+    }
+  ],
+  "scoring": {
+    "method": "sum",
+    "reverseScoring": {
+      "1": 5,
+      "2": 4,
+      "3": 3,
+      "4": 2,
+      "5": 1
+    },
+    "itemsPerDomain": 10,
+    "minScore": 10,
+    "maxScore": 50,
+    "bands": {
+      "high": { "min": 38, "max": 50, "label": "High" },
+      "mid": { "min": 25, "max": 37, "label": "Mid-range" },
+      "low": { "min": 10, "max": 24, "label": "Low" }
+    }
+  },
+  "hollandCodeInfo": {
+    "description": "Your top 3 codes combine to form your Holland Code (e.g., RIA, SEC, AIC)",
+    "careerMatches": {
+      "REA": ["Engineer", "Mechanic", "Carpenter", "Electrician", "Pilot", "Athlete"],
+      "INV": ["Scientist", "Researcher", "Doctor", "Data Analyst", "Professor", "Pharmacist"],
+      "ART": ["Designer", "Writer", "Musician", "Actor", "Architect", "Photographer"],
+      "SOC": ["Teacher", "Counselor", "Nurse", "Social Worker", "HR Manager", "Therapist"],
+      "ENT": ["Entrepreneur", "Lawyer", "Sales Manager", "CEO", "Marketing Director", "Politician"],
+      "CON": ["Accountant", "Administrator", "Banker", "Auditor", "Data Entry", "Secretary"]
+    }
+  }
+}

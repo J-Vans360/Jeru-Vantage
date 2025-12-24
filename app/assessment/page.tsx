@@ -9,16 +9,29 @@ async function getAssessmentProgress(userId: string) {
     where: { userId },
     select: {
       partName: true,
+      domainName: true,
       completed: true,
     },
   });
 
-  const partA = results.find((r) => r.partName === 'Part A');
+  // Check for Part A subsections
+  const partAS1 = results.find((r) => r.partName === 'Part A' && r.domainName === 'Personality Architecture');
+  const partAS2 = results.find((r) => r.partName === 'Part A' && r.domainName === 'Values & Interests');
+  const partAS3 = results.find((r) => r.partName === 'Part A' && r.domainName === 'Career Interests (Holland Code)');
+  const partAS4 = results.find((r) => r.partName === 'Part A' && r.domainName === 'Multiple Intelligences');
+
+  // Part A is completed when S1, S2, S3, and S4 are all completed
+  const partACompleted = (partAS1?.completed || false) && (partAS2?.completed || false) && (partAS3?.completed || false) && (partAS4?.completed || false);
+
   const partB = results.find((r) => r.partName === 'Part B');
   const partC = results.find((r) => r.partName === 'Part C');
 
   return {
-    partACompleted: partA?.completed || false,
+    partAS1Completed: partAS1?.completed || false,
+    partAS2Completed: partAS2?.completed || false,
+    partAS3Completed: partAS3?.completed || false,
+    partAS4Completed: partAS4?.completed || false,
+    partACompleted,
     partBCompleted: partB?.completed || false,
     partCCompleted: partC?.completed || false,
   };
@@ -155,14 +168,39 @@ export default async function AssessmentPage() {
                   Part A: Personality & Values
                 </h3>
                 <p className="text-gray-700 mb-3">
-                  Discover your personality type and core values through the Big Five personality traits and Holland Code career assessment.
+                  Discover your personality type and core values through the Big Five personality traits and values assessment.
                 </p>
+
+                {/* Subsection Progress */}
+                <div className="mb-3 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className={`text-sm ${progress.partAS1Completed ? 'text-green-600 font-semibold' : 'text-gray-600'}`}>
+                      {progress.partAS1Completed ? '✓' : '○'} S1: Personality Architecture (50 questions)
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-sm ${progress.partAS2Completed ? 'text-green-600 font-semibold' : 'text-gray-600'}`}>
+                      {progress.partAS2Completed ? '✓' : '○'} S2: Core Values (60 questions)
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-sm ${progress.partAS3Completed ? 'text-green-600 font-semibold' : 'text-gray-600'}`}>
+                      {progress.partAS3Completed ? '✓' : '○'} S3: Holland Code - Career Interests (60 questions)
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-sm ${progress.partAS4Completed ? 'text-green-600 font-semibold' : 'text-gray-600'}`}>
+                      {progress.partAS4Completed ? '✓' : '○'} S4: Multiple Intelligences (80 questions)
+                    </span>
+                  </div>
+                </div>
+
                 <div className="flex items-center gap-4 text-sm text-gray-600">
-                  <span>⏱️ 15-20 minutes</span>
+                  <span>⏱️ 55-60 minutes total</span>
                   <span className={`font-semibold ${
                     progress.partACompleted ? 'text-green-600' : 'text-purple-600'
                   }`}>
-                    {progress.partACompleted ? '✓ Completed' : '○ Not Started'}
+                    {progress.partACompleted ? '✓ Completed' : progress.partAS1Completed || progress.partAS2Completed || progress.partAS3Completed || progress.partAS4Completed ? '⟳ In Progress' : '○ Not Started'}
                   </span>
                 </div>
               </div>
@@ -170,17 +208,63 @@ export default async function AssessmentPage() {
                 <div className="text-4xl">✅</div>
               )}
             </div>
-            <div className="flex gap-3">
-              <Link
-                href="/assessment/part-a"
-                className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-                  progress.partACompleted
-                    ? 'bg-gray-300 text-gray-700 hover:bg-gray-400'
-                    : 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:shadow-lg'
-                }`}
-              >
-                {progress.partACompleted ? 'Review Part A' : 'Start Part A →'}
-              </Link>
+            <div className="flex gap-3 flex-wrap">
+              {!progress.partAS1Completed ? (
+                <Link
+                  href="/assessment/part-a"
+                  className="px-6 py-3 rounded-lg font-semibold transition-all bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:shadow-lg"
+                >
+                  Start S1: Personality →
+                </Link>
+              ) : !progress.partAS2Completed ? (
+                <Link
+                  href="/assessment/part-a-s2"
+                  className="px-6 py-3 rounded-lg font-semibold transition-all bg-gradient-to-r from-pink-600 to-red-600 text-white hover:shadow-lg"
+                >
+                  Start S2: Core Values →
+                </Link>
+              ) : !progress.partAS3Completed ? (
+                <Link
+                  href="/assessment/part-a-s3"
+                  className="px-6 py-3 rounded-lg font-semibold transition-all bg-gradient-to-r from-orange-600 to-yellow-600 text-white hover:shadow-lg"
+                >
+                  Start S3: Holland Code →
+                </Link>
+              ) : !progress.partAS4Completed ? (
+                <Link
+                  href="/assessment/part-a-s4"
+                  className="px-6 py-3 rounded-lg font-semibold transition-all bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-lg"
+                >
+                  Start S4: Intelligences →
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href="/assessment/part-a"
+                    className="px-6 py-3 rounded-lg font-semibold transition-all bg-gray-300 text-gray-700 hover:bg-gray-400"
+                  >
+                    Review S1
+                  </Link>
+                  <Link
+                    href="/assessment/part-a-s2"
+                    className="px-6 py-3 rounded-lg font-semibold transition-all bg-gray-300 text-gray-700 hover:bg-gray-400"
+                  >
+                    Review S2
+                  </Link>
+                  <Link
+                    href="/assessment/part-a-s3"
+                    className="px-6 py-3 rounded-lg font-semibold transition-all bg-gray-300 text-gray-700 hover:bg-gray-400"
+                  >
+                    Review S3
+                  </Link>
+                  <Link
+                    href="/assessment/part-a-s4"
+                    className="px-6 py-3 rounded-lg font-semibold transition-all bg-gray-300 text-gray-700 hover:bg-gray-400"
+                  >
+                    Review S4
+                  </Link>
+                </>
+              )}
             </div>
           </div>
 

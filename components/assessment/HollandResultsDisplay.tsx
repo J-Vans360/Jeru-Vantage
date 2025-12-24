@@ -8,7 +8,7 @@ type DomainScore = {
   itemCount: number;
 };
 
-type ResultsDisplayProps = {
+type HollandResultsDisplayProps = {
   section: {
     title: string;
     subtitle: string;
@@ -16,6 +16,8 @@ type ResultsDisplayProps = {
   };
   scores: {
     domains: DomainScore[];
+    hollandCode: string;
+    topThree: DomainScore[];
     timestamp: string;
   };
   domains: Array<{
@@ -29,16 +31,16 @@ type ResultsDisplayProps = {
   isSaving: boolean;
 };
 
-export default function ResultsDisplay({
+export default function HollandResultsDisplay({
   section,
   scores,
   domains,
   onContinue,
   continueButtonText = 'Continue to Assessment Hub →',
   isSaving,
-}: ResultsDisplayProps) {
+}: HollandResultsDisplayProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-yellow-50">
       <div className="max-w-5xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8">
@@ -47,6 +49,25 @@ export default function ResultsDisplay({
             Assessment Complete!
           </h1>
           <p className="text-lg text-gray-600">{section.subtitle}</p>
+        </div>
+
+        {/* Holland Code Display */}
+        <div className="bg-gradient-to-r from-orange-500 to-yellow-500 rounded-2xl shadow-xl p-8 mb-8 text-center text-white">
+          <h2 className="text-2xl font-bold mb-4">Your Holland Code</h2>
+          <div className="text-7xl font-black mb-4 tracking-wider">
+            {scores.hollandCode}
+          </div>
+          <div className="flex justify-center gap-4 flex-wrap">
+            {scores.topThree.map((domain, index) => (
+              <div key={domain.code} className="bg-white/20 rounded-lg px-4 py-2">
+                <span className="font-semibold">#{index + 1}: {domain.name}</span>
+                <span className="ml-2 text-sm">({domain.score}/50)</span>
+              </div>
+            ))}
+          </div>
+          <p className="mt-4 text-sm opacity-90">
+            Your top 3 career interest areas define your unique Holland Code
+          </p>
         </div>
 
         {/* Results Cards */}
@@ -109,31 +130,40 @@ export default function ResultsDisplay({
         {/* Interpretation Guide */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
           <h3 className="text-xl font-bold text-gray-900 mb-4">
-            Understanding Your Scores
+            Understanding Your Holland Code
           </h3>
+          <div className="space-y-3 mb-4">
+            <p className="text-gray-700">
+              Your Holland Code combines your top 3 career interest areas. People with similar codes tend to:
+            </p>
+            <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
+              <li>Enjoy similar types of work activities</li>
+              <li>Thrive in similar work environments</li>
+              <li>Find satisfaction in similar career fields</li>
+            </ul>
+          </div>
           <div className="grid md:grid-cols-3 gap-4">
             <div className="p-4 bg-green-50 rounded-lg border border-green-200">
               <div className="font-bold text-green-700 mb-2">High (38-50)</div>
               <p className="text-sm text-gray-600">
-                Strong expression of this trait
+                Strong interest in this area
               </p>
             </div>
             <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
               <div className="font-bold text-blue-700 mb-2">Mid-range (25-37)</div>
               <p className="text-sm text-gray-600">
-                Flexible and adaptable in this area
+                Moderate interest in this area
               </p>
             </div>
             <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
               <div className="font-bold text-purple-700 mb-2">Low (10-24)</div>
               <p className="text-sm text-gray-600">
-                Lower expression of this trait
+                Limited interest in this area
               </p>
             </div>
           </div>
           <p className="text-sm text-gray-500 mt-4">
-            Remember: There are no "good" or "bad" scores. Each personality profile
-            has unique strengths and opportunities.
+            Remember: All career interests are equally valuable. Your unique combination helps identify fields where you'll be most engaged.
           </p>
         </div>
 
@@ -142,7 +172,7 @@ export default function ResultsDisplay({
           <button
             onClick={onContinue}
             disabled={isSaving}
-            className="px-8 py-4 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold text-lg hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="px-8 py-4 rounded-lg bg-gradient-to-r from-orange-600 to-yellow-600 text-white font-semibold text-lg hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {isSaving ? 'Saving...' : continueButtonText}
           </button>

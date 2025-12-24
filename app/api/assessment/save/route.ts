@@ -29,6 +29,8 @@ export async function POST(request: NextRequest) {
     const sectionMapping: Record<string, { partName: string; domainName: string }> = {
       'part-a-s1': { partName: 'Part A', domainName: 'Personality Architecture' },
       'part-a-s2': { partName: 'Part A', domainName: 'Values & Interests' },
+      'part-a-s3': { partName: 'Part A', domainName: 'Career Interests (Holland Code)' },
+      'part-a-s4': { partName: 'Part A', domainName: 'Multiple Intelligences' },
     };
 
     const mapping = sectionMapping[sectionId] || {

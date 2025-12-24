@@ -95,3 +95,195 @@ export function calculatePersonalityScores(
     timestamp: new Date().toISOString(),
   };
 }
+
+export function calculateValuesScores(
+  answers: Record<number, number>,
+  assessmentData: AssessmentData
+) {
+  const { questions, domains, scoring } = assessmentData;
+
+  // Initialize domain scores
+  const domainScores: Record<string, { total: number; count: number }> = {};
+  domains.forEach((domain) => {
+    domainScores[domain.code] = { total: 0, count: 0 };
+  });
+
+  // Calculate scores for each domain
+  questions.forEach((question) => {
+    const answer = answers[question.id];
+    if (answer === undefined) return;
+
+    // Apply reverse scoring if needed
+    let score = answer;
+    if (question.reverse) {
+      score = scoring.reverseScoring[answer.toString()];
+    }
+
+    // Add to domain total
+    if (domainScores[question.domain]) {
+      domainScores[question.domain].total += score;
+      domainScores[question.domain].count += 1;
+    }
+  });
+
+  // Format results with band interpretations
+  const results: DomainScore[] = domains.map((domain) => {
+    const domainData = domainScores[domain.code];
+    const score = domainData.total;
+
+    // Determine band
+    let band = 'Mid-range';
+    if (score >= scoring.bands.high.min) {
+      band = scoring.bands.high.label;
+    } else if (score <= scoring.bands.low.max) {
+      band = scoring.bands.low.label;
+    }
+
+    return {
+      code: domain.code,
+      name: domain.name,
+      description: domain.description,
+      color: domain.color,
+      score,
+      band,
+      itemCount: domainData.count,
+    };
+  });
+
+  return {
+    domains: results,
+    timestamp: new Date().toISOString(),
+  };
+}
+
+export function calculateHollandScores(
+  answers: Record<number, number>,
+  assessmentData: AssessmentData
+) {
+  const { questions, domains, scoring } = assessmentData;
+
+  // Initialize domain scores
+  const domainScores: Record<string, { total: number; count: number }> = {};
+  domains.forEach((domain) => {
+    domainScores[domain.code] = { total: 0, count: 0 };
+  });
+
+  // Calculate scores for each domain
+  questions.forEach((question) => {
+    const answer = answers[question.id];
+    if (answer === undefined) return;
+
+    // Apply reverse scoring if needed
+    let score = answer;
+    if (question.reverse) {
+      score = scoring.reverseScoring[answer.toString()];
+    }
+
+    // Add to domain total
+    if (domainScores[question.domain]) {
+      domainScores[question.domain].total += score;
+      domainScores[question.domain].count += 1;
+    }
+  });
+
+  // Format results with band interpretations
+  const results: DomainScore[] = domains.map((domain) => {
+    const domainData = domainScores[domain.code];
+    const score = domainData.total;
+
+    // Determine band
+    let band = 'Mid-range';
+    if (score >= scoring.bands.high.min) {
+      band = scoring.bands.high.label;
+    } else if (score <= scoring.bands.low.max) {
+      band = scoring.bands.low.label;
+    }
+
+    return {
+      code: domain.code,
+      name: domain.name,
+      description: domain.description,
+      color: domain.color,
+      score,
+      band,
+      itemCount: domainData.count,
+    };
+  });
+
+  // Calculate Holland Code (top 3 domains by score)
+  const sortedDomains = [...results].sort((a, b) => b.score - a.score);
+  const hollandCode = sortedDomains.slice(0, 3).map((d) => d.code).join('');
+
+  return {
+    domains: results,
+    hollandCode,
+    topThree: sortedDomains.slice(0, 3),
+    timestamp: new Date().toISOString(),
+  };
+}
+
+export function calculateIntelligencesScores(
+  answers: Record<number, number>,
+  assessmentData: AssessmentData
+) {
+  const { questions, domains, scoring } = assessmentData;
+
+  // Initialize domain scores
+  const domainScores: Record<string, { total: number; count: number }> = {};
+  domains.forEach((domain) => {
+    domainScores[domain.code] = { total: 0, count: 0 };
+  });
+
+  // Calculate scores for each domain
+  questions.forEach((question) => {
+    const answer = answers[question.id];
+    if (answer === undefined) return;
+
+    // Apply reverse scoring if needed
+    let score = answer;
+    if (question.reverse) {
+      score = scoring.reverseScoring[answer.toString()];
+    }
+
+    // Add to domain total
+    if (domainScores[question.domain]) {
+      domainScores[question.domain].total += score;
+      domainScores[question.domain].count += 1;
+    }
+  });
+
+  // Format results with band interpretations
+  const results: DomainScore[] = domains.map((domain) => {
+    const domainData = domainScores[domain.code];
+    const score = domainData.total;
+
+    // Determine band
+    let band = 'Moderate';
+    if (score >= scoring.bands.high.min) {
+      band = scoring.bands.high.label;
+    } else if (score <= scoring.bands.low.max) {
+      band = scoring.bands.low.label;
+    }
+
+    return {
+      code: domain.code,
+      name: domain.name,
+      description: domain.description,
+      color: domain.color,
+      score,
+      band,
+      itemCount: domainData.count,
+    };
+  });
+
+  // Calculate top 3 intelligences
+  const sortedDomains = [...results].sort((a, b) => b.score - a.score);
+  const topIntelligences = sortedDomains.slice(0, 3).map((d) => d.code).join('');
+
+  return {
+    domains: results,
+    topIntelligences,
+    topThree: sortedDomains.slice(0, 3),
+    timestamp: new Date().toISOString(),
+  };
+}

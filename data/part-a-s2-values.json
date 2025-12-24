@@ -1,0 +1,440 @@
+{
+  "section": {
+    "id": "part-a-s2",
+    "title": "Part A: Core Values",
+    "subtitle": "WHAT DRIVES YOU? - Discover your motivational compass",
+    "description": "Answer honestly based on what truly matters to you—not what others expect.",
+    "icon": "❤️",
+    "estimatedTime": "12-15 minutes",
+    "totalQuestions": 60,
+    "scale": {
+      "min": 1,
+      "max": 5,
+      "labels": {
+        "1": "Strongly Disagree",
+        "2": "Disagree",
+        "3": "Neutral",
+        "4": "Agree",
+        "5": "Strongly Agree"
+      }
+    }
+  },
+  "domains": [
+    {
+      "code": "ALT",
+      "name": "Altruism",
+      "description": "Service & Social Impact - Driven by helping others",
+      "color": "#EC4899"
+    },
+    {
+      "code": "ECO",
+      "name": "Economic",
+      "description": "Wealth & Security - Driven by financial gain and rewards",
+      "color": "#10B981"
+    },
+    {
+      "code": "AUT",
+      "name": "Autonomy",
+      "description": "Independence - Driven by freedom and self-direction",
+      "color": "#8B5CF6"
+    },
+    {
+      "code": "POW",
+      "name": "Power",
+      "description": "Authority & Influence - Driven by leadership and control",
+      "color": "#EF4444"
+    },
+    {
+      "code": "TRA",
+      "name": "Tradition",
+      "description": "Structure & Stability - Driven by rules and clear hierarchies",
+      "color": "#6366F1"
+    },
+    {
+      "code": "INN",
+      "name": "Innovation",
+      "description": "Learning & Creativity - Driven by problem-solving and variety",
+      "color": "#F59E0B"
+    }
+  ],
+  "questions": [
+    {
+      "id": 1,
+      "text": "I feel happiest when my work helps other people.",
+      "domain": "ALT",
+      "reverse": false
+    },
+    {
+      "id": 2,
+      "text": "Money and security are very important in my decisions.",
+      "domain": "ECO",
+      "reverse": false
+    },
+    {
+      "id": 3,
+      "text": "I like choosing my own way to do tasks.",
+      "domain": "AUT",
+      "reverse": false
+    },
+    {
+      "id": 4,
+      "text": "I like roles where I can lead and influence others.",
+      "domain": "POW",
+      "reverse": false
+    },
+    {
+      "id": 5,
+      "text": "Clear rules help me work better.",
+      "domain": "TRA",
+      "reverse": false
+    },
+    {
+      "id": 6,
+      "text": "I enjoy trying new ideas and new methods.",
+      "domain": "INN",
+      "reverse": false
+    },
+    {
+      "id": 7,
+      "text": "I prefer helping quietly instead of getting attention.",
+      "domain": "ALT",
+      "reverse": false
+    },
+    {
+      "id": 8,
+      "text": "I would be okay with a job even if it doesn't pay much.",
+      "domain": "ECO",
+      "reverse": true
+    },
+    {
+      "id": 9,
+      "text": "I dislike asking permission for small things.",
+      "domain": "AUT",
+      "reverse": false
+    },
+    {
+      "id": 10,
+      "text": "I like taking charge when a group is confused.",
+      "domain": "POW",
+      "reverse": false
+    },
+    {
+      "id": 11,
+      "text": "I respect traditions and the way things have been done for a long time.",
+      "domain": "TRA",
+      "reverse": false
+    },
+    {
+      "id": 12,
+      "text": "I get bored with the same tasks again and again.",
+      "domain": "INN",
+      "reverse": false
+    },
+    {
+      "id": 13,
+      "text": "I will give time and effort to support a cause I believe in.",
+      "domain": "ALT",
+      "reverse": false
+    },
+    {
+      "id": 14,
+      "text": "I feel stressed if my future income is not clear.",
+      "domain": "ECO",
+      "reverse": false
+    },
+    {
+      "id": 15,
+      "text": "I work best when I can choose my schedule and methods.",
+      "domain": "AUT",
+      "reverse": false
+    },
+    {
+      "id": 16,
+      "text": "Having power is useful because it lets me change outcomes.",
+      "domain": "POW",
+      "reverse": false
+    },
+    {
+      "id": 17,
+      "text": "I like environments where expectations are clear.",
+      "domain": "TRA",
+      "reverse": false
+    },
+    {
+      "id": 18,
+      "text": "I like learning new tools and skills.",
+      "domain": "INN",
+      "reverse": false
+    },
+    {
+      "id": 19,
+      "text": "I often think about what my community needs.",
+      "domain": "ALT",
+      "reverse": false
+    },
+    {
+      "id": 20,
+      "text": "I try to make smart and careful money decisions.",
+      "domain": "ECO",
+      "reverse": false
+    },
+    {
+      "id": 21,
+      "text": "I would rather make my own path than follow a standard path.",
+      "domain": "AUT",
+      "reverse": false
+    },
+    {
+      "id": 22,
+      "text": "Status and recognition matter to me.",
+      "domain": "POW",
+      "reverse": false
+    },
+    {
+      "id": 23,
+      "text": "I feel comfortable when there is a clear boss and clear levels.",
+      "domain": "TRA",
+      "reverse": false
+    },
+    {
+      "id": 24,
+      "text": "I enjoy solving difficult problems.",
+      "domain": "INN",
+      "reverse": false
+    },
+    {
+      "id": 25,
+      "text": "I would choose meaningful work over being famous.",
+      "domain": "ALT",
+      "reverse": false
+    },
+    {
+      "id": 26,
+      "text": "I want a career that can help me build wealth.",
+      "domain": "ECO",
+      "reverse": false
+    },
+    {
+      "id": 27,
+      "text": "Too much supervision frustrates me.",
+      "domain": "AUT",
+      "reverse": false
+    },
+    {
+      "id": 28,
+      "text": "I do not want to lead other people.",
+      "domain": "POW",
+      "reverse": true
+    },
+    {
+      "id": 29,
+      "text": "I like using proven systems instead of changing everything.",
+      "domain": "TRA",
+      "reverse": false
+    },
+    {
+      "id": 30,
+      "text": "I like variety in what I learn and do.",
+      "domain": "INN",
+      "reverse": false
+    },
+    {
+      "id": 31,
+      "text": "I want to use my strengths to support people who need help.",
+      "domain": "ALT",
+      "reverse": false
+    },
+    {
+      "id": 32,
+      "text": "High salary is a big factor when I choose a major or career.",
+      "domain": "ECO",
+      "reverse": false
+    },
+    {
+      "id": 33,
+      "text": "I like working alone for long periods.",
+      "domain": "AUT",
+      "reverse": false
+    },
+    {
+      "id": 34,
+      "text": "I enjoy persuading people and shaping decisions.",
+      "domain": "POW",
+      "reverse": false
+    },
+    {
+      "id": 35,
+      "text": "I dislike situations where rules keep changing.",
+      "domain": "TRA",
+      "reverse": false
+    },
+    {
+      "id": 36,
+      "text": "I enjoy creative work where style and originality matter.",
+      "domain": "INN",
+      "reverse": false
+    },
+    {
+      "id": 37,
+      "text": "Helping others should not cost me time or effort.",
+      "domain": "ALT",
+      "reverse": true
+    },
+    {
+      "id": 38,
+      "text": "I can accept financial risk if the work feels meaningful.",
+      "domain": "ECO",
+      "reverse": true
+    },
+    {
+      "id": 39,
+      "text": "I would struggle if I had to follow detailed instructions every day.",
+      "domain": "AUT",
+      "reverse": false
+    },
+    {
+      "id": 40,
+      "text": "I want people to look to me for direction.",
+      "domain": "POW",
+      "reverse": false
+    },
+    {
+      "id": 41,
+      "text": "I like familiar routines more than constant change.",
+      "domain": "TRA",
+      "reverse": false
+    },
+    {
+      "id": 42,
+      "text": "I often think of many ideas quickly.",
+      "domain": "INN",
+      "reverse": false
+    },
+    {
+      "id": 43,
+      "text": "I'm interested in roles where I can support, guide, or protect others.",
+      "domain": "ALT",
+      "reverse": false
+    },
+    {
+      "id": 44,
+      "text": "I would be unhappy if my job did not improve my lifestyle.",
+      "domain": "ECO",
+      "reverse": false
+    },
+    {
+      "id": 45,
+      "text": "I would accept uncertainty to keep my freedom.",
+      "domain": "AUT",
+      "reverse": false
+    },
+    {
+      "id": 46,
+      "text": "I avoid competition and do not like comparing myself to others.",
+      "domain": "POW",
+      "reverse": true
+    },
+    {
+      "id": 47,
+      "text": "I feel safer when decisions follow rules, not personal opinions.",
+      "domain": "TRA",
+      "reverse": false
+    },
+    {
+      "id": 48,
+      "text": "I like learning because it changes how I see the world.",
+      "domain": "INN",
+      "reverse": false
+    },
+    {
+      "id": 49,
+      "text": "I want my success to help others too.",
+      "domain": "ALT",
+      "reverse": false
+    },
+    {
+      "id": 50,
+      "text": "Long-term security is more important than short-term excitement.",
+      "domain": "ECO",
+      "reverse": false
+    },
+    {
+      "id": 51,
+      "text": "I prefer being responsible for my own results.",
+      "domain": "AUT",
+      "reverse": false
+    },
+    {
+      "id": 52,
+      "text": "I enjoy being a public representative for a group.",
+      "domain": "POW",
+      "reverse": false
+    },
+    {
+      "id": 53,
+      "text": "I respect authority when it is fair and consistent.",
+      "domain": "TRA",
+      "reverse": false
+    },
+    {
+      "id": 54,
+      "text": "I like building better systems and improving how things work.",
+      "domain": "INN",
+      "reverse": false
+    },
+    {
+      "id": 55,
+      "text": "I feel proud when I make someone's life easier.",
+      "domain": "ALT",
+      "reverse": false
+    },
+    {
+      "id": 56,
+      "text": "Being able to afford the life I want is very important to me.",
+      "domain": "ECO",
+      "reverse": false
+    },
+    {
+      "id": 57,
+      "text": "I prefer choosing my own goals instead of being given goals.",
+      "domain": "AUT",
+      "reverse": false
+    },
+    {
+      "id": 58,
+      "text": "I like jobs where my decisions affect many people.",
+      "domain": "POW",
+      "reverse": false
+    },
+    {
+      "id": 59,
+      "text": "I question traditions when they no longer make sense.",
+      "domain": "TRA",
+      "reverse": true
+    },
+    {
+      "id": 60,
+      "text": "I prefer stable routines over new ideas.",
+      "domain": "INN",
+      "reverse": true
+    }
+  ],
+  "scoring": {
+    "method": "sum",
+    "reverseScoring": {
+      "1": 5,
+      "2": 4,
+      "3": 3,
+      "4": 2,
+      "5": 1
+    },
+    "itemsPerDomain": 10,
+    "minScore": 10,
+    "maxScore": 50,
+    "bands": {
+      "high": { "min": 38, "max": 50, "label": "High" },
+      "mid": { "min": 25, "max": 37, "label": "Mid-range" },
+      "low": { "min": 10, "max": 24, "label": "Low" }
+    }
+  }
+}

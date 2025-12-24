@@ -1,0 +1,593 @@
+{
+  "section": {
+    "id": "part-a-s4",
+    "title": "Part A: Multiple Intelligences",
+    "subtitle": "YOUR NATURAL HARDWARE - Discover how you learn and think best",
+    "description": "Answer based on what comes naturally to you—not what you've been trained to do.",
+    "icon": "🎨",
+    "estimatedTime": "15-18 minutes",
+    "totalQuestions": 80,
+    "scale": {
+      "min": 1,
+      "max": 5,
+      "labels": {
+        "1": "Strongly Disagree",
+        "2": "Disagree",
+        "3": "Neutral",
+        "4": "Agree",
+        "5": "Strongly Agree"
+      }
+    }
+  },
+  "domains": [
+    {
+      "code": "VLI",
+      "name": "Verbal-Linguistic",
+      "description": "Word Smart - Reading, writing, speaking, languages",
+      "color": "#3B82F6",
+      "icon": "📝"
+    },
+    {
+      "code": "LMA",
+      "name": "Logical-Mathematical",
+      "description": "Number Smart - Logic, reasoning, problem-solving",
+      "color": "#8B5CF6",
+      "icon": "🔢"
+    },
+    {
+      "code": "VSP",
+      "name": "Visual-Spatial",
+      "description": "Picture Smart - Images, design, visualization",
+      "color": "#EC4899",
+      "icon": "🎨"
+    },
+    {
+      "code": "BKI",
+      "name": "Bodily-Kinesthetic",
+      "description": "Body Smart - Movement, hands-on, physical skills",
+      "color": "#F59E0B",
+      "icon": "🏃"
+    },
+    {
+      "code": "MUS",
+      "name": "Musical",
+      "description": "Music Smart - Rhythm, pitch, melody, sound patterns",
+      "color": "#10B981",
+      "icon": "🎵"
+    },
+    {
+      "code": "IRP",
+      "name": "Interpersonal",
+      "description": "People Smart - Understanding and working with others",
+      "color": "#EF4444",
+      "icon": "👥"
+    },
+    {
+      "code": "IAP",
+      "name": "Intrapersonal",
+      "description": "Self Smart - Self-awareness, reflection, inner understanding",
+      "color": "#6366F1",
+      "icon": "🧘"
+    },
+    {
+      "code": "NAT",
+      "name": "Naturalist",
+      "description": "Nature Smart - Patterns in nature, environment, living things",
+      "color": "#059669",
+      "icon": "🌿"
+    }
+  ],
+  "questions": [
+    {
+      "id": 1,
+      "text": "I enjoy reading books, articles, or stories in my free time.",
+      "domain": "VLI",
+      "reverse": false
+    },
+    {
+      "id": 2,
+      "text": "I like solving puzzles, brainteasers, or logic problems.",
+      "domain": "LMA",
+      "reverse": false
+    },
+    {
+      "id": 3,
+      "text": "I can easily picture things in my mind when I close my eyes.",
+      "domain": "VSP",
+      "reverse": false
+    },
+    {
+      "id": 4,
+      "text": "I learn best when I can move around or use my hands.",
+      "domain": "BKI",
+      "reverse": false
+    },
+    {
+      "id": 5,
+      "text": "I can remember melodies and songs easily.",
+      "domain": "MUS",
+      "reverse": false
+    },
+    {
+      "id": 6,
+      "text": "I find it easy to understand how other people are feeling.",
+      "domain": "IRP",
+      "reverse": false
+    },
+    {
+      "id": 7,
+      "text": "I spend time thinking about my goals and who I want to become.",
+      "domain": "IAP",
+      "reverse": false
+    },
+    {
+      "id": 8,
+      "text": "I enjoy being outdoors and observing nature.",
+      "domain": "NAT",
+      "reverse": false
+    },
+    {
+      "id": 9,
+      "text": "I am good at explaining ideas using words.",
+      "domain": "VLI",
+      "reverse": false
+    },
+    {
+      "id": 10,
+      "text": "I enjoy working with numbers and calculations.",
+      "domain": "LMA",
+      "reverse": false
+    },
+    {
+      "id": 11,
+      "text": "I prefer learning from diagrams, charts, and pictures.",
+      "domain": "VSP",
+      "reverse": false
+    },
+    {
+      "id": 12,
+      "text": "I enjoy sports, dance, or physical activities.",
+      "domain": "BKI",
+      "reverse": false
+    },
+    {
+      "id": 13,
+      "text": "I notice when music is off-key or out of rhythm.",
+      "domain": "MUS",
+      "reverse": false
+    },
+    {
+      "id": 14,
+      "text": "I enjoy working in groups and collaborating with others.",
+      "domain": "IRP",
+      "reverse": false
+    },
+    {
+      "id": 15,
+      "text": "I understand my own strengths and weaknesses well.",
+      "domain": "IAP",
+      "reverse": false
+    },
+    {
+      "id": 16,
+      "text": "I can easily identify different types of plants, animals, or rocks.",
+      "domain": "NAT",
+      "reverse": false
+    },
+    {
+      "id": 17,
+      "text": "I find it easy to learn new languages or vocabulary.",
+      "domain": "VLI",
+      "reverse": false
+    },
+    {
+      "id": 18,
+      "text": "I like to find patterns and logical connections in information.",
+      "domain": "LMA",
+      "reverse": false
+    },
+    {
+      "id": 19,
+      "text": "I am good at reading maps and finding my way around new places.",
+      "domain": "VSP",
+      "reverse": false
+    },
+    {
+      "id": 20,
+      "text": "I find it hard to sit still for long periods.",
+      "domain": "BKI",
+      "reverse": false
+    },
+    {
+      "id": 21,
+      "text": "I often hum, whistle, or tap rhythms without thinking.",
+      "domain": "MUS",
+      "reverse": false
+    },
+    {
+      "id": 22,
+      "text": "People often come to me for advice or to talk about their problems.",
+      "domain": "IRP",
+      "reverse": false
+    },
+    {
+      "id": 23,
+      "text": "I keep a journal or regularly reflect on my experiences.",
+      "domain": "IAP",
+      "reverse": false
+    },
+    {
+      "id": 24,
+      "text": "I am interested in environmental issues and conservation.",
+      "domain": "NAT",
+      "reverse": false
+    },
+    {
+      "id": 25,
+      "text": "I enjoy writing essays, stories, or poems.",
+      "domain": "VLI",
+      "reverse": false
+    },
+    {
+      "id": 26,
+      "text": "I enjoy subjects like math, science, or computer programming.",
+      "domain": "LMA",
+      "reverse": false
+    },
+    {
+      "id": 27,
+      "text": "I enjoy drawing, painting, or creating visual art.",
+      "domain": "VSP",
+      "reverse": false
+    },
+    {
+      "id": 28,
+      "text": "I am good at activities that require coordination (sports, crafts, building).",
+      "domain": "BKI",
+      "reverse": false
+    },
+    {
+      "id": 29,
+      "text": "I enjoy listening to music and can appreciate different styles.",
+      "domain": "MUS",
+      "reverse": false
+    },
+    {
+      "id": 30,
+      "text": "I can easily sense the mood of a room when I walk in.",
+      "domain": "IRP",
+      "reverse": false
+    },
+    {
+      "id": 31,
+      "text": "I prefer working alone rather than in a group.",
+      "domain": "IAP",
+      "reverse": false
+    },
+    {
+      "id": 32,
+      "text": "I like learning about animals, plants, or ecosystems.",
+      "domain": "NAT",
+      "reverse": false
+    },
+    {
+      "id": 33,
+      "text": "I am good at debates, presentations, or public speaking.",
+      "domain": "VLI",
+      "reverse": false
+    },
+    {
+      "id": 34,
+      "text": "I like to analyse situations and think about cause and effect.",
+      "domain": "LMA",
+      "reverse": false
+    },
+    {
+      "id": 35,
+      "text": "I notice visual details that others often miss.",
+      "domain": "VSP",
+      "reverse": false
+    },
+    {
+      "id": 36,
+      "text": "I express myself well through body language or gestures.",
+      "domain": "BKI",
+      "reverse": false
+    },
+    {
+      "id": 37,
+      "text": "I can play a musical instrument or would like to learn.",
+      "domain": "MUS",
+      "reverse": false
+    },
+    {
+      "id": 38,
+      "text": "I am good at resolving conflicts between people.",
+      "domain": "IRP",
+      "reverse": false
+    },
+    {
+      "id": 39,
+      "text": "I know what motivates me and what makes me happy.",
+      "domain": "IAP",
+      "reverse": false
+    },
+    {
+      "id": 40,
+      "text": "I enjoy gardening, hiking, or spending time in nature.",
+      "domain": "NAT",
+      "reverse": false
+    },
+    {
+      "id": 41,
+      "text": "I remember things better when I read them or write them down.",
+      "domain": "VLI",
+      "reverse": false
+    },
+    {
+      "id": 42,
+      "text": "I enjoy strategy games like chess, sudoku, or problem-solving games.",
+      "domain": "LMA",
+      "reverse": false
+    },
+    {
+      "id": 43,
+      "text": "I can easily imagine how a room would look with different furniture.",
+      "domain": "VSP",
+      "reverse": false
+    },
+    {
+      "id": 44,
+      "text": "I learn new physical skills quickly (sports, dance, crafts).",
+      "domain": "BKI",
+      "reverse": false
+    },
+    {
+      "id": 45,
+      "text": "Music affects my mood and emotions strongly.",
+      "domain": "MUS",
+      "reverse": false
+    },
+    {
+      "id": 46,
+      "text": "I enjoy teaching or helping others learn something new.",
+      "domain": "IRP",
+      "reverse": false
+    },
+    {
+      "id": 47,
+      "text": "I think deeply about life's big questions and my place in the world.",
+      "domain": "IAP",
+      "reverse": false
+    },
+    {
+      "id": 48,
+      "text": "I notice changes in weather, seasons, or natural patterns.",
+      "domain": "NAT",
+      "reverse": false
+    },
+    {
+      "id": 49,
+      "text": "I enjoy word games like Scrabble, crosswords, or word puzzles.",
+      "domain": "VLI",
+      "reverse": false
+    },
+    {
+      "id": 50,
+      "text": "I like to understand the \"why\" behind how things work.",
+      "domain": "LMA",
+      "reverse": false
+    },
+    {
+      "id": 51,
+      "text": "I have a good sense of direction and spatial awareness.",
+      "domain": "VSP",
+      "reverse": false
+    },
+    {
+      "id": 52,
+      "text": "I enjoy hands-on projects like building, cooking, or crafting.",
+      "domain": "BKI",
+      "reverse": false
+    },
+    {
+      "id": 53,
+      "text": "I often have songs or melodies stuck in my head.",
+      "domain": "MUS",
+      "reverse": false
+    },
+    {
+      "id": 54,
+      "text": "I can easily adapt my communication style to different people.",
+      "domain": "IRP",
+      "reverse": false
+    },
+    {
+      "id": 55,
+      "text": "I am good at setting personal goals and following through.",
+      "domain": "IAP",
+      "reverse": false
+    },
+    {
+      "id": 56,
+      "text": "I feel calm and refreshed when I spend time in nature.",
+      "domain": "NAT",
+      "reverse": false
+    },
+    {
+      "id": 57,
+      "text": "I find reading and writing boring.",
+      "domain": "VLI",
+      "reverse": true
+    },
+    {
+      "id": 58,
+      "text": "I avoid math and logical problems when I can.",
+      "domain": "LMA",
+      "reverse": true
+    },
+    {
+      "id": 59,
+      "text": "I struggle to visualise things in my imagination.",
+      "domain": "VSP",
+      "reverse": true
+    },
+    {
+      "id": 60,
+      "text": "I am not very coordinated or athletic.",
+      "domain": "BKI",
+      "reverse": true
+    },
+    {
+      "id": 61,
+      "text": "I don't really pay attention to music or sounds around me.",
+      "domain": "MUS",
+      "reverse": true
+    },
+    {
+      "id": 62,
+      "text": "I find it difficult to understand other people's perspectives.",
+      "domain": "IRP",
+      "reverse": true
+    },
+    {
+      "id": 63,
+      "text": "I rarely think about my own thoughts and feelings.",
+      "domain": "IAP",
+      "reverse": true
+    },
+    {
+      "id": 64,
+      "text": "I am not very interested in nature or the outdoors.",
+      "domain": "NAT",
+      "reverse": true
+    },
+    {
+      "id": 65,
+      "text": "I can express complex ideas clearly in writing.",
+      "domain": "VLI",
+      "reverse": false
+    },
+    {
+      "id": 66,
+      "text": "I enjoy conducting experiments or testing theories.",
+      "domain": "LMA",
+      "reverse": false
+    },
+    {
+      "id": 67,
+      "text": "I am good at assembling things from diagrams or instructions.",
+      "domain": "VSP",
+      "reverse": false
+    },
+    {
+      "id": 68,
+      "text": "I prefer learning by doing rather than by reading or listening.",
+      "domain": "BKI",
+      "reverse": false
+    },
+    {
+      "id": 69,
+      "text": "I can tell the difference between similar musical instruments.",
+      "domain": "MUS",
+      "reverse": false
+    },
+    {
+      "id": 70,
+      "text": "I am good at motivating and encouraging others.",
+      "domain": "IRP",
+      "reverse": false
+    },
+    {
+      "id": 71,
+      "text": "I understand why I react the way I do in different situations.",
+      "domain": "IAP",
+      "reverse": false
+    },
+    {
+      "id": 72,
+      "text": "I am curious about how different species adapt to their environment.",
+      "domain": "NAT",
+      "reverse": false
+    },
+    {
+      "id": 73,
+      "text": "I notice grammar and spelling mistakes easily.",
+      "domain": "VLI",
+      "reverse": false
+    },
+    {
+      "id": 74,
+      "text": "I like categorising and organising information logically.",
+      "domain": "LMA",
+      "reverse": false
+    },
+    {
+      "id": 75,
+      "text": "I can recreate images or designs I have seen before.",
+      "domain": "VSP",
+      "reverse": false
+    },
+    {
+      "id": 76,
+      "text": "I feel restless if I haven't been physically active.",
+      "domain": "BKI",
+      "reverse": false
+    },
+    {
+      "id": 77,
+      "text": "I can easily create or recognise harmonies in music.",
+      "domain": "MUS",
+      "reverse": false
+    },
+    {
+      "id": 78,
+      "text": "I enjoy networking and meeting new people.",
+      "domain": "IRP",
+      "reverse": false
+    },
+    {
+      "id": 79,
+      "text": "I am comfortable being alone with my thoughts.",
+      "domain": "IAP",
+      "reverse": false
+    },
+    {
+      "id": 80,
+      "text": "I enjoy watching nature documentaries or learning about wildlife.",
+      "domain": "NAT",
+      "reverse": false
+    }
+  ],
+  "scoring": {
+    "method": "sum",
+    "reverseScoring": {
+      "1": 5,
+      "2": 4,
+      "3": 3,
+      "4": 2,
+      "5": 1
+    },
+    "itemsPerDomain": 10,
+    "minScore": 10,
+    "maxScore": 50,
+    "bands": {
+      "high": { "min": 38, "max": 50, "label": "Strong" },
+      "mid": { "min": 25, "max": 37, "label": "Moderate" },
+      "low": { "min": 10, "max": 24, "label": "Developing" }
+    }
+  },
+  "intelligenceInfo": {
+    "description": "Everyone has all 8 intelligences, but we each have a unique combination of strengths.",
+    "careerLinks": {
+      "VLI": ["Writer", "Journalist", "Lawyer", "Teacher", "Translator", "Editor"],
+      "LMA": ["Engineer", "Scientist", "Accountant", "Programmer", "Analyst", "Economist"],
+      "VSP": ["Architect", "Designer", "Artist", "Photographer", "Pilot", "Surgeon"],
+      "BKI": ["Athlete", "Dancer", "Surgeon", "Craftsperson", "Mechanic", "Actor"],
+      "MUS": ["Musician", "Composer", "Sound Engineer", "Music Teacher", "DJ", "Singer"],
+      "IRP": ["Counselor", "Teacher", "HR Manager", "Sales", "Politician", "Nurse"],
+      "IAP": ["Psychologist", "Philosopher", "Writer", "Entrepreneur", "Life Coach", "Researcher"],
+      "NAT": ["Biologist", "Veterinarian", "Farmer", "Environmentalist", "Geologist", "Botanist"]
+    }
+  }
+}

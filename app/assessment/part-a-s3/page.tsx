@@ -2,13 +2,13 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import assessmentData from '@/data/part-a-s1-personality.json';
-import { calculatePersonalityScores } from '@/lib/scoring';
-import ResultsDisplay from '@/components/assessment/ResultsDisplay';
+import assessmentData from '@/data/part-a-s3-holland.json';
+import { calculateHollandScores } from '@/lib/scoring';
+import HollandResultsDisplay from '@/components/assessment/HollandResultsDisplay';
 
 const USER_ID = 'test-user-123';
 
-export default function PartAPage() {
+export default function PartAS3Page() {
   const router = useRouter();
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -37,7 +37,7 @@ export default function PartAPage() {
   };
 
   const handleComplete = async (finalAnswers: Record<number, number>) => {
-    const calculatedScores = calculatePersonalityScores(finalAnswers, assessmentData);
+    const calculatedScores = calculateHollandScores(finalAnswers, assessmentData);
     setScores(calculatedScores);
     setIsComplete(true);
 
@@ -82,19 +82,19 @@ export default function PartAPage() {
 
   if (isComplete && scores) {
     return (
-      <ResultsDisplay
+      <HollandResultsDisplay
         section={section}
         scores={scores}
         domains={domains}
-        onContinue={() => router.push('/assessment/part-a-s2')}
-        continueButtonText="Continue to Part A: S2 (Core Values) →"
+        onContinue={() => router.push('/assessment/part-a-s4')}
+        continueButtonText="Continue to Part A: S4 (Multiple Intelligences) →"
         isSaving={isSaving}
       />
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-yellow-50">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -121,7 +121,7 @@ export default function PartAPage() {
           </div>
           <div className="w-full bg-gray-200 rounded-full h-3">
             <div
-              className="bg-gradient-to-r from-indigo-600 to-purple-600 h-3 rounded-full transition-all duration-300"
+              className="bg-gradient-to-r from-orange-600 to-yellow-600 h-3 rounded-full transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -143,8 +143,8 @@ export default function PartAPage() {
                 onClick={() => handleAnswer(value)}
                 className={`w-full p-4 rounded-xl border-2 transition-all duration-200 text-left ${
                   selectedValue === value
-                    ? 'border-indigo-600 bg-indigo-50 shadow-md'
-                    : 'border-gray-200 hover:border-indigo-300 hover:bg-gray-50'
+                    ? 'border-orange-600 bg-orange-50 shadow-md'
+                    : 'border-gray-200 hover:border-orange-300 hover:bg-gray-50'
                 }`}
               >
                 <div className="flex items-center justify-between">
@@ -154,7 +154,7 @@ export default function PartAPage() {
                   <div
                     className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
                       selectedValue === value
-                        ? 'border-indigo-600 bg-indigo-600'
+                        ? 'border-orange-600 bg-orange-600'
                         : 'border-gray-300'
                     }`}
                   >
@@ -181,7 +181,7 @@ export default function PartAPage() {
           <button
             onClick={handleNext}
             disabled={currentQuestionIndex === questions.length - 1}
-            className="px-6 py-3 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="px-6 py-3 rounded-lg bg-orange-600 text-white font-medium hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             Next →
           </button>
