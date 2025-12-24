@@ -72,45 +72,83 @@ You can also access AI Jeru directly at `/ai-jeru` once you've completed your as
   - Environment & Preferences
   - Execution & Grit
 
-## AI Jeru Report Sections
+## AI Jeru Report Sections (COMPREHENSIVE VERSION)
 
-1. **Executive Summary**
-   - Your unique archetype (1 sentence profile)
-   - Verdict on current aspirations
-   - Top 3 AI recommendations
+The report is 3000-4000 words and takes 60-90 seconds to generate.
 
-2. **The Ikigai Blueprint**
-   - ❤️ What You Love (passions, interests)
-   - ⭐ What You're Good At (skills, strengths)
-   - 🌍 What the World Needs (values, impact)
-   - 💰 What You Can Be Paid For (economic reality)
+### 1. **Executive Summary**
+   - Your unique archetype (2-3 sentences with personality depth)
+   - The Big Picture (full paragraph on your unique profile)
+   - Top 3 Career Pathways with detailed WHY explanations
 
-3. **Dream vs. Data**
-   - Reality check on university choices
-   - Safety/Target/Reach categorization
-   - Admission probability insights
+### 2. **Deep Dive: Assessment Analysis**
+   Comprehensive analysis of ALL 10 assessment sections:
 
-4. **Recommendation Pathways**
-   - Pathway A: Ideal Fit (best alignment)
-   - Pathway B: Pragmatic Choice (balanced)
-   - Pathway C: Wildcard (unexpected opportunity)
+   **Part A: The Internal You**
+   - Personality Architecture (all 5 Big Five traits with interpretations)
+   - Core Values & Interests (top values + what drives you + career fit)
+   - Holland Code (full RIASEC breakdown + 5-7 matching majors)
+   - Multiple Intelligences (top intelligences + learning style + major selection)
 
-5. **University Strategy**
-   - Home country options
-   - International options
-   - Financial aid strategy
-   - Application timeline
+   **Part B: Your Operating System**
+   - Cognitive Style (all dimensions + problem-solving approach)
+   - Stress Response (patterns + university environment fit)
+   - 21st Century Skills (competitive edge + development areas)
+   - Social Check (authenticity assessment + self-awareness analysis)
 
-6. **Gap Analysis & Action Plan**
-   - Current gaps in profile
-   - Impact on admissions
-   - Specific actions to close gaps
-   - Priority recommendations
+   **Part C: The Reality Check**
+   - Environment & Preferences (ideal campus description + deal breakers)
+   - Execution & Grit (academic readiness + growth areas)
 
-7. **Well-Being Note**
-   - Encouraging message
-   - Long-term perspective
-   - Support resources
+### 3. **The Ikigai Blueprint (Deep Integration)**
+   Connects EVERYTHING to find your calling:
+
+   - ❤️ **What You Love** - 2-3 paragraphs synthesizing passions + 5-7 career implications
+   - ⭐ **What You're Good At** - 2-3 paragraphs on talents + 5-7 major recommendations
+   - 🌍 **What the World Needs** - 2-3 paragraphs on impact + 5-7 careers for difference-making
+   - 💰 **What You Can Be Paid For** - 2-3 paragraphs on market viability + salary ranges
+   - 🎯 **Your Ikigai Sweet Spot** - Comprehensive paragraph on where all 4 circles overlap
+
+### 4. **University Strategy (Detailed Recommendations)**
+   - Dream Schools Analysis (fit + financial viability + competitiveness)
+   - **12-15 Specific University Recommendations:**
+     - REACH Schools (3-4): Why it's a reach + why it could work + how to improve odds
+     - TARGET Schools (5-6): Detailed fit analysis + program highlights + financial aid
+     - SAFETY Schools (3-4): Why it's safe + why it's still great + unique advantages
+   - Geographic Strategy (home country + regional + international with rationale)
+   - Financial Strategy (budget analysis + aid opportunities + ROI + cost-saving)
+
+### 5. **Career Pathway Recommendations (Three Detailed Paths)**
+   For EACH pathway:
+   - Why This Fits (2-3 paragraphs connecting to assessment data)
+   - Recommended Majors (3-5 specific majors with explanations)
+   - Career Progression (Entry → Mid → Senior roles)
+   - Salary Expectations (realistic ranges by career stage)
+   - Day-in-the-Life (what you'd actually DO daily)
+   - Required Skills (what you have vs need to build)
+   - University Picks (2-3 universities strong in this area)
+
+### 6. **Gap Analysis & 12-Month Action Plan**
+   - Academic Gaps (what's missing + impact + fix + timeline)
+   - Extracurricular Gaps (what's missing + which schools care + fix + milestones)
+   - Testing Gaps (scores needed + test prep strategy + dates)
+   - Application Strategy (ED/EA decisions + essay themes + recommendations + supplements)
+   - **Month-by-Month Plan** (detailed timeline from NOW to application deadlines)
+
+### 7. **Well-Being & Final Thoughts**
+   - A Word to the Student (2-3 paragraphs acknowledging strengths + addressing anxieties)
+   - A Word to the Family (2-3 paragraphs for parents on support + financial realities)
+   - The Long View (final paragraph on success beyond admissions)
+
+---
+
+## Report Characteristics
+
+- **Length**: 3000-4000 words (comprehensive, not summary)
+- **Processing Time**: 60-90 seconds (longer due to depth)
+- **Focus**: Explains WHY behind every recommendation
+- **Approach**: Connects personality → values → skills → career fit
+- **Citations**: Every recommendation backed by specific assessment data
 
 ## Cost Considerations
 
@@ -118,7 +156,7 @@ You can also access AI Jeru directly at `/ai-jeru` once you've completed your as
 - Model: GPT-4 Turbo
 - Input: ~$0.01 per 1K tokens
 - Output: ~$0.03 per 1K tokens
-- Average cost per guidance report: **$0.20 - $0.50**
+- **Average cost per comprehensive report: $0.50 - $1.00** (increased due to 4x length)
 
 ### Tips to Manage Costs
 1. Only generate reports when assessments are complete

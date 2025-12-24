@@ -109,7 +109,10 @@ export default function AIJeruPage() {
                 Jeru is Analyzing Your Profile...
               </h2>
               <p className="text-gray-600 mb-4">
-                This may take 30-60 seconds as we process your complete assessment data.
+                This may take 60-90 seconds as we generate your comprehensive 3000-4000 word report.
+              </p>
+              <p className="text-sm text-gray-500 mb-6">
+                We're analyzing all 10 assessment sections and creating personalized recommendations just for you.
               </p>
               <div className="flex justify-center gap-2">
                 <div className="w-3 h-3 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
