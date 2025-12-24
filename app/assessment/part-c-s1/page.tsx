@@ -1,20 +1,25 @@
 'use client';
 
 import { useState } from 'react';
+import { useUserId } from '@/lib/get-user-id';
 import { useRouter } from 'next/navigation';
 import assessmentData from '@/data/part-c-s1-environment.json';
 import { calculateEnvironmentScores } from '@/lib/scoring';
 import EnvironmentResultsDisplay from '@/components/assessment/EnvironmentResultsDisplay';
 
-const USER_ID = 'test-user-123';
 
 export default function PartCS1Page() {
   const router = useRouter();
+  const userId = useUserId();
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [scores, setScores] = useState<any>(null);
   const [isSaving, setIsSaving] = useState(false);
+
+  if (!userId) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
 
   const { section, questions, domains } = assessmentData;
   const currentQuestion = questions[currentQuestionIndex];
@@ -45,7 +50,7 @@ export default function PartCS1Page() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: USER_ID,
+          userId,
           sectionId: section.id,
           answers: finalAnswers,
           scores: calculatedScores,

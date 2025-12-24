@@ -1,8 +1,7 @@
 import { getStudentProfile } from '@/actions/profile-actions';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-
-const USER_ID = 'test-user-123';
+import { getCurrentUserId } from '@/lib/auth-utils';
 
 async function getAssessmentProgress(userId: string) {
   const results = await prisma.assessmentResult.findMany({
@@ -57,8 +56,9 @@ async function getAssessmentProgress(userId: string) {
 }
 
 export default async function AssessmentPage() {
-  const profileResult = await getStudentProfile(USER_ID);
-  const progress = await getAssessmentProgress(USER_ID);
+  const userId = await getCurrentUserId();
+  const profileResult = await getStudentProfile(userId);
+  const progress = await getAssessmentProgress(userId);
 
   if (!profileResult.success || !profileResult.profile) {
     return (

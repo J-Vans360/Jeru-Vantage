@@ -1,20 +1,25 @@
 'use client';
 
 import { useState } from 'react';
+import { useUserId } from '@/lib/get-user-id';
 import { useRouter } from 'next/navigation';
 import assessmentData from '@/data/part-b-s1-cognitive.json';
 import { calculateCognitiveScores } from '@/lib/scoring';
 import CognitiveResultsDisplay from '@/components/assessment/CognitiveResultsDisplay';
 
-const USER_ID = 'test-user-123';
 
 export default function PartBS1Page() {
   const router = useRouter();
+  const userId = useUserId();
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [scores, setScores] = useState<any>(null);
   const [isSaving, setIsSaving] = useState(false);
+
+  if (!userId) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
 
   const { section, questions, domains } = assessmentData;
   const currentQuestion = questions[currentQuestionIndex];
@@ -48,7 +53,7 @@ export default function PartBS1Page() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: USER_ID,
+          userId,
           sectionId: section.id,
           answers: finalAnswers,
           scores: calculatedScores,

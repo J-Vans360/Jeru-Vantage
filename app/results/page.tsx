@@ -1,17 +1,17 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import ResultsDashboard from '@/components/results/ResultsDashboard';
-
-const USER_ID = 'test-user-123';
+import { getCurrentUserId } from '@/lib/auth-utils';
 
 export default async function ResultsPage() {
+  const userId = await getCurrentUserId();
   let assessmentResults: any[] = [];
   let error: string | null = null;
 
   try {
     assessmentResults = await prisma.assessmentResult.findMany({
       where: {
-        userId: USER_ID,
+        userId,
         completed: true,
       },
       orderBy: {
