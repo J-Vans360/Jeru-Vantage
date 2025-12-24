@@ -31,6 +31,12 @@ export async function POST(request: NextRequest) {
       'part-a-s2': { partName: 'Part A', domainName: 'Values & Interests' },
       'part-a-s3': { partName: 'Part A', domainName: 'Career Interests (Holland Code)' },
       'part-a-s4': { partName: 'Part A', domainName: 'Multiple Intelligences' },
+      'part-b-s1': { partName: 'Part B', domainName: 'Cognitive Style' },
+      'part-b-s2': { partName: 'Part B', domainName: 'Stress Response' },
+      'part-b-s3': { partName: 'Part B', domainName: '21st Century Skills' },
+      'part-b-s4': { partName: 'Part B', domainName: 'Social Check' },
+      'part-c-s1': { partName: 'Part C', domainName: 'Environment & Preferences' },
+      'part-c-s2': { partName: 'Part C', domainName: 'Execution & Grit' },
     };
 
     const mapping = sectionMapping[sectionId] || {

@@ -1,0 +1,520 @@
+{
+  "section": {
+    "id": "part-b-s3",
+    "title": "Part B: 21st Century Skills",
+    "subtitle": "FUTURE READY - Are you prepared for the modern workforce?",
+    "description": "Rate yourself honestly on these essential skills for success in today's world.",
+    "icon": "🌐",
+    "estimatedTime": "12-15 minutes",
+    "totalQuestions": 60,
+    "scale": {
+      "min": 1,
+      "max": 5,
+      "labels": {
+        "1": "Strongly Disagree",
+        "2": "Disagree",
+        "3": "Neutral",
+        "4": "Agree",
+        "5": "Strongly Agree"
+      }
+    }
+  },
+  "categories": [
+    {
+      "code": "4CS",
+      "name": "Learning Skills (The 4 Cs)",
+      "description": "Mental processes required to adapt and improve",
+      "color": "#8B5CF6"
+    },
+    {
+      "code": "IMT",
+      "name": "Literacy Skills",
+      "description": "Discerning facts, media, and technology",
+      "color": "#3B82F6"
+    },
+    {
+      "code": "FLIPS",
+      "name": "Life Skills",
+      "description": "Personal and professional qualities",
+      "color": "#10B981"
+    }
+  ],
+  "domains": [
+    {
+      "code": "CRT",
+      "name": "Critical Thinking",
+      "category": "4CS",
+      "description": "Analysing information and finding solutions",
+      "color": "#8B5CF6",
+      "icon": "🧠"
+    },
+    {
+      "code": "CRE",
+      "name": "Creativity",
+      "category": "4CS",
+      "description": "Thinking outside the box and innovating",
+      "color": "#EC4899",
+      "icon": "💡"
+    },
+    {
+      "code": "COL",
+      "name": "Collaboration",
+      "category": "4CS",
+      "description": "Working effectively with others",
+      "color": "#F59E0B",
+      "icon": "🤝"
+    },
+    {
+      "code": "COM",
+      "name": "Communication",
+      "category": "4CS",
+      "description": "Sharing ideas effectively",
+      "color": "#EF4444",
+      "icon": "💬"
+    },
+    {
+      "code": "INL",
+      "name": "Information Literacy",
+      "category": "IMT",
+      "description": "Understanding and evaluating information",
+      "color": "#3B82F6",
+      "icon": "📊"
+    },
+    {
+      "code": "MLI",
+      "name": "Media Literacy",
+      "category": "IMT",
+      "description": "Understanding media and identifying bias",
+      "color": "#6366F1",
+      "icon": "📰"
+    },
+    {
+      "code": "TLI",
+      "name": "Technology Literacy",
+      "category": "IMT",
+      "description": "Understanding and using technology",
+      "color": "#0EA5E9",
+      "icon": "💻"
+    },
+    {
+      "code": "FLE",
+      "name": "Flexibility",
+      "category": "FLIPS",
+      "description": "Adapting to changing circumstances",
+      "color": "#10B981",
+      "icon": "🔄"
+    },
+    {
+      "code": "LEA",
+      "name": "Leadership",
+      "category": "FLIPS",
+      "description": "Motivating teams toward goals",
+      "color": "#EF4444",
+      "icon": "👑"
+    },
+    {
+      "code": "INI",
+      "name": "Initiative",
+      "category": "FLIPS",
+      "description": "Starting projects without being told",
+      "color": "#F59E0B",
+      "icon": "🚀"
+    },
+    {
+      "code": "PRO",
+      "name": "Productivity",
+      "category": "FLIPS",
+      "description": "Managing time and maintaining efficiency",
+      "color": "#8B5CF6",
+      "icon": "⚡"
+    },
+    {
+      "code": "SOC",
+      "name": "Social Skills",
+      "category": "FLIPS",
+      "description": "Networking and navigating social situations",
+      "color": "#EC4899",
+      "icon": "🌟"
+    }
+  ],
+  "questions": [
+    {
+      "id": 1,
+      "text": "I can analyse a problem from multiple perspectives before deciding.",
+      "domain": "CRT",
+      "reverse": false
+    },
+    {
+      "id": 2,
+      "text": "I often come up with original ideas that others haven't thought of.",
+      "domain": "CRE",
+      "reverse": false
+    },
+    {
+      "id": 3,
+      "text": "I work well with others and value their contributions.",
+      "domain": "COL",
+      "reverse": false
+    },
+    {
+      "id": 4,
+      "text": "I can explain complex ideas clearly to others.",
+      "domain": "COM",
+      "reverse": false
+    },
+    {
+      "id": 5,
+      "text": "I can tell the difference between reliable and unreliable information.",
+      "domain": "INL",
+      "reverse": false
+    },
+    {
+      "id": 6,
+      "text": "I can identify bias in news articles and social media posts.",
+      "domain": "MLI",
+      "reverse": false
+    },
+    {
+      "id": 7,
+      "text": "I am comfortable learning and using new technology.",
+      "domain": "TLI",
+      "reverse": false
+    },
+    {
+      "id": 8,
+      "text": "I can adapt quickly when plans change unexpectedly.",
+      "domain": "FLE",
+      "reverse": false
+    },
+    {
+      "id": 9,
+      "text": "I naturally take charge and guide others toward a goal.",
+      "domain": "LEA",
+      "reverse": false
+    },
+    {
+      "id": 10,
+      "text": "I start projects on my own without waiting to be told.",
+      "domain": "INI",
+      "reverse": false
+    },
+    {
+      "id": 11,
+      "text": "I manage my time well and meet deadlines consistently.",
+      "domain": "PRO",
+      "reverse": false
+    },
+    {
+      "id": 12,
+      "text": "I find it easy to connect with new people.",
+      "domain": "SOC",
+      "reverse": false
+    },
+    {
+      "id": 13,
+      "text": "I question information rather than accepting it at face value.",
+      "domain": "CRT",
+      "reverse": false
+    },
+    {
+      "id": 14,
+      "text": "I enjoy finding new and better ways to do things.",
+      "domain": "CRE",
+      "reverse": false
+    },
+    {
+      "id": 15,
+      "text": "I listen to others' viewpoints even when I disagree.",
+      "domain": "COL",
+      "reverse": false
+    },
+    {
+      "id": 16,
+      "text": "I can write clearly and persuasively.",
+      "domain": "COM",
+      "reverse": false
+    },
+    {
+      "id": 17,
+      "text": "I check multiple sources before believing something is true.",
+      "domain": "INL",
+      "reverse": false
+    },
+    {
+      "id": 18,
+      "text": "I understand how media companies make money and how this affects content.",
+      "domain": "MLI",
+      "reverse": false
+    },
+    {
+      "id": 19,
+      "text": "I can troubleshoot basic technology problems on my own.",
+      "domain": "TLI",
+      "reverse": false
+    },
+    {
+      "id": 20,
+      "text": "I stay calm and productive when facing unexpected challenges.",
+      "domain": "FLE",
+      "reverse": false
+    },
+    {
+      "id": 21,
+      "text": "People often look to me for direction in group situations.",
+      "domain": "LEA",
+      "reverse": false
+    },
+    {
+      "id": 22,
+      "text": "I see opportunities and take action without being asked.",
+      "domain": "INI",
+      "reverse": false
+    },
+    {
+      "id": 23,
+      "text": "I can stay focused and avoid distractions when working.",
+      "domain": "PRO",
+      "reverse": false
+    },
+    {
+      "id": 24,
+      "text": "I can navigate different social and cultural situations comfortably.",
+      "domain": "SOC",
+      "reverse": false
+    },
+    {
+      "id": 25,
+      "text": "I consider the consequences before making decisions.",
+      "domain": "CRT",
+      "reverse": false
+    },
+    {
+      "id": 26,
+      "text": "I am not afraid to try unconventional approaches.",
+      "domain": "CRE",
+      "reverse": false
+    },
+    {
+      "id": 27,
+      "text": "I share responsibility and credit with team members.",
+      "domain": "COL",
+      "reverse": false
+    },
+    {
+      "id": 28,
+      "text": "I am comfortable speaking in front of a group.",
+      "domain": "COM",
+      "reverse": false
+    },
+    {
+      "id": 29,
+      "text": "I can evaluate the quality of research and statistics.",
+      "domain": "INL",
+      "reverse": false
+    },
+    {
+      "id": 30,
+      "text": "I am aware of how algorithms affect what I see online.",
+      "domain": "MLI",
+      "reverse": false
+    },
+    {
+      "id": 31,
+      "text": "I keep up with new apps and digital tools.",
+      "domain": "TLI",
+      "reverse": false
+    },
+    {
+      "id": 32,
+      "text": "I can let go of my original plan when a better option appears.",
+      "domain": "FLE",
+      "reverse": false
+    },
+    {
+      "id": 33,
+      "text": "I can motivate others even when things are difficult.",
+      "domain": "LEA",
+      "reverse": false
+    },
+    {
+      "id": 34,
+      "text": "I look for problems to solve rather than waiting for instructions.",
+      "domain": "INI",
+      "reverse": false
+    },
+    {
+      "id": 35,
+      "text": "I break large tasks into smaller, manageable steps.",
+      "domain": "PRO",
+      "reverse": false
+    },
+    {
+      "id": 36,
+      "text": "I can build and maintain professional relationships.",
+      "domain": "SOC",
+      "reverse": false
+    },
+    {
+      "id": 37,
+      "text": "I avoid making decisions based on emotions alone.",
+      "domain": "CRT",
+      "reverse": false
+    },
+    {
+      "id": 38,
+      "text": "I enjoy brainstorming and generating many ideas.",
+      "domain": "CRE",
+      "reverse": false
+    },
+    {
+      "id": 39,
+      "text": "I help resolve conflicts within a team.",
+      "domain": "COL",
+      "reverse": false
+    },
+    {
+      "id": 40,
+      "text": "I adjust my communication style for different audiences.",
+      "domain": "COM",
+      "reverse": false
+    },
+    {
+      "id": 41,
+      "text": "I can identify when information is incomplete or misleading.",
+      "domain": "INL",
+      "reverse": false
+    },
+    {
+      "id": 42,
+      "text": "I think critically about the media I consume.",
+      "domain": "MLI",
+      "reverse": false
+    },
+    {
+      "id": 43,
+      "text": "I am confident using online tools for research and collaboration.",
+      "domain": "TLI",
+      "reverse": false
+    },
+    {
+      "id": 44,
+      "text": "I embrace change as an opportunity to learn and grow.",
+      "domain": "FLE",
+      "reverse": false
+    },
+    {
+      "id": 45,
+      "text": "I take responsibility for the success of my team.",
+      "domain": "LEA",
+      "reverse": false
+    },
+    {
+      "id": 46,
+      "text": "I am a self-starter who doesn't need much supervision.",
+      "domain": "INI",
+      "reverse": false
+    },
+    {
+      "id": 47,
+      "text": "I use tools and systems to stay organised.",
+      "domain": "PRO",
+      "reverse": false
+    },
+    {
+      "id": 48,
+      "text": "I am good at reading social cues and body language.",
+      "domain": "SOC",
+      "reverse": false
+    },
+    {
+      "id": 49,
+      "text": "I struggle to evaluate the logic of an argument.",
+      "domain": "CRT",
+      "reverse": true
+    },
+    {
+      "id": 50,
+      "text": "I prefer following established methods rather than creating new ones.",
+      "domain": "CRE",
+      "reverse": true
+    },
+    {
+      "id": 51,
+      "text": "I find group work frustrating and prefer working alone.",
+      "domain": "COL",
+      "reverse": true
+    },
+    {
+      "id": 52,
+      "text": "I often struggle to get my point across clearly.",
+      "domain": "COM",
+      "reverse": true
+    },
+    {
+      "id": 53,
+      "text": "I often believe information without checking if it's true.",
+      "domain": "INL",
+      "reverse": true
+    },
+    {
+      "id": 54,
+      "text": "I rarely think about the bias behind news or social media.",
+      "domain": "MLI",
+      "reverse": true
+    },
+    {
+      "id": 55,
+      "text": "I feel overwhelmed by new technology.",
+      "domain": "TLI",
+      "reverse": true
+    },
+    {
+      "id": 56,
+      "text": "I get stressed when plans change unexpectedly.",
+      "domain": "FLE",
+      "reverse": true
+    },
+    {
+      "id": 57,
+      "text": "I prefer to follow rather than lead.",
+      "domain": "LEA",
+      "reverse": true
+    },
+    {
+      "id": 58,
+      "text": "I wait to be told what to do rather than taking initiative.",
+      "domain": "INI",
+      "reverse": true
+    },
+    {
+      "id": 59,
+      "text": "I often procrastinate and struggle to meet deadlines.",
+      "domain": "PRO",
+      "reverse": true
+    },
+    {
+      "id": 60,
+      "text": "I find networking and small talk uncomfortable.",
+      "domain": "SOC",
+      "reverse": true
+    }
+  ],
+  "scoring": {
+    "method": "sum",
+    "reverseScoring": {
+      "1": 5,
+      "2": 4,
+      "3": 3,
+      "4": 2,
+      "5": 1
+    },
+    "itemsPerDomain": 5,
+    "minScore": 5,
+    "maxScore": 25,
+    "bands": {
+      "high": { "min": 20, "max": 25, "label": "Strong" },
+      "mid": { "min": 13, "max": 19, "label": "Developing" },
+      "low": { "min": 5, "max": 12, "label": "Needs Focus" }
+    }
+  }
+}

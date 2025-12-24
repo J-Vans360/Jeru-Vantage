@@ -1,0 +1,400 @@
+{
+  "section": {
+    "id": "part-b-s1",
+    "title": "Part B: Cognitive Style",
+    "subtitle": "HOW DO YOU THINK? - Discover your mental processing preferences",
+    "description": "Answer based on how you naturally approach problems—not how you've been taught.",
+    "icon": "⚙️",
+    "estimatedTime": "10-12 minutes",
+    "totalQuestions": 50,
+    "scale": {
+      "min": 1,
+      "max": 5,
+      "labels": {
+        "1": "Strongly Disagree",
+        "2": "Disagree",
+        "3": "Neutral",
+        "4": "Agree",
+        "5": "Strongly Agree"
+      }
+    }
+  },
+  "domains": [
+    {
+      "code": "WHO",
+      "name": "Wholist",
+      "description": "Big Picture Thinker - Prefers understanding the whole structure first",
+      "color": "#8B5CF6",
+      "opposite": {
+        "code": "ANA",
+        "name": "Analyst",
+        "description": "Detail Thinker - Prefers breaking problems into specific steps"
+      }
+    },
+    {
+      "code": "VER",
+      "name": "Verbal",
+      "description": "Word Processor - Processes information through words and text",
+      "color": "#3B82F6",
+      "opposite": {
+        "code": "IMA",
+        "name": "Imager",
+        "description": "Visual Processor - Thinks in mental images and diagrams"
+      }
+    },
+    {
+      "code": "CON",
+      "name": "Convergent",
+      "description": "Focused Thinker - Uses logic to find the single correct answer",
+      "color": "#10B981",
+      "opposite": {
+        "code": "DIV",
+        "name": "Divergent",
+        "description": "Creative Thinker - Brainstorms multiple creative possibilities"
+      }
+    },
+    {
+      "code": "FDE",
+      "name": "Field Dependent",
+      "description": "Context-Aware - Relies on surrounding context and social cues",
+      "color": "#F59E0B",
+      "opposite": {
+        "code": "FIN",
+        "name": "Field Independent",
+        "description": "Detail-Focused - Isolates specific details from background"
+      }
+    },
+    {
+      "code": "REF",
+      "name": "Reflective",
+      "description": "Careful Thinker - Takes time to ensure accuracy",
+      "color": "#EC4899",
+      "opposite": {
+        "code": "IMP",
+        "name": "Impulsive",
+        "description": "Quick Thinker - Responds quickly and spontaneously"
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": 1,
+      "text": "I like to understand the big picture before looking at the details.",
+      "domain": "WHO",
+      "reverse": false
+    },
+    {
+      "id": 2,
+      "text": "I prefer reading instructions rather than looking at diagrams.",
+      "domain": "VER",
+      "reverse": false
+    },
+    {
+      "id": 3,
+      "text": "I like finding the one correct answer to a problem.",
+      "domain": "CON",
+      "reverse": false
+    },
+    {
+      "id": 4,
+      "text": "I pay attention to how others react before making decisions.",
+      "domain": "FDE",
+      "reverse": false
+    },
+    {
+      "id": 5,
+      "text": "I think carefully before giving an answer.",
+      "domain": "REF",
+      "reverse": false
+    },
+    {
+      "id": 6,
+      "text": "I prefer to break complex problems into smaller steps.",
+      "domain": "WHO",
+      "reverse": true
+    },
+    {
+      "id": 7,
+      "text": "I learn better from pictures and diagrams than from text.",
+      "domain": "VER",
+      "reverse": true
+    },
+    {
+      "id": 8,
+      "text": "I enjoy brainstorming many different solutions.",
+      "domain": "CON",
+      "reverse": true
+    },
+    {
+      "id": 9,
+      "text": "I can focus on a task even when there are distractions around me.",
+      "domain": "FDE",
+      "reverse": true
+    },
+    {
+      "id": 10,
+      "text": "I often answer quickly without thinking too long.",
+      "domain": "REF",
+      "reverse": true
+    },
+    {
+      "id": 11,
+      "text": "I like to see how all the parts of a topic connect together.",
+      "domain": "WHO",
+      "reverse": false
+    },
+    {
+      "id": 12,
+      "text": "I remember things better when I write them down in words.",
+      "domain": "VER",
+      "reverse": false
+    },
+    {
+      "id": 13,
+      "text": "I prefer questions with clear right or wrong answers.",
+      "domain": "CON",
+      "reverse": false
+    },
+    {
+      "id": 14,
+      "text": "I notice the mood of a room and adjust my behaviour accordingly.",
+      "domain": "FDE",
+      "reverse": false
+    },
+    {
+      "id": 15,
+      "text": "I double-check my work before submitting it.",
+      "domain": "REF",
+      "reverse": false
+    },
+    {
+      "id": 16,
+      "text": "I prefer to focus on one detail at a time.",
+      "domain": "WHO",
+      "reverse": true
+    },
+    {
+      "id": 17,
+      "text": "I prefer watching videos or looking at images to reading text.",
+      "domain": "VER",
+      "reverse": true
+    },
+    {
+      "id": 18,
+      "text": "I like open-ended questions with many possible answers.",
+      "domain": "CON",
+      "reverse": true
+    },
+    {
+      "id": 19,
+      "text": "I can easily ignore what others think when making decisions.",
+      "domain": "FDE",
+      "reverse": true
+    },
+    {
+      "id": 20,
+      "text": "I prefer to act quickly rather than spend too much time planning.",
+      "domain": "REF",
+      "reverse": true
+    },
+    {
+      "id": 21,
+      "text": "I understand new topics better when I see the overall structure first.",
+      "domain": "WHO",
+      "reverse": false
+    },
+    {
+      "id": 22,
+      "text": "I explain ideas better using words than using drawings.",
+      "domain": "VER",
+      "reverse": false
+    },
+    {
+      "id": 23,
+      "text": "I like following a logical step-by-step process.",
+      "domain": "CON",
+      "reverse": false
+    },
+    {
+      "id": 24,
+      "text": "I often ask others for their opinions before deciding.",
+      "domain": "FDE",
+      "reverse": false
+    },
+    {
+      "id": 25,
+      "text": "I prefer to take my time and be accurate.",
+      "domain": "REF",
+      "reverse": false
+    },
+    {
+      "id": 26,
+      "text": "I like to analyse each part of a problem separately.",
+      "domain": "WHO",
+      "reverse": true
+    },
+    {
+      "id": 27,
+      "text": "I think in pictures more than in words.",
+      "domain": "VER",
+      "reverse": true
+    },
+    {
+      "id": 28,
+      "text": "I enjoy coming up with unusual or creative solutions.",
+      "domain": "CON",
+      "reverse": true
+    },
+    {
+      "id": 29,
+      "text": "I make decisions based on my own analysis, not others' opinions.",
+      "domain": "FDE",
+      "reverse": true
+    },
+    {
+      "id": 30,
+      "text": "I trust my first instinct when answering questions.",
+      "domain": "REF",
+      "reverse": true
+    },
+    {
+      "id": 31,
+      "text": "I need to understand how everything fits together before starting.",
+      "domain": "WHO",
+      "reverse": false
+    },
+    {
+      "id": 32,
+      "text": "I prefer reading a book over watching a movie.",
+      "domain": "VER",
+      "reverse": false
+    },
+    {
+      "id": 33,
+      "text": "I feel uncomfortable when there is no clear answer to a problem.",
+      "domain": "CON",
+      "reverse": false
+    },
+    {
+      "id": 34,
+      "text": "I work better when I know what others expect from me.",
+      "domain": "FDE",
+      "reverse": false
+    },
+    {
+      "id": 35,
+      "text": "I rarely make careless mistakes because I check my work.",
+      "domain": "REF",
+      "reverse": false
+    },
+    {
+      "id": 36,
+      "text": "I prefer to start with the details and build up to the big picture.",
+      "domain": "WHO",
+      "reverse": true
+    },
+    {
+      "id": 37,
+      "text": "I find it easier to remember faces than names.",
+      "domain": "VER",
+      "reverse": true
+    },
+    {
+      "id": 38,
+      "text": "I like to explore many different ideas before choosing one.",
+      "domain": "CON",
+      "reverse": true
+    },
+    {
+      "id": 39,
+      "text": "I prefer to figure things out independently without asking for help.",
+      "domain": "FDE",
+      "reverse": true
+    },
+    {
+      "id": 40,
+      "text": "I sometimes regret answering too quickly.",
+      "domain": "REF",
+      "reverse": true
+    },
+    {
+      "id": 41,
+      "text": "I like subjects that show how different topics are connected.",
+      "domain": "WHO",
+      "reverse": false
+    },
+    {
+      "id": 42,
+      "text": "I prefer listening to podcasts over watching videos.",
+      "domain": "VER",
+      "reverse": false
+    },
+    {
+      "id": 43,
+      "text": "I prefer structured tasks with clear guidelines.",
+      "domain": "CON",
+      "reverse": false
+    },
+    {
+      "id": 44,
+      "text": "I consider how my decisions will affect the people around me.",
+      "domain": "FDE",
+      "reverse": false
+    },
+    {
+      "id": 45,
+      "text": "I prefer quality over speed when completing work.",
+      "domain": "REF",
+      "reverse": false
+    },
+    {
+      "id": 46,
+      "text": "I like to work through problems one step at a time.",
+      "domain": "WHO",
+      "reverse": true
+    },
+    {
+      "id": 47,
+      "text": "I often draw diagrams or sketches to help me think.",
+      "domain": "VER",
+      "reverse": true
+    },
+    {
+      "id": 48,
+      "text": "I enjoy thinking outside the box and being creative.",
+      "domain": "CON",
+      "reverse": true
+    },
+    {
+      "id": 49,
+      "text": "I trust my own judgement even when others disagree.",
+      "domain": "FDE",
+      "reverse": true
+    },
+    {
+      "id": 50,
+      "text": "I like to finish tasks quickly and move on.",
+      "domain": "REF",
+      "reverse": true
+    }
+  ],
+  "scoring": {
+    "method": "spectrum",
+    "reverseScoring": {
+      "1": 5,
+      "2": 4,
+      "3": 3,
+      "4": 2,
+      "5": 1
+    },
+    "itemsPerDomain": 10,
+    "minScore": 10,
+    "maxScore": 50,
+    "interpretation": {
+      "high": { "min": 35, "max": 50, "label": "Strong preference for first style" },
+      "balanced": { "min": 25, "max": 34, "label": "Balanced / Flexible" },
+      "low": { "min": 10, "max": 24, "label": "Strong preference for opposite style" }
+    },
+    "spectrumDisplay": true
+  }
+}

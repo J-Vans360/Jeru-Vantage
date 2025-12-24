@@ -1,0 +1,123 @@
+{
+  "section": {
+    "id": "part-c-s2",
+    "title": "Part C: Execution & Grit",
+    "subtitle": "CAN YOU DO THE WORK? - Your academic execution capacity",
+    "description": "Rate yourself honestly on your ability to execute academic work.",
+    "icon": "🚀",
+    "estimatedTime": "10-12 minutes",
+    "totalQuestions": 50,
+    "scale": {
+      "min": 1,
+      "max": 5,
+      "labels": {
+        "1": "Strongly Disagree",
+        "2": "Disagree",
+        "3": "Neutral",
+        "4": "Agree",
+        "5": "Strongly Agree"
+      }
+    }
+  },
+  "domains": [
+    {
+      "code": "SHR",
+      "name": "Study Habits & Routine",
+      "description": "Consistency and discipline in daily study",
+      "color": "#3B82F6",
+      "icon": "📚"
+    },
+    {
+      "code": "TCO",
+      "name": "Testing & Comprehension",
+      "description": "Test-taking skills and information retention",
+      "color": "#8B5CF6",
+      "icon": "📝"
+    },
+    {
+      "code": "WSR",
+      "name": "Writing & Research",
+      "description": "Academic writing and research capabilities",
+      "color": "#EC4899",
+      "icon": "✍️"
+    },
+    {
+      "code": "PMG",
+      "name": "Project Management",
+      "description": "Planning and organizing complex tasks",
+      "color": "#F59E0B",
+      "icon": "🎯"
+    },
+    {
+      "code": "ILA",
+      "name": "Ivy League Aspirations",
+      "description": "Readiness for highly selective programs",
+      "color": "#10B981",
+      "icon": "🏆"
+    }
+  ],
+  "questions": [
+    {"id": 1, "text": "I maintain a consistent daily study schedule.", "domain": "SHR", "reverse": false},
+    {"id": 2, "text": "I rarely feel anxious before important tests.", "domain": "TCO", "reverse": false},
+    {"id": 3, "text": "I can write clear, well-structured essays.", "domain": "WSR", "reverse": false},
+    {"id": 4, "text": "I break large assignments into manageable steps.", "domain": "PMG", "reverse": false},
+    {"id": 5, "text": "I have a track record of exceptional academic achievement.", "domain": "ILA", "reverse": false},
+    {"id": 6, "text": "I study without needing external pressure or deadlines.", "domain": "SHR", "reverse": false},
+    {"id": 7, "text": "I can quickly understand and retain new information.", "domain": "TCO", "reverse": false},
+    {"id": 8, "text": "I enjoy conducting research and citing sources properly.", "domain": "WSR", "reverse": false},
+    {"id": 9, "text": "I use tools like calendars and to-do lists effectively.", "domain": "PMG", "reverse": false},
+    {"id": 10, "text": "I challenge myself with advanced courses and materials.", "domain": "ILA", "reverse": false},
+    {"id": 11, "text": "I often procrastinate on homework.", "domain": "SHR", "reverse": true},
+    {"id": 12, "text": "I struggle to recall information during exams.", "domain": "TCO", "reverse": true},
+    {"id": 13, "text": "Writing essays is difficult and stressful for me.", "domain": "WSR", "reverse": true},
+    {"id": 14, "text": "I frequently miss deadlines or submit work late.", "domain": "PMG", "reverse": true},
+    {"id": 15, "text": "I doubt my ability to succeed at top-tier universities.", "domain": "ILA", "reverse": true},
+    {"id": 16, "text": "I have a dedicated study space free from distractions.", "domain": "SHR", "reverse": false},
+    {"id": 17, "text": "I perform well under exam pressure.", "domain": "TCO", "reverse": false},
+    {"id": 18, "text": "I can develop and defend a clear thesis statement.", "domain": "WSR", "reverse": false},
+    {"id": 19, "text": "I prioritize tasks based on importance and urgency.", "domain": "PMG", "reverse": false},
+    {"id": 20, "text": "I seek out intellectually challenging opportunities.", "domain": "ILA", "reverse": false},
+    {"id": 21, "text": "I review my notes regularly, not just before exams.", "domain": "SHR", "reverse": false},
+    {"id": 22, "text": "I use effective test-taking strategies.", "domain": "TCO", "reverse": false},
+    {"id": 23, "text": "I revise my written work multiple times before submitting.", "domain": "WSR", "reverse": false},
+    {"id": 24, "text": "I can manage multiple projects simultaneously.", "domain": "PMG", "reverse": false},
+    {"id": 25, "text": "I am confident I could handle an Ivy League workload.", "domain": "ILA", "reverse": false},
+    {"id": 26, "text": "I get distracted easily when studying.", "domain": "SHR", "reverse": true},
+    {"id": 27, "text": "I freeze up when I don't know an answer on a test.", "domain": "TCO", "reverse": true},
+    {"id": 28, "text": "I avoid writing assignments whenever possible.", "domain": "WSR", "reverse": true},
+    {"id": 29, "text": "I feel overwhelmed by complex projects.", "domain": "PMG", "reverse": true},
+    {"id": 30, "text": "I prefer schools with less competitive academic pressure.", "domain": "ILA", "reverse": true},
+    {"id": 31, "text": "I can focus for extended periods without breaks.", "domain": "SHR", "reverse": false},
+    {"id": 32, "text": "I understand how to study effectively for different subjects.", "domain": "TCO", "reverse": false},
+    {"id": 33, "text": "I can synthesize information from multiple sources.", "domain": "WSR", "reverse": false},
+    {"id": 34, "text": "I set realistic goals and track my progress toward them.", "domain": "PMG", "reverse": false},
+    {"id": 35, "text": "I thrive in rigorous, fast-paced academic environments.", "domain": "ILA", "reverse": false},
+    {"id": 36, "text": "I complete assignments well before the deadline.", "domain": "SHR", "reverse": false},
+    {"id": 37, "text": "I can identify my knowledge gaps and address them.", "domain": "TCO", "reverse": false},
+    {"id": 38, "text": "I am comfortable with different writing styles.", "domain": "WSR", "reverse": false},
+    {"id": 39, "text": "I adapt quickly when project requirements change.", "domain": "PMG", "reverse": false},
+    {"id": 40, "text": "I have received recognition for academic excellence.", "domain": "ILA", "reverse": false},
+    {"id": 41, "text": "My study habits have been consistent throughout school.", "domain": "SHR", "reverse": false},
+    {"id": 42, "text": "I learn from my mistakes on tests and improve.", "domain": "TCO", "reverse": false},
+    {"id": 43, "text": "I can write compelling, evidence-based arguments.", "domain": "WSR", "reverse": false},
+    {"id": 44, "text": "I meet all my commitments and responsibilities.", "domain": "PMG", "reverse": false},
+    {"id": 45, "text": "I am prepared for the intensity of elite universities.", "domain": "ILA", "reverse": false},
+    {"id": 46, "text": "I need frequent reminders to stay on task.", "domain": "SHR", "reverse": true},
+    {"id": 47, "text": "I second-guess my answers during tests.", "domain": "TCO", "reverse": true},
+    {"id": 48, "text": "I struggle to organize my thoughts in writing.", "domain": "WSR", "reverse": true},
+    {"id": 49, "text": "I underestimate how long tasks will take.", "domain": "PMG", "reverse": true},
+    {"id": 50, "text": "I worry about not being academically prepared enough.", "domain": "ILA", "reverse": true}
+  ],
+  "scoring": {
+    "method": "sum",
+    "reverseScoring": {"1": 5, "2": 4, "3": 3, "4": 2, "5": 1},
+    "itemsPerDomain": 10,
+    "minScore": 10,
+    "maxScore": 50,
+    "bands": {
+      "high": {"min": 38, "max": 50, "label": "Strong"},
+      "mid": {"min": 25, "max": 37, "label": "Developing"},
+      "low": {"min": 10, "max": 24, "label": "Needs Focus"}
+    }
+  }
+}

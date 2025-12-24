@@ -23,8 +23,21 @@ async function getAssessmentProgress(userId: string) {
   // Part A is completed when S1, S2, S3, and S4 are all completed
   const partACompleted = (partAS1?.completed || false) && (partAS2?.completed || false) && (partAS3?.completed || false) && (partAS4?.completed || false);
 
-  const partB = results.find((r) => r.partName === 'Part B');
-  const partC = results.find((r) => r.partName === 'Part C');
+  // Check for Part B subsections
+  const partBS1 = results.find((r) => r.partName === 'Part B' && r.domainName === 'Cognitive Style');
+  const partBS2 = results.find((r) => r.partName === 'Part B' && r.domainName === 'Stress Response');
+  const partBS3 = results.find((r) => r.partName === 'Part B' && r.domainName === '21st Century Skills');
+  const partBS4 = results.find((r) => r.partName === 'Part B' && r.domainName === 'Social Check');
+
+  // Part B is completed when all 4 subsections are completed
+  const partBCompleted = (partBS1?.completed || false) && (partBS2?.completed || false) && (partBS3?.completed || false) && (partBS4?.completed || false);
+
+  // Check for Part C subsections
+  const partCS1 = results.find((r) => r.partName === 'Part C' && r.domainName === 'Environment & Preferences');
+  const partCS2 = results.find((r) => r.partName === 'Part C' && r.domainName === 'Execution & Grit');
+
+  // Part C is completed when both subsections are completed
+  const partCCompleted = (partCS1?.completed || false) && (partCS2?.completed || false);
 
   return {
     partAS1Completed: partAS1?.completed || false,
@@ -32,8 +45,14 @@ async function getAssessmentProgress(userId: string) {
     partAS3Completed: partAS3?.completed || false,
     partAS4Completed: partAS4?.completed || false,
     partACompleted,
-    partBCompleted: partB?.completed || false,
-    partCCompleted: partC?.completed || false,
+    partBS1Completed: partBS1?.completed || false,
+    partBS2Completed: partBS2?.completed || false,
+    partBS3Completed: partBS3?.completed || false,
+    partBS4Completed: partBS4?.completed || false,
+    partBCompleted,
+    partCS1Completed: partCS1?.completed || false,
+    partCS2Completed: partCS2?.completed || false,
+    partCCompleted,
   };
 }
 
@@ -281,20 +300,45 @@ export default async function AssessmentPage() {
                 <h3 className={`text-2xl font-bold mb-2 ${
                   !progress.partACompleted ? 'text-gray-500' : 'text-purple-600'
                 }`}>
-                  Part B: Cognitive Style & Skills
+                  Part B: Your Operating System
                 </h3>
                 <p className={`mb-3 ${
                   !progress.partACompleted ? 'text-gray-500' : 'text-gray-700'
                 }`}>
-                  Explore your learning preferences through Multiple Intelligences and assess your 21st Century Skills development.
+                  Understand how you think, respond to stress, and navigate the world around you.
                 </p>
+
+                {/* Subsection Progress */}
+                <div className="mb-3 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className={`text-sm ${progress.partBS1Completed ? 'text-green-600 font-semibold' : progress.partACompleted ? 'text-gray-600' : 'text-gray-400'}`}>
+                      {progress.partBS1Completed ? '✓' : '○'} S1: Cognitive Style (50 questions)
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-sm ${progress.partBS2Completed ? 'text-green-600 font-semibold' : progress.partACompleted ? 'text-gray-600' : 'text-gray-400'}`}>
+                      {progress.partBS2Completed ? '✓' : '○'} S2: Stress Response (40 questions)
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-sm ${progress.partBS3Completed ? 'text-green-600 font-semibold' : progress.partACompleted ? 'text-gray-600' : 'text-gray-400'}`}>
+                      {progress.partBS3Completed ? '✓' : '○'} S3: 21st Century Skills (60 questions)
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-sm ${progress.partBS4Completed ? 'text-green-600 font-semibold' : progress.partACompleted ? 'text-gray-600' : 'text-gray-400'}`}>
+                      {progress.partBS4Completed ? '✓' : '○'} S4: Social Check (20 questions)
+                    </span>
+                  </div>
+                </div>
+
                 <div className="flex items-center gap-4 text-sm text-gray-600">
-                  <span>⏱️ 15-20 minutes</span>
+                  <span>⏱️ 40-45 minutes total</span>
                   <span className={`font-semibold ${
                     progress.partBCompleted ? 'text-green-600' :
                     !progress.partACompleted ? 'text-gray-500' : 'text-purple-600'
                   }`}>
-                    {progress.partBCompleted ? '✓ Completed' : '○ Not Started'}
+                    {progress.partBCompleted ? '✓ Completed' : progress.partBS1Completed || progress.partBS2Completed || progress.partBS3Completed || progress.partBS4Completed ? '⟳ In Progress' : '○ Not Started'}
                   </span>
                 </div>
               </div>
@@ -305,18 +349,66 @@ export default async function AssessmentPage() {
                 <div className="text-4xl">🔒</div>
               )}
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-wrap">
               {progress.partACompleted ? (
-                <Link
-                  href="/assessment/part-b"
-                  className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-                    progress.partBCompleted
-                      ? 'bg-gray-300 text-gray-700 hover:bg-gray-400'
-                      : 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:shadow-lg'
-                  }`}
-                >
-                  {progress.partBCompleted ? 'Review Part B' : 'Start Part B →'}
-                </Link>
+                <>
+                  {!progress.partBS1Completed ? (
+                    <Link
+                      href="/assessment/part-b-s1"
+                      className="px-6 py-3 rounded-lg font-semibold transition-all bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:shadow-lg"
+                    >
+                      Start S1: Cognitive Style →
+                    </Link>
+                  ) : !progress.partBS2Completed ? (
+                    <Link
+                      href="/assessment/part-b-s2"
+                      className="px-6 py-3 rounded-lg font-semibold transition-all bg-gradient-to-r from-teal-600 to-cyan-600 text-white hover:shadow-lg"
+                    >
+                      Start S2: Stress Response →
+                    </Link>
+                  ) : !progress.partBS3Completed ? (
+                    <Link
+                      href="/assessment/part-b-s3"
+                      className="px-6 py-3 rounded-lg font-semibold transition-all bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:shadow-lg"
+                    >
+                      Start S3: 21st Century Skills →
+                    </Link>
+                  ) : !progress.partBS4Completed ? (
+                    <Link
+                      href="/assessment/part-b-s4"
+                      className="px-6 py-3 rounded-lg font-semibold transition-all bg-gradient-to-r from-rose-600 to-pink-600 text-white hover:shadow-lg"
+                    >
+                      Start S4: Social Check →
+                    </Link>
+                  ) : (
+                    <>
+                      <Link
+                        href="/assessment/part-b-s1"
+                        className="px-6 py-3 rounded-lg font-semibold transition-all bg-gray-300 text-gray-700 hover:bg-gray-400"
+                      >
+                        Review S1
+                      </Link>
+                      <Link
+                        href="/assessment/part-b-s2"
+                        className="px-6 py-3 rounded-lg font-semibold transition-all bg-gray-300 text-gray-700 hover:bg-gray-400"
+                      >
+                        Review S2
+                      </Link>
+                      <Link
+                        href="/assessment/part-b-s3"
+                        className="px-6 py-3 rounded-lg font-semibold transition-all bg-gray-300 text-gray-700 hover:bg-gray-400"
+                      >
+                        Review S3
+                      </Link>
+                      <Link
+                        href="/assessment/part-b-s4"
+                        className="px-6 py-3 rounded-lg font-semibold transition-all bg-gray-300 text-gray-700 hover:bg-gray-400"
+                      >
+                        Review S4
+                      </Link>
+                    </>
+                  )}
+                </>
               ) : (
                 <button
                   disabled
@@ -333,28 +425,28 @@ export default async function AssessmentPage() {
             !progress.partBCompleted
               ? 'border-gray-300 bg-gray-100 opacity-60'
               : !progress.partCCompleted
-                ? 'border-purple-300 bg-purple-50'
+                ? 'border-emerald-300 bg-emerald-50'
                 : 'border-green-300 bg-green-50'
           }`}>
             <div className="flex justify-between items-start mb-4">
               <div>
                 <h3 className={`text-2xl font-bold mb-2 ${
-                  !progress.partBCompleted ? 'text-gray-500' : 'text-purple-600'
+                  !progress.partBCompleted ? 'text-gray-500' : 'text-emerald-600'
                 }`}>
-                  Part C: Environment & Preferences
+                  🌍 Part C: The Reality Check
                 </h3>
                 <p className={`mb-3 ${
                   !progress.partBCompleted ? 'text-gray-500' : 'text-gray-700'
                 }`}>
-                  Define your ideal university environment, campus culture preferences, and lifestyle priorities.
+                  Assess your environment preferences and academic execution capacity
                 </p>
                 <div className="flex items-center gap-4 text-sm text-gray-600">
-                  <span>⏱️ 15-20 minutes</span>
+                  <span>⏱️ 18-20 minutes</span>
                   <span className={`font-semibold ${
                     progress.partCCompleted ? 'text-green-600' :
-                    !progress.partBCompleted ? 'text-gray-500' : 'text-purple-600'
+                    !progress.partBCompleted ? 'text-gray-500' : 'text-emerald-600'
                   }`}>
-                    {progress.partCCompleted ? '✓ Completed' : '○ Not Started'}
+                    {progress.partCCompleted ? '✓ Completed' : '2 sections'}
                   </span>
                 </div>
               </div>
@@ -365,18 +457,61 @@ export default async function AssessmentPage() {
                 <div className="text-4xl">🔒</div>
               )}
             </div>
+
+            {/* Subsections */}
+            <div className="mb-4 space-y-2 pl-4 border-l-2 border-emerald-300">
+              <div className={`text-sm ${
+                !progress.partBCompleted ? 'text-gray-500' : 'text-gray-700'
+              }`}>
+                <span className={progress.partCS1Completed ? 'text-green-600 font-semibold' : ''}>
+                  {progress.partCS1Completed ? '✓' : '○'} S1: Environment & Preferences
+                </span>
+              </div>
+              <div className={`text-sm ${
+                !progress.partBCompleted ? 'text-gray-500' : 'text-gray-700'
+              }`}>
+                <span className={progress.partCS2Completed ? 'text-green-600 font-semibold' : ''}>
+                  {progress.partCS2Completed ? '✓' : '○'} S2: Execution & Grit
+                </span>
+              </div>
+            </div>
+
             <div className="flex gap-3">
               {progress.partBCompleted ? (
-                <Link
-                  href="/assessment/part-c"
-                  className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-                    progress.partCCompleted
-                      ? 'bg-gray-300 text-gray-700 hover:bg-gray-400'
-                      : 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:shadow-lg'
-                  }`}
-                >
-                  {progress.partCCompleted ? 'Review Part C' : 'Start Part C →'}
-                </Link>
+                <>
+                  {!progress.partCS1Completed && (
+                    <Link
+                      href="/assessment/part-c-s1"
+                      className="px-6 py-3 rounded-lg font-semibold bg-gradient-to-r from-emerald-600 to-green-600 text-white hover:shadow-lg transition-all"
+                    >
+                      Start S1 →
+                    </Link>
+                  )}
+                  {progress.partCS1Completed && !progress.partCS2Completed && (
+                    <Link
+                      href="/assessment/part-c-s2"
+                      className="px-6 py-3 rounded-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg transition-all"
+                    >
+                      Start S2 →
+                    </Link>
+                  )}
+                  {progress.partCCompleted && (
+                    <>
+                      <Link
+                        href="/assessment/part-c-s1"
+                        className="px-4 py-2 rounded-lg font-semibold bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all text-sm"
+                      >
+                        Review S1
+                      </Link>
+                      <Link
+                        href="/assessment/part-c-s2"
+                        className="px-4 py-2 rounded-lg font-semibold bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all text-sm"
+                      >
+                        Review S2
+                      </Link>
+                    </>
+                  )}
+                </>
               ) : (
                 <button
                   disabled

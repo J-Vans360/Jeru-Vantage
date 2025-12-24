@@ -1,0 +1,142 @@
+{
+  "dashboard": {
+    "title": "Your Complete Profile",
+    "subtitle": "Jeru Vantage Self-Discovery Results",
+    "icon": "🎯",
+    "sections": [
+      {
+        "id": "overview",
+        "title": "Profile Overview",
+        "description": "A snapshot of your unique profile"
+      },
+      {
+        "id": "part-a",
+        "title": "Part A: The Internal You",
+        "subtitle": "Who you are at your core",
+        "color": "#8B5CF6",
+        "sections": ["personality", "values", "holland", "intelligences"]
+      },
+      {
+        "id": "part-b",
+        "title": "Part B: Your Operating System",
+        "subtitle": "How you think and respond",
+        "color": "#3B82F6",
+        "sections": ["cognitive", "stress", "skills", "authenticity"]
+      },
+      {
+        "id": "part-c",
+        "title": "Part C: The Reality Check",
+        "subtitle": "Your practical considerations",
+        "color": "#10B981",
+        "sections": ["environment", "execution"]
+      },
+      {
+        "id": "ikigai",
+        "title": "Your Ikigai Analysis",
+        "subtitle": "Where passion, mission, profession, and vocation intersect",
+        "color": "#F59E0B"
+      }
+    ]
+  },
+  "ikigai": {
+    "description": "Ikigai (生き甲斐) is a Japanese concept meaning 'reason for being'. It sits at the intersection of what you love, what you're good at, what the world needs, and what you can be paid for.",
+    "components": {
+      "love": {
+        "title": "What You Love",
+        "icon": "❤️",
+        "color": "#EC4899",
+        "sources": ["personality.OPE", "personality.EXT", "values.ALT", "values.INN", "holland", "intelligences"]
+      },
+      "good": {
+        "title": "What You're Good At",
+        "icon": "⭐",
+        "color": "#F59E0B",
+        "sources": ["intelligences", "skills", "execution"]
+      },
+      "needs": {
+        "title": "What The World Needs",
+        "icon": "🌍",
+        "color": "#10B981",
+        "sources": ["values.ALT", "values.POW", "holland.SOC", "holland.ENT"]
+      },
+      "paid": {
+        "title": "What You Can Be Paid For",
+        "icon": "💰",
+        "color": "#3B82F6",
+        "sources": ["values.ECO", "holland", "execution.ILA", "environment.FRR"]
+      }
+    },
+    "intersections": {
+      "passion": {
+        "combines": ["love", "good"],
+        "title": "Passion",
+        "description": "Activities you love AND are good at"
+      },
+      "mission": {
+        "combines": ["love", "needs"],
+        "title": "Mission",
+        "description": "What you love AND the world needs"
+      },
+      "profession": {
+        "combines": ["good", "paid"],
+        "title": "Profession",
+        "description": "What you're good at AND can be paid for"
+      },
+      "vocation": {
+        "combines": ["needs", "paid"],
+        "title": "Vocation",
+        "description": "What the world needs AND pays for"
+      }
+    }
+  },
+  "careerMapping": {
+    "hollandToFields": {
+      "REA": ["Engineering", "Construction", "Agriculture", "Military", "Athletics", "Trades"],
+      "INV": ["Science", "Research", "Medicine", "Technology", "Academia", "Data Analysis"],
+      "ART": ["Design", "Fine Arts", "Music", "Writing", "Film", "Architecture"],
+      "SOC": ["Education", "Healthcare", "Counseling", "Social Work", "HR", "Non-profit"],
+      "ENT": ["Business", "Law", "Sales", "Marketing", "Entrepreneurship", "Politics"],
+      "CON": ["Finance", "Accounting", "Administration", "Banking", "Insurance", "Data Entry"]
+    },
+    "intelligenceToStrengths": {
+      "VLI": ["Writing", "Teaching", "Law", "Journalism", "Translation"],
+      "LMA": ["Engineering", "Science", "Finance", "Programming", "Research"],
+      "VSP": ["Design", "Architecture", "Art", "Surgery", "Navigation"],
+      "BKI": ["Sports", "Dance", "Surgery", "Crafts", "Acting"],
+      "MUS": ["Music Performance", "Composition", "Sound Engineering", "Music Therapy"],
+      "IRP": ["Management", "Teaching", "Sales", "Counseling", "Politics"],
+      "IAP": ["Psychology", "Philosophy", "Writing", "Entrepreneurship", "Coaching"],
+      "NAT": ["Biology", "Environmental Science", "Veterinary", "Agriculture", "Conservation"]
+    },
+    "valueToMotivation": {
+      "ALT": "Making a positive impact on others' lives",
+      "ECO": "Building financial security and wealth",
+      "AUT": "Having freedom and independence in your work",
+      "POW": "Leading others and having influence",
+      "TRA": "Working within established systems and structures",
+      "INN": "Creating new solutions and continuous learning"
+    }
+  },
+  "universityFactors": {
+    "locationSensitivity": {
+      "high": "Consider universities anywhere - global options open",
+      "mid": "Balance between reach schools and closer options",
+      "low": "Prioritize universities closer to home/family"
+    },
+    "socialAtmosphere": {
+      "high": "Look for collaborative, team-based programs",
+      "mid": "Flexible - can thrive in various environments",
+      "low": "Consider programs with independent study options"
+    },
+    "financialReality": {
+      "high": "Factor in ROI, scholarships, and earning potential",
+      "mid": "Balance cost with program quality",
+      "low": "Can prioritize passion over financial return"
+    },
+    "executionCapacity": {
+      "high": "Ready for highly competitive programs",
+      "mid": "Solid foundation, room to strengthen application",
+      "low": "Focus on building skills before applying to reaches"
+    }
+  }
+}

@@ -1,0 +1,192 @@
+{
+  "section": {
+    "id": "part-b-s4",
+    "title": "Part B: Social Check",
+    "subtitle": "AUTHENTICITY CHECK - Ensuring your profile is genuine",
+    "description": "Answer these questions as honestly as possible. There are no right or wrong answers.",
+    "icon": "🛡️",
+    "estimatedTime": "4-5 minutes",
+    "totalQuestions": 20,
+    "scale": {
+      "min": 1,
+      "max": 5,
+      "labels": {
+        "1": "Strongly Disagree",
+        "2": "Disagree",
+        "3": "Neutral",
+        "4": "Agree",
+        "5": "Strongly Agree"
+      }
+    },
+    "note": "These questions help ensure authentic responses throughout the assessment."
+  },
+  "domains": [
+    {
+      "code": "SDR",
+      "name": "Social Desirability",
+      "description": "Tendency to present oneself in an overly positive light",
+      "color": "#8B5CF6"
+    }
+  ],
+  "questions": [
+    {
+      "id": 1,
+      "text": "I have never told a lie.",
+      "domain": "SDR",
+      "reverse": false,
+      "type": "too_good"
+    },
+    {
+      "id": 2,
+      "text": "I have never felt jealous of someone else's success.",
+      "domain": "SDR",
+      "reverse": false,
+      "type": "too_good"
+    },
+    {
+      "id": 3,
+      "text": "I always follow all rules, even when no one is watching.",
+      "domain": "SDR",
+      "reverse": false,
+      "type": "too_good"
+    },
+    {
+      "id": 4,
+      "text": "I have never said something I later regretted.",
+      "domain": "SDR",
+      "reverse": false,
+      "type": "too_good"
+    },
+    {
+      "id": 5,
+      "text": "I have never felt annoyed with my family or close friends.",
+      "domain": "SDR",
+      "reverse": false,
+      "type": "too_good"
+    },
+    {
+      "id": 6,
+      "text": "I always complete every task I start, no matter what.",
+      "domain": "SDR",
+      "reverse": false,
+      "type": "too_good"
+    },
+    {
+      "id": 7,
+      "text": "I have never procrastinated on important work.",
+      "domain": "SDR",
+      "reverse": false,
+      "type": "too_good"
+    },
+    {
+      "id": 8,
+      "text": "I have never felt lazy or unmotivated.",
+      "domain": "SDR",
+      "reverse": false,
+      "type": "too_good"
+    },
+    {
+      "id": 9,
+      "text": "I always treat everyone with perfect fairness.",
+      "domain": "SDR",
+      "reverse": false,
+      "type": "too_good"
+    },
+    {
+      "id": 10,
+      "text": "I have never judged someone based on their appearance.",
+      "domain": "SDR",
+      "reverse": false,
+      "type": "too_good"
+    },
+    {
+      "id": 11,
+      "text": "I sometimes make excuses to get out of things I don't want to do.",
+      "domain": "SDR",
+      "reverse": true,
+      "type": "common_flaw"
+    },
+    {
+      "id": 12,
+      "text": "I have occasionally taken credit for something I didn't fully do.",
+      "domain": "SDR",
+      "reverse": true,
+      "type": "common_flaw"
+    },
+    {
+      "id": 13,
+      "text": "I sometimes pretend to understand things when I don't.",
+      "domain": "SDR",
+      "reverse": true,
+      "type": "common_flaw"
+    },
+    {
+      "id": 14,
+      "text": "I have broken small rules when I thought no one would notice.",
+      "domain": "SDR",
+      "reverse": true,
+      "type": "common_flaw"
+    },
+    {
+      "id": 15,
+      "text": "I sometimes exaggerate my achievements slightly.",
+      "domain": "SDR",
+      "reverse": true,
+      "type": "common_flaw"
+    },
+    {
+      "id": 16,
+      "text": "I have occasionally been late because I underestimated how long something would take.",
+      "domain": "SDR",
+      "reverse": true,
+      "type": "common_flaw"
+    },
+    {
+      "id": 17,
+      "text": "I sometimes say I'm fine when I'm actually upset.",
+      "domain": "SDR",
+      "reverse": true,
+      "type": "common_flaw"
+    },
+    {
+      "id": 18,
+      "text": "I have occasionally gossiped about someone.",
+      "domain": "SDR",
+      "reverse": true,
+      "type": "common_flaw"
+    },
+    {
+      "id": 19,
+      "text": "I sometimes get distracted when I should be paying attention.",
+      "domain": "SDR",
+      "reverse": true,
+      "type": "common_flaw"
+    },
+    {
+      "id": 20,
+      "text": "I have felt envious of others at times.",
+      "domain": "SDR",
+      "reverse": true,
+      "type": "common_flaw"
+    }
+  ],
+  "scoring": {
+    "method": "sum",
+    "reverseScoring": {
+      "1": 5,
+      "2": 4,
+      "3": 3,
+      "4": 2,
+      "5": 1
+    },
+    "itemsPerDomain": 20,
+    "minScore": 20,
+    "maxScore": 100,
+    "interpretation": {
+      "authentic": { "min": 20, "max": 50, "label": "Authentic Responder", "description": "Your responses appear genuine and honest." },
+      "moderate": { "min": 51, "max": 70, "label": "Moderate Image Management", "description": "Some tendency to present positively, but generally reliable." },
+      "high": { "min": 71, "max": 100, "label": "High Image Management", "description": "Consider retaking the assessment with more candid responses." }
+    }
+  },
+  "note": "This scale detects 'too good to be true' responses. High scores suggest the person may be presenting an idealized self-image rather than their authentic self."
+}
