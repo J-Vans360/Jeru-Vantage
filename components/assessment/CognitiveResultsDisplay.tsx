@@ -44,7 +44,7 @@ type CognitiveResultsDisplayProps = {
 export default function CognitiveResultsDisplay({
   section,
   scores,
-  domains,
+  domains: _domains,
   onContinue,
   continueButtonText = 'Continue to Part B: S2 →',
   isSaving,

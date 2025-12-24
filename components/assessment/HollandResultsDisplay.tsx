@@ -34,7 +34,7 @@ type HollandResultsDisplayProps = {
 export default function HollandResultsDisplay({
   section,
   scores,
-  domains,
+  domains: _domains,
   onContinue,
   continueButtonText = 'Continue to Assessment Hub →',
   isSaving,

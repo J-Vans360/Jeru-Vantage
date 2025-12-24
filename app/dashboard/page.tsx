@@ -25,9 +25,9 @@ export default async function Dashboard() {
 
   // Extract specific assessment results
   const valuesResult = assessmentResults.find((r) => r.domainName === 'Values & Interests');
-  const personalityResult = assessmentResults.find((r) => r.domainName === 'Personality Architecture');
-  const hollandResult = assessmentResults.find((r) => r.domainName === 'Career Interests (Holland Code)');
-  const intelligencesResult = assessmentResults.find((r) => r.domainName === 'Multiple Intelligences');
+  const _personalityResult = assessmentResults.find((r) => r.domainName === 'Personality Architecture');
+  const _hollandResult = assessmentResults.find((r) => r.domainName === 'Career Interests (Holland Code)');
+  const _intelligencesResult = assessmentResults.find((r) => r.domainName === 'Multiple Intelligences');
 
   // Ensure topValues exists for backward compatibility
   if (valuesResult?.scores && !valuesResult.scores.topValues && valuesResult.scores.domains) {

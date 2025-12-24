@@ -21,7 +21,7 @@ export default function PartBS4Page() {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
 
-  const { section, questions, domains } = assessmentData;
+  const { section, questions, domains: _domains } = assessmentData;
   const currentQuestion = questions[currentQuestionIndex];
   const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
   const answeredCount = Object.keys(answers).length;

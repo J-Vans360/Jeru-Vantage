@@ -18,7 +18,7 @@ type ExecutionResultsDisplayProps = {
   isSaving: boolean;
 };
 
-export default function ExecutionResultsDisplay({ section, scores, domains, onContinue, continueButtonText = 'Complete Assessment →', isSaving }: ExecutionResultsDisplayProps) {
+export default function ExecutionResultsDisplay({ section, scores, domains: _domains, onContinue, continueButtonText = 'Complete Assessment →', isSaving }: ExecutionResultsDisplayProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
       <div className="max-w-6xl mx-auto px-4 py-8">

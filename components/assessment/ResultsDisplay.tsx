@@ -32,7 +32,7 @@ type ResultsDisplayProps = {
 export default function ResultsDisplay({
   section,
   scores,
-  domains,
+  domains: _domains,
   onContinue,
   continueButtonText = 'Continue to Assessment Hub →',
   isSaving,

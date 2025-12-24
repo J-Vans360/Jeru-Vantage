@@ -53,8 +53,8 @@ type SkillsResultsDisplayProps = {
 export default function SkillsResultsDisplay({
   section,
   scores,
-  domains,
-  categories,
+  domains: _domains,
+  categories: _categories,
   onContinue,
   continueButtonText = 'Continue to Part B: S4 →',
   isSaving,

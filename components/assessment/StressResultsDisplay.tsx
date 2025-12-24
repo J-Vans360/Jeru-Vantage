@@ -40,7 +40,7 @@ type StressResultsDisplayProps = {
 export default function StressResultsDisplay({
   section,
   scores,
-  domains,
+  domains: _domains,
   stressInfo,
   onContinue,
   continueButtonText = 'Continue to Part B: S3 →',
