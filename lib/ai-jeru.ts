@@ -278,7 +278,7 @@ Write a final paragraph about success beyond university admission - about findin
 
 export async function getAIJeruRecommendations(studentData: any) {
   const response = await openai.chat.completions.create({
-    model: 'gpt-4-turbo-preview',
+    model: 'gpt-4-turbo', // Updated to gpt-4-turbo (supports up to 4096 tokens)
     messages: [
       { role: 'system', content: AI_JERU_SYSTEM_PROMPT },
       {
@@ -287,7 +287,7 @@ export async function getAIJeruRecommendations(studentData: any) {
       },
     ],
     temperature: 0.7,
-    max_tokens: 16000, // Increased for comprehensive 3000-4000 word reports
+    max_tokens: 4096, // Maximum for GPT-4 Turbo (approximately 3000-3500 words)
   });
 
   return response.choices[0].message.content;
