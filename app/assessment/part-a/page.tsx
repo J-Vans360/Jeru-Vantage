@@ -85,12 +85,16 @@ export default function PartAPage() {
   const selectedValue = answers[currentQuestion?.id];
 
   if (isComplete && scores) {
+    const handleContinue = () => {
+      router.push('/assessment/part-a-s2');
+    };
+
     return (
       <ResultsDisplay
         section={section}
         scores={scores}
         domains={domains}
-        onContinue={() => router.push('/assessment/part-a-s2')}
+        onContinue={handleContinue}
         continueButtonText="Continue to Part A: S2 (Core Values) →"
         isSaving={isSaving}
       />
