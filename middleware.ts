@@ -12,6 +12,7 @@ export const config = {
     "/profile/:path*",
     "/results/:path*",
     "/dashboard/:path*",
-    "/ai-jeru/:path*"
+    "/ai-jeru/:path*",
+    "/my-reports/:path*"
   ],
 };

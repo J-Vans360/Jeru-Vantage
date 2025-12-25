@@ -21,6 +21,7 @@ model User {
   sessions          Session[]
   assessmentResults AssessmentResult[]
   studentProfile    StudentProfile?
+  jeruReports       JeruReport[]
 
   @@map("users")
 }
@@ -138,4 +139,19 @@ model AssessmentResult {
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("assessment_results")
+}
+
+model JeruReport {
+  id                 String   @id @default(cuid())
+  userId             String
+  reportContent      String   @db.Text
+  assessmentSnapshot Json
+  generationNumber   Int      @default(1)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("jeru_reports")
 }

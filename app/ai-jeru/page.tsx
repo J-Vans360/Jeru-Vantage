@@ -4,6 +4,18 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 
+// Types
+type Report = {
+  id: string;
+  generationNumber: number;
+  createdAt: string;
+};
+
+type FullReport = Report & {
+  reportContent: string;
+  assessmentSnapshot: any;
+};
+
 // Table of Contents sections
 const TOC_SECTIONS = [
   { id: 'executive-summary', label: '1. Executive Summary', icon: '📊' },
@@ -34,12 +46,24 @@ const sectionIdMap: Record<string, string> = {
 
 export default function AIJeruPage() {
   const [recommendations, setRecommendations] = useState<string | null>(null);
+  const [reportId, setReportId] = useState<string | null>(null);
+  const [generationNumber, setGenerationNumber] = useState<number>(1);
+  const [reportDate, setReportDate] = useState<Date | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingReports, setIsLoadingReports] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [previousReports, setPreviousReports] = useState<Report[]>([]);
+  const [showReportsList, setShowReportsList] = useState(false);
   const [activeSection, setActiveSection] = useState<string>('executive-summary');
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
+  const [showSavedMessage, setShowSavedMessage] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+
+  // Fetch previous reports on load
+  useEffect(() => {
+    fetchPreviousReports();
+  }, []);
 
   // Track scroll position for active section and scroll-to-top button
   useEffect(() => {
@@ -62,6 +86,46 @@ export default function AIJeruPage() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [recommendations]);
+
+  const fetchPreviousReports = async () => {
+    try {
+      const response = await fetch('/api/ai-jeru');
+      if (response.ok) {
+        const data = await response.json();
+        setPreviousReports(data.reports || []);
+      }
+    } catch (err) {
+      console.error('Error fetching reports:', err);
+    } finally {
+      setIsLoadingReports(false);
+    }
+  };
+
+  const loadReport = async (id: string) => {
+    setIsLoading(true);
+    setError(null);
+    setShowReportsList(false);
+
+    try {
+      const response = await fetch(`/api/ai-jeru?reportId=${id}`);
+      if (!response.ok) {
+        throw new Error('Failed to load report');
+      }
+
+      const data = await response.json();
+      const report = data.report as FullReport;
+
+      setRecommendations(report.reportContent);
+      setReportId(report.id);
+      setGenerationNumber(report.generationNumber);
+      setReportDate(new Date(report.createdAt));
+      setCollapsedSections(new Set());
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load report');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -94,6 +158,7 @@ export default function AIJeruPage() {
   const getRecommendations = async () => {
     setIsLoading(true);
     setError(null);
+    setShowSavedMessage(false);
 
     try {
       const response = await fetch('/api/ai-jeru', {
@@ -108,7 +173,17 @@ export default function AIJeruPage() {
 
       const data = await response.json();
       setRecommendations(data.recommendations);
-      setCollapsedSections(new Set()); // Expand all on new report
+      setReportId(data.reportId);
+      setGenerationNumber(data.generationNumber);
+      setReportDate(new Date(data.createdAt));
+      setCollapsedSections(new Set());
+      setShowSavedMessage(true);
+
+      // Refresh previous reports list
+      fetchPreviousReports();
+
+      // Hide saved message after 5 seconds
+      setTimeout(() => setShowSavedMessage(false), 5000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -132,18 +207,20 @@ export default function AIJeruPage() {
       >
         <span>{children}</span>
         {sectionId && (
-          <span className="text-purple-400 text-lg no-print">
-            {isCollapsed ? '▶' : '▼'}
-          </span>
+          <span className="text-purple-400 text-lg no-print">{isCollapsed ? '▶' : '▼'}</span>
         )}
       </h2>
     );
   };
 
-  // Wrapper to handle collapsed sections in markdown content
-  const processMarkdown = (content: string) => {
-    // Add section IDs to headers for navigation
-    return content;
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   };
 
   return (
@@ -159,22 +236,81 @@ export default function AIJeruPage() {
                 <p className="text-sm opacity-90">AI Guidance Counselor</p>
               </div>
             </div>
-            {recommendations && (
-              <div className="flex items-center gap-3 no-print">
-                <button
-                  onClick={() => window.print()}
-                  className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg font-semibold transition-all text-sm flex items-center gap-2"
-                >
-                  📄 Print Report
-                </button>
-                <button
-                  onClick={() => setRecommendations(null)}
-                  className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg font-semibold transition-all text-sm"
-                >
-                  New Report
-                </button>
-              </div>
-            )}
+            <div className="flex items-center gap-3 no-print">
+              {/* Previous Reports Dropdown */}
+              {previousReports.length > 0 && (
+                <div className="relative">
+                  <button
+                    onClick={() => setShowReportsList(!showReportsList)}
+                    className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg font-semibold transition-all text-sm flex items-center gap-2"
+                  >
+                    📚 My Reports ({previousReports.length})
+                    <span className="text-xs">{showReportsList ? '▲' : '▼'}</span>
+                  </button>
+                  {showReportsList && (
+                    <div className="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50">
+                      <div className="p-3 bg-purple-50 border-b">
+                        <h3 className="font-bold text-purple-800 text-sm">Previous Reports</h3>
+                      </div>
+                      <div className="max-h-64 overflow-y-auto">
+                        {previousReports.map((report) => (
+                          <button
+                            key={report.id}
+                            onClick={() => loadReport(report.id)}
+                            className={`w-full text-left px-4 py-3 hover:bg-purple-50 transition-colors border-b border-gray-50 ${
+                              reportId === report.id ? 'bg-purple-100' : ''
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="font-semibold text-gray-800 text-sm">
+                                Report #{report.generationNumber}
+                              </span>
+                              {reportId === report.id && (
+                                <span className="text-xs bg-purple-600 text-white px-2 py-0.5 rounded-full">
+                                  Current
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {new Date(report.createdAt).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                              })}
+                            </p>
+                          </button>
+                        ))}
+                      </div>
+                      <Link
+                        href="/my-reports"
+                        className="block w-full text-center px-4 py-3 bg-gray-50 text-purple-600 font-semibold text-sm hover:bg-gray-100 transition-colors"
+                      >
+                        View All Reports →
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              )}
+              {recommendations && (
+                <>
+                  <button
+                    onClick={() => window.print()}
+                    className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg font-semibold transition-all text-sm flex items-center gap-2"
+                  >
+                    📄 Print
+                  </button>
+                  <button
+                    onClick={() => {
+                      setRecommendations(null);
+                      setReportId(null);
+                    }}
+                    className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg font-semibold transition-all text-sm"
+                  >
+                    + New Report
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -190,6 +326,32 @@ export default function AIJeruPage() {
                 Jeru will analyze your complete assessment profile to create a comprehensive guidance report with
                 personalized university recommendations, career pathways, SWOT analysis, and a 90-day action plan.
               </p>
+
+              {/* Show previous reports if available */}
+              {!isLoadingReports && previousReports.length > 0 && (
+                <div className="bg-purple-50 border border-purple-200 rounded-xl p-6 mb-8">
+                  <h3 className="font-bold text-purple-800 mb-3">
+                    📚 You have {previousReports.length} previous report{previousReports.length > 1 ? 's' : ''}
+                  </h3>
+                  <div className="flex flex-wrap gap-2 justify-center mb-4">
+                    {previousReports.slice(0, 3).map((report) => (
+                      <button
+                        key={report.id}
+                        onClick={() => loadReport(report.id)}
+                        className="px-4 py-2 bg-white border border-purple-200 rounded-lg text-sm hover:bg-purple-100 transition-colors"
+                      >
+                        Report #{report.generationNumber} •{' '}
+                        {new Date(report.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      </button>
+                    ))}
+                  </div>
+                  {previousReports.length > 3 && (
+                    <Link href="/my-reports" className="text-purple-600 text-sm hover:underline">
+                      View all {previousReports.length} reports →
+                    </Link>
+                  )}
+                </div>
+              )}
 
               <div className="bg-gradient-to-br from-purple-50 to-amber-50 border border-purple-100 rounded-xl p-6 mb-8">
                 <h3 className="font-bold text-gray-800 mb-4 text-lg">Your Report Will Include:</h3>
@@ -207,7 +369,7 @@ export default function AIJeruPage() {
                 onClick={getRecommendations}
                 className="px-10 py-4 bg-gradient-to-r from-purple-600 to-amber-600 text-white text-xl font-bold rounded-xl hover:shadow-xl transition-all transform hover:scale-105"
               >
-                Generate My Report
+                {previousReports.length > 0 ? 'Generate New Report' : 'Generate My Report'}
               </button>
 
               <p className="text-sm text-gray-500 mt-4">Takes approximately 90-120 seconds to generate</p>
@@ -227,24 +389,42 @@ export default function AIJeruPage() {
 
               <div className="bg-purple-50 rounded-lg p-4 mb-6">
                 <div className="flex flex-wrap gap-2 justify-center">
-                  {['Personality', 'Values', 'Holland Code', 'Intelligences', 'Cognitive Style', 'Stress Response', 'Skills', 'Environment', 'Execution', 'SWOT'].map(
-                    (item, i) => (
-                      <span
-                        key={item}
-                        className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm animate-pulse"
-                        style={{ animationDelay: `${i * 100}ms` }}
-                      >
-                        {item}
-                      </span>
-                    )
-                  )}
+                  {[
+                    'Personality',
+                    'Values',
+                    'Holland Code',
+                    'Intelligences',
+                    'Cognitive Style',
+                    'Stress Response',
+                    'Skills',
+                    'Environment',
+                    'Execution',
+                    'SWOT',
+                  ].map((item, i) => (
+                    <span
+                      key={item}
+                      className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm animate-pulse"
+                      style={{ animationDelay: `${i * 100}ms` }}
+                    >
+                      {item}
+                    </span>
+                  ))}
                 </div>
               </div>
 
               <div className="flex justify-center gap-2">
-                <div className="w-3 h-3 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                <div className="w-3 h-3 bg-amber-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                <div className="w-3 h-3 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                <div
+                  className="w-3 h-3 bg-purple-600 rounded-full animate-bounce"
+                  style={{ animationDelay: '0ms' }}
+                ></div>
+                <div
+                  className="w-3 h-3 bg-amber-600 rounded-full animate-bounce"
+                  style={{ animationDelay: '150ms' }}
+                ></div>
+                <div
+                  className="w-3 h-3 bg-purple-600 rounded-full animate-bounce"
+                  style={{ animationDelay: '300ms' }}
+                ></div>
               </div>
 
               <p className="text-sm text-gray-500 mt-6">This may take 90-120 seconds. Please don't refresh the page.</p>
@@ -322,8 +502,21 @@ export default function AIJeruPage() {
               <div className="bg-white rounded-2xl shadow-lg p-8 lg:p-12" ref={contentRef}>
                 {/* Report Header */}
                 <div className="text-center mb-10 pb-8 border-b-2 border-purple-100">
-                  <h2 className="text-3xl font-bold text-gray-800 mb-2">Your Personalized Guidance Report</h2>
+                  <div className="flex items-center justify-center gap-3 mb-2">
+                    <h2 className="text-3xl font-bold text-gray-800">Your Personalized Guidance Report</h2>
+                    <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold">
+                      #{generationNumber}
+                    </span>
+                  </div>
                   <p className="text-gray-500">Generated by Jeru, AI Guidance Counselor</p>
+                  {reportDate && <p className="text-sm text-gray-400 mt-1">{formatDate(reportDate)}</p>}
+
+                  {/* Saved confirmation */}
+                  {showSavedMessage && (
+                    <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold animate-pulse">
+                      ✓ Report saved to your account
+                    </div>
+                  )}
                 </div>
 
                 {/* Mobile TOC */}
@@ -356,9 +549,7 @@ export default function AIJeruPage() {
                       ),
                       h2: ({ children }) => renderH2(children),
                       h3: ({ children }) => (
-                        <h3 className="text-xl font-bold text-amber-700 mt-8 mb-3 flex items-center gap-2">
-                          {children}
-                        </h3>
+                        <h3 className="text-xl font-bold text-amber-700 mt-8 mb-3 flex items-center gap-2">{children}</h3>
                       ),
                       h4: ({ children }) => (
                         <h4 className="text-lg font-semibold text-gray-800 mt-6 mb-2">{children}</h4>
@@ -370,9 +561,7 @@ export default function AIJeruPage() {
                         <ol className="list-decimal list-outside ml-6 space-y-2 my-4 text-gray-700">{children}</ol>
                       ),
                       li: ({ children }) => <li className="leading-relaxed pl-2">{children}</li>,
-                      p: ({ children }) => (
-                        <p className="text-gray-700 leading-relaxed my-4 text-base">{children}</p>
-                      ),
+                      p: ({ children }) => <p className="text-gray-700 leading-relaxed my-4 text-base">{children}</p>,
                       strong: ({ children }) => <strong className="font-bold text-gray-900">{children}</strong>,
                       em: ({ children }) => <em className="italic text-gray-800">{children}</em>,
                       hr: () => <hr className="my-10 border-t-2 border-purple-100" />,
@@ -383,7 +572,7 @@ export default function AIJeruPage() {
                       ),
                     }}
                   >
-                    {processMarkdown(recommendations)}
+                    {recommendations}
                   </ReactMarkdown>
                 </article>
 
@@ -397,16 +586,25 @@ export default function AIJeruPage() {
                       📄 Print / Save as PDF
                     </button>
                     <button
-                      onClick={() => setRecommendations(null)}
+                      onClick={() => {
+                        setRecommendations(null);
+                        setReportId(null);
+                      }}
                       className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-all"
                     >
                       Generate New Report
                     </button>
                     <Link
-                      href="/results"
+                      href="/my-reports"
                       className="px-6 py-3 bg-purple-100 text-purple-700 rounded-lg font-semibold hover:bg-purple-200 transition-all"
                     >
-                      View Assessment Results
+                      View All Reports
+                    </Link>
+                    <Link
+                      href="/results"
+                      className="px-6 py-3 bg-amber-100 text-amber-700 rounded-lg font-semibold hover:bg-amber-200 transition-all"
+                    >
+                      Assessment Results
                     </Link>
                   </div>
                 </div>

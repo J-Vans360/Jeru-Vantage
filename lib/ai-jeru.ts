@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import { prisma } from './prisma';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -54,7 +55,7 @@ For EACH of the 5 traits (Openness, Conscientiousness, Extraversion, Agreeablene
 - Explain their top 3 values in detail with scores
 - What fundamentally drives them
 - How values should influence major/career choice
-- Any potential conflicts between values (e.g., wanting both security AND adventure)
+- Any potential conflicts between values
 
 ### 2.3 Your Holland Code (RIASEC) Explained
 - Their 3-letter code with individual scores
@@ -87,43 +88,34 @@ For each spectrum (Analyst↔Wholist, Verbal↔Imager, Convergent↔Divergent, F
 ### 3.3 Your 21st Century Skills Assessment
 - Their strongest skills to leverage
 - Areas needing development
-- Impact on university success
-- Impact on career success
+- Impact on university and career success
 
 ---
 
 ## 4. THE IKIGAI BLUEPRINT (CONNECTING THE DOTS)
 
-This section shows how everything connects. Be thorough and specific.
-
 ### 4.1 ❤️ WHAT YOU LOVE (Passion Zone)
-- Evidence from Values assessment (cite scores)
-- Evidence from Holland Code (cite scores)
-- Evidence from stated interests in Profile
+- Evidence from Values, Holland Code, stated interests
 - Activities that would make them lose track of time
-- **The Connection:** Explain how these data points combine
+- **The Connection:** How these data points combine
 
 ### 4.2 ⭐ WHAT YOU'RE GOOD AT (Talent Zone)
-- Evidence from Multiple Intelligences (cite scores)
-- Evidence from Academic Performance
-- Evidence from 21st Century Skills (cite scores)
+- Evidence from Multiple Intelligences, Academics, Skills
 - Natural abilities they might take for granted
-- **The Connection:** Explain how these data points combine
+- **The Connection:** How these data points combine
 
 ### 4.3 🌍 WHAT THE WORLD NEEDS (Mission Zone)
 - Connect their values to real-world problems
-- Industries addressing these needs
 - How their unique skills can create impact
 - **The Connection:** Why they're positioned to contribute
 
 ### 4.4 💰 WHAT YOU CAN BE PAID FOR (Profession Zone)
 - Market demand for their skill combination
-- Salary expectations for recommended paths
-- Job growth projections
+- Salary expectations and job growth
 - **The Connection:** Where passion meets paycheck
 
 ### 4.5 🎯 YOUR IKIGAI CENTER POINT
-- The specific career/field where ALL 4 circles overlap
+- The specific career where ALL 4 circles overlap
 - Why this is uniquely suited to THIS student
 - Multiple paths to reach this center point
 
@@ -131,66 +123,50 @@ This section shows how everything connects. Be thorough and specific.
 
 ## 5. SWOT ANALYSIS: YOUR STRATEGIC PROFILE
 
-Present this in a NARRATIVE format that is insightful and actionable. NOT in boxes.
+Present in NARRATIVE format, NOT boxes.
 
 ### 💪 Strengths (Internal Assets)
 
-Identify 3-5 key strengths. For EACH strength, write a paragraph:
-- Give it a memorable name (e.g., "Analytical Horsepower", "Adaptable Personality")
-- Cite the specific evidence from assessment scores
-- Explain what this means in practical terms
-- Show why this is an asset for their future
-
-Example:
-**Analytical Horsepower:** The Logical-Mathematical intelligence score (35/50) is a standout asset. This indicates a natural aptitude for data, complex problem-solving, and structured thinking—crucial for STEM or quantitative fields.
+Identify 3-5 strengths. For EACH, write a paragraph with:
+- A memorable name (e.g., "Analytical Horsepower")
+- Specific evidence from scores
+- Practical meaning
+- Why it's an asset
 
 ### 📉 Weaknesses (Internal Challenges)
 
-Identify 3-4 key weaknesses. For EACH weakness, write a paragraph:
-- Give it a clear, honest name (e.g., "The Execution Gap", "Academic Mechanics")
-- Cite the specific evidence from assessment scores
-- Explain the practical impact without being discouraging
-- Frame it as something that CAN be addressed
-
-Example:
-**The Execution Gap:** There is a significant disconnect between ability and output. Low scores in Study Habits (18/50) and Productivity (12/25) suggest the student struggles to sit down and get the work done efficiently. This is fixable with the right systems.
+Identify 3-4 weaknesses. For EACH, write a paragraph with:
+- A clear name (e.g., "The Execution Gap")
+- Specific evidence from scores
+- Practical impact
+- Frame as fixable
 
 ### 🚀 Opportunities (External Potential)
 
-Identify 3-4 key opportunities. For EACH opportunity, write a paragraph:
-- Name the opportunity clearly
-- Connect it to their specific profile data
-- Explain why this is achievable for THIS student
-- Suggest how to pursue it
-
-Example:
-**Alignment with Niche Careers:** The interest profile highlights Realistic and Investigative domains. This opens clear pathways into specialized careers (e.g., Engineering, Data Science, Financial Forensics) where their logical mind can thrive.
+Identify 3-4 opportunities. For EACH, write a paragraph with:
+- Clear name
+- Connection to their profile
+- Why achievable for THIS student
+- How to pursue it
 
 ### ⚠️ Threats (External Risks)
 
-Identify 2-3 key threats. For EACH threat, write a paragraph:
-- Name the threat honestly
-- Cite the specific evidence
-- Explain the real-world risk
-- Hint at mitigation strategies
-
-Example:
-**The "Freeze" Stress Response:** A primary stress reaction of "Freeze" (40/50) is a major risk for high-stakes environments like timed standardized tests or admissions interviews. If not managed, this could cause underperformance precisely when it matters most.
+Identify 2-3 threats. For EACH, write a paragraph with:
+- Honest name
+- Specific evidence
+- Real-world risk
+- Mitigation hint
 
 ### 🎯 Strategic Synthesis & Next Steps
 
-**Paragraph 1 - The Profile Summary:**
-Synthesize the SWOT into one clear statement. Use a memorable phrase like "High Potential, Low Execution" or "The Quiet Powerhouse" or "The Diamond in the Rough". Explain what's blocking them and what assets they have.
+**Paragraph 1 - Profile Summary:** Use a memorable phrase like "High Potential, Low Execution"
 
 **Paragraph 2 - Recommended Focus Areas:**
-List 3 specific, prioritized actions:
+1. **[Name]:** Most urgent fix + concrete strategy
+2. **[Name]:** Second priority + concrete strategy
+3. **[Name]:** Leverage top strength + concrete strategy
 
-1. **[Memorable Name]:** The MOST URGENT thing to fix. Give one concrete strategy.
-2. **[Memorable Name]:** The second priority. Give one concrete strategy.
-3. **[Memorable Name]:** How to leverage their top strength. Give one concrete strategy.
-
-**Paragraph 3 - The Honest Truth:**
-A direct but encouraging message about realistic chances and what it will take.
+**Paragraph 3 - The Honest Truth:** Direct but encouraging reality check
 
 ---
 
@@ -306,8 +282,22 @@ Write a heartfelt 2-3 paragraph message that:
 Remember: This report should feel like a 1-hour consultation with a wise mentor, not a computer summary. Use their NAME throughout. Reference SPECIFIC scores. Make CONNECTIONS between different assessments. Help them SEE themselves clearly and feel MOTIVATED to act.
 `;
 
-export async function getAIJeruRecommendations(studentData: any) {
-  const studentName = studentData.profile?.name || studentData.profile?.studentName || 'Student';
+export async function getAIJeruRecommendations(userId: string, studentData: any) {
+  const studentName = studentData.profile?.studentName || studentData.profile?.name || 'Student';
+
+  // Get previous reports for context
+  const previousReports = await prisma.jeruReport.findMany({
+    where: { userId },
+    orderBy: { createdAt: 'desc' },
+    take: 1,
+  });
+
+  const generationNumber = previousReports.length > 0 ? previousReports[0].generationNumber + 1 : 1;
+
+  const previousContext =
+    previousReports.length > 0
+      ? `\n\nNOTE: This is report #${generationNumber} for this student. Their previous report was generated on ${previousReports[0].createdAt.toDateString()}. Consider their progress if relevant.`
+      : '';
 
   const response = await openai.chat.completions.create({
     model: 'gpt-4o', // GPT-4o supports up to 16,384 output tokens
@@ -320,6 +310,7 @@ export async function getAIJeruRecommendations(studentData: any) {
 The student's name is ${studentName}.
 
 Be thorough and connect all the dots between their assessment results. Use memorable phrases to name their strengths and weaknesses. Make the SWOT analysis narrative and actionable.
+${previousContext}
 
 Here is their complete data:
 
@@ -330,5 +321,55 @@ ${JSON.stringify(studentData, null, 2)}`,
     max_tokens: 12000, // ~8000-10000 words for comprehensive report
   });
 
-  return response.choices[0].message.content;
+  const reportContent = response.choices[0].message.content || '';
+
+  // Save report to database
+  const savedReport = await prisma.jeruReport.create({
+    data: {
+      userId,
+      reportContent,
+      assessmentSnapshot: studentData,
+      generationNumber,
+    },
+  });
+
+  return {
+    report: reportContent,
+    reportId: savedReport.id,
+    generationNumber,
+    createdAt: savedReport.createdAt,
+  };
+}
+
+// Get all reports for a user
+export async function getUserReports(userId: string) {
+  return prisma.jeruReport.findMany({
+    where: { userId },
+    orderBy: { createdAt: 'desc' },
+    select: {
+      id: true,
+      generationNumber: true,
+      createdAt: true,
+    },
+  });
+}
+
+// Get specific report
+export async function getReportById(reportId: string, userId: string) {
+  return prisma.jeruReport.findFirst({
+    where: {
+      id: reportId,
+      userId,
+    },
+  });
+}
+
+// Delete a report
+export async function deleteReport(reportId: string, userId: string) {
+  return prisma.jeruReport.deleteMany({
+    where: {
+      id: reportId,
+      userId,
+    },
+  });
 }

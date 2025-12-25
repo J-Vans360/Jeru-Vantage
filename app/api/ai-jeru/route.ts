@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
-import { getAIJeruRecommendations } from '@/lib/ai-jeru';
+import { getAIJeruRecommendations, getUserReports, getReportById } from '@/lib/ai-jeru';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUserId } from '@/lib/auth-utils';
 
+// Generate new report
 export async function POST() {
   try {
     const userId = await getCurrentUserId();
@@ -41,6 +42,7 @@ export async function POST() {
     // Combine all data
     const studentData = {
       profile: {
+        studentName: profile.studentName,
         name: profile.studentName,
         grade: profile.currentGrade,
         targetYear: profile.targetEntryYear,
@@ -73,14 +75,51 @@ export async function POST() {
       }, {} as Record<string, any>),
     };
 
-    // Get AI Jeru recommendations
-    const recommendations = await getAIJeruRecommendations(studentData);
+    // Get AI Jeru recommendations (now saves to database)
+    const result = await getAIJeruRecommendations(userId, studentData);
 
-    return NextResponse.json({ recommendations });
+    return NextResponse.json({
+      recommendations: result.report,
+      reportId: result.reportId,
+      generationNumber: result.generationNumber,
+      createdAt: result.createdAt,
+    });
   } catch (error) {
     console.error('AI Jeru error:', error);
     return NextResponse.json(
-      { error: 'Failed to get recommendations' },
+      { error: 'Failed to generate report' },
+      { status: 500 }
+    );
+  }
+}
+
+// Get user's reports
+export async function GET(request: Request) {
+  try {
+    const userId = await getCurrentUserId();
+
+    const { searchParams } = new URL(request.url);
+    const reportId = searchParams.get('reportId');
+
+    if (reportId) {
+      // Get specific report
+      const report = await getReportById(reportId, userId);
+      if (!report) {
+        return NextResponse.json(
+          { error: 'Report not found' },
+          { status: 404 }
+        );
+      }
+      return NextResponse.json({ report });
+    }
+
+    // Get all reports
+    const reports = await getUserReports(userId);
+    return NextResponse.json({ reports });
+  } catch (error) {
+    console.error('Get reports error:', error);
+    return NextResponse.json(
+      { error: 'Failed to get reports' },
       { status: 500 }
     );
   }
