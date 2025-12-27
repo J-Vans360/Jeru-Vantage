@@ -83,6 +83,7 @@ export async function POST() {
       reportId: result.reportId,
       generationNumber: result.generationNumber,
       createdAt: result.createdAt,
+      studentName: profile.studentName,
     });
   } catch (error) {
     console.error('AI Jeru error:', error);

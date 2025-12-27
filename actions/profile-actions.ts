@@ -40,6 +40,7 @@ export async function saveStudentProfile(
         where: { userId },
         data: {
           studentName: data.studentName,
+          degreeLevel: data.degreeLevel,
           currentGrade: data.currentGrade,
           targetEntryYear: data.targetEntryYear,
           citizenshipPrimary: data.citizenshipPrimary,
@@ -110,6 +111,7 @@ export async function saveStudentProfile(
         data: {
           userId,
           studentName: data.studentName,
+          degreeLevel: data.degreeLevel,
           currentGrade: data.currentGrade,
           targetEntryYear: data.targetEntryYear,
           citizenshipPrimary: data.citizenshipPrimary,

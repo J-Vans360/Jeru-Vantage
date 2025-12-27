@@ -3,11 +3,19 @@
 export type StudentProfileFormData = {
   // A. Demographics & Residency
   studentName: string;
+  gender?: string;
+  sex?: string; // Deprecated - use gender instead
+  degreeLevel?: 'bachelors' | 'masters';  // Bachelor's or Master's
   currentGrade: string;
   targetEntryYear: string;
   citizenshipPrimary: string;
   citizenshipSecondary?: string;
   countryResidence: string;
+  isDomesticApplicant?: boolean;
+
+  // GPA
+  gpa?: string;
+  gpaScale?: string;
   
   // B. Financial Reality Check
   annualBudgetRange: string;
@@ -21,10 +29,11 @@ export type StudentProfileFormData = {
   // D. Academic Data
   subjects: StudentSubjectData[];
   
-  // E. Standardized Testing
+  // E. Standardized Tests
   ieltsScore?: number;
   toeflScore?: number;
   duolingoScore?: number;
+  pteScore?: number;
   nativeEnglish: boolean;
   satTotal?: number;
   satMath?: number;
@@ -33,6 +42,11 @@ export type StudentProfileFormData = {
   ucatBmatScore?: string;
   testPlanDate?: string;
   testOptional: boolean;
+
+  // National/State Entrance Exam
+  hasNationalExam?: boolean;
+  nationalExamName?: string;
+  nationalExamScore?: string;
   
   // F. Learning & Disciplinary Context
   learningSupport: boolean;
@@ -70,7 +84,9 @@ export type BudgetRange =
 
 export type NeedBasedAid = 'required' | 'maybe' | 'no';
 
-export type USStatus = 'us-citizen' | 'international';
+export type USStatus = 'us-citizen' | 'international' | 'not-applying-us';
+
+export type DegreeLevel = 'bachelors' | 'masters';
 
 export type Curriculum = 
   | 'ib-diploma'

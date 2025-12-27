@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed:pilot": "npx ts-node --compiler-options '{\"module\":\"CommonJS\"}' scripts/seed-pilot-codes.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
@@ -16,6 +17,8 @@
     "@supabase/supabase-js": "^2.89.0",
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "framer-motion": "^12.23.26",
     "lucide-react": "^0.562.0",
     "next": "16.1.1",
     "next-auth": "^4.24.13",
@@ -24,8 +27,11 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-hook-form": "^7.69.0",
+    "react-intersection-observer": "^10.0.0",
     "react-markdown": "^10.1.0",
+    "recharts": "^3.6.0",
     "tailwind-merge": "^3.4.0",
+    "uuid": "^13.0.0",
     "zod": "^4.2.1"
   },
   "devDependencies": {

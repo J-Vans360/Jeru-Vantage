@@ -1,12 +1,14 @@
 "use client"
 
 import Link from 'next/link';
+import UniversityMatchesWrapper from './UniversityMatchesWrapper';
 
 interface ResultsDashboardProps {
   assessmentResults: any[];
+  userId?: string;
 }
 
-export default function ResultsDashboard({ assessmentResults }: ResultsDashboardProps) {
+export default function ResultsDashboard({ assessmentResults, userId }: ResultsDashboardProps) {
   // Group results by part and domain
   const partAResults = assessmentResults.filter((r) => r.partName === 'Part A');
   const partBResults = assessmentResults.filter((r) => r.partName === 'Part B');
@@ -15,17 +17,28 @@ export default function ResultsDashboard({ assessmentResults }: ResultsDashboard
   // Check if all parts are complete (10 sections total)
   const allPartsComplete = assessmentResults.length >= 10;
 
+  // Helper function to find result by domain name (with flexible matching for legacy data)
+  const findResult = (results: any[], domainNames: string[]) => {
+    return results.find((r) =>
+      domainNames.some(name =>
+        r.domainName?.toLowerCase().includes(name.toLowerCase()) ||
+        name.toLowerCase().includes(r.domainName?.toLowerCase() || '')
+      )
+    );
+  };
+
   // Extract specific results for Ikigai analysis
-  const personalityResult = partAResults.find((r) => r.domainName === 'Personality Architecture');
-  const valuesResult = partAResults.find((r) => r.domainName === 'Values & Interests');
-  const hollandResult = partAResults.find((r) => r.domainName === 'Career Interests (Holland Code)');
-  const intelligencesResult = partAResults.find((r) => r.domainName === 'Multiple Intelligences');
-  const cognitiveResult = partBResults.find((r) => r.domainName === 'Cognitive Style');
-  const stressResult = partBResults.find((r) => r.domainName === 'Stress Response');
-  const skillsResult = partBResults.find((r) => r.domainName === '21st Century Skills');
-  const socialResult = partBResults.find((r) => r.domainName === 'Social Check');
-  const environmentResult = partCResults.find((r) => r.domainName === 'Environment & Preferences');
-  const executionResult = partCResults.find((r) => r.domainName === 'Execution & Grit');
+  // Use flexible matching to handle any legacy domain name variations
+  const personalityResult = findResult(partAResults, ['Personality Architecture', 'Personality', 'Big Five', 'Big 5']);
+  const valuesResult = findResult(partAResults, ['Values & Interests', 'Core Values', 'Values']);
+  const hollandResult = findResult(partAResults, ['Career Interests (Holland Code)', 'Career Interests', 'Holland Code', 'Holland']);
+  const intelligencesResult = findResult(partAResults, ['Multiple Intelligences', 'Intelligences']);
+  const cognitiveResult = findResult(partBResults, ['Cognitive Style', 'Cognitive']);
+  const stressResult = findResult(partBResults, ['Stress Response', 'Stress']);
+  const skillsResult = findResult(partBResults, ['21st Century Skills', '21st Century', 'Skills']);
+  const socialResult = findResult(partBResults, ['Social Check', 'Social']);
+  const environmentResult = findResult(partCResults, ['Environment & Preferences', 'Environment']);
+  const executionResult = findResult(partCResults, ['Execution & Grit', 'Execution', 'Grit']);
 
   // Ensure topValues exists for backward compatibility
   if (valuesResult?.scores && !valuesResult.scores.topValues && valuesResult.scores.domains) {
@@ -99,15 +112,15 @@ export default function ResultsDashboard({ assessmentResults }: ResultsDashboard
                       <span>❤️</span> Core Values
                     </h3>
                     <div className="mb-3">
-                      <div className="text-lg font-semibold text-gray-700 mb-2">Top 3 Values:</div>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="text-lg font-semibold text-gray-700 mb-3">Top 3 Values:</div>
+                      <div className="grid grid-cols-3 gap-3">
                         {valuesResult.scores.topValues?.slice(0, 3).map((value: any, idx: number) => (
                           <div
                             key={value.name}
-                            className={`px-4 py-2 rounded-full font-semibold ${
-                              idx === 0 ? 'bg-pink-600 text-white text-lg' :
-                              idx === 1 ? 'bg-pink-500 text-white' :
-                              'bg-pink-400 text-white'
+                            className={`py-3 px-4 rounded-xl font-semibold text-center text-white ${
+                              idx === 0 ? 'bg-pink-600' :
+                              idx === 1 ? 'bg-pink-500' :
+                              'bg-pink-400'
                             }`}
                           >
                             #{idx + 1} {value.name}
@@ -136,24 +149,23 @@ export default function ResultsDashboard({ assessmentResults }: ResultsDashboard
                         {hollandResult.scores.description}
                       </p>
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       {hollandResult.scores.domains?.map((domain: any) => (
-                        <div key={domain.code} className="flex items-center gap-3">
-                          <div className="w-24 text-sm font-bold flex items-center gap-1" style={{ color: domain.color }}>
-                            <span className="text-lg">{domain.code}</span>
-                            <span className="text-xs">{domain.name}</span>
+                        <div key={domain.code} className="flex items-center gap-4">
+                          <div className="w-44 shrink-0">
+                            <span className="font-bold text-lg" style={{ color: domain.color }}>{domain.code}</span>
+                            <span className="text-gray-600 text-sm ml-2">{domain.name}</span>
                           </div>
-                          <div className="flex-1">
-                            <div className="w-full bg-gray-200 rounded-full h-6">
-                              <div
-                                className="h-6 rounded-full flex items-center px-2 text-white text-xs font-semibold"
-                                style={{
-                                  width: `${(domain.score / 50) * 100}%`,
-                                  backgroundColor: domain.color,
-                                }}
-                              >
-                                {domain.score}/50
-                              </div>
+                          <div className="flex-1 bg-gray-200 rounded-full h-7 overflow-hidden">
+                            <div
+                              className="h-full rounded-full flex items-center justify-end pr-3 text-white text-sm font-semibold"
+                              style={{
+                                width: `${(domain.score / 50) * 100}%`,
+                                backgroundColor: domain.color,
+                                minWidth: '50px'
+                              }}
+                            >
+                              {domain.score}/50
                             </div>
                           </div>
                         </div>
@@ -293,9 +305,17 @@ export default function ResultsDashboard({ assessmentResults }: ResultsDashboard
                               Avg: {category.averageScore}/25
                             </div>
                           </div>
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                          <div className={`grid gap-2 ${
+                            category.skills?.length === 3 ? 'grid-cols-3' :
+                            category.skills?.length === 5 ? 'grid-cols-5' :
+                            'grid-cols-2 md:grid-cols-4'
+                          }`}>
                             {category.skills?.map((skill: any) => (
-                              <div key={skill.code} className="text-center p-2 bg-gray-50 rounded border" style={{ borderColor: skill.color }}>
+                              <div
+                                key={skill.code}
+                                className="text-center p-2 bg-gray-50 rounded border"
+                                style={{ borderColor: skill.color }}
+                              >
                                 <div className="text-xl mb-1">{skill.icon}</div>
                                 <div className="text-xs font-semibold text-gray-700 mb-1">{skill.name}</div>
                                 <div className="text-lg font-bold" style={{ color: skill.color }}>
@@ -392,27 +412,30 @@ export default function ResultsDashboard({ assessmentResults }: ResultsDashboard
                       <div className="text-lg">Overall Academic Readiness</div>
                     </div>
                     <div className="grid md:grid-cols-2 gap-3">
-                      {executionResult.scores.domains?.map((domain: any) => (
-                        <div key={domain.code} className="bg-gray-50 rounded-lg p-4">
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="text-2xl">{domain.icon}</span>
-                            <div className="flex-1">
-                              <div className="text-sm font-bold text-gray-800">{domain.name}</div>
-                              <div className="text-xs text-gray-600">{domain.score}/50 - {domain.band}</div>
+                      {executionResult.scores.domains?.map((domain: any, idx: number, arr: any[]) => {
+                        const isLastOdd = idx === arr.length - 1 && arr.length % 2 === 1;
+                        return (
+                          <div key={domain.code} className={`bg-gray-50 rounded-lg p-4 ${isLastOdd ? 'md:col-span-2' : ''}`}>
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-2xl">{domain.icon}</span>
+                              <div className="flex-1">
+                                <div className="text-sm font-bold text-gray-800">{domain.name}</div>
+                                <div className="text-xs text-gray-600">{domain.score}/50 - {domain.band}</div>
+                              </div>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-3">
+                              <div
+                                className={`h-3 rounded-full ${
+                                  domain.band === 'Strong' ? 'bg-green-500' :
+                                  domain.band === 'Developing' ? 'bg-yellow-500' :
+                                  'bg-red-500'
+                                }`}
+                                style={{ width: `${(domain.score / 50) * 100}%` }}
+                              />
                             </div>
                           </div>
-                          <div className="w-full bg-gray-200 rounded-full h-3">
-                            <div
-                              className={`h-3 rounded-full ${
-                                domain.band === 'Strong' ? 'bg-green-500' :
-                                domain.band === 'Developing' ? 'bg-yellow-500' :
-                                'bg-red-500'
-                              }`}
-                              style={{ width: `${(domain.score / 50) * 100}%` }}
-                            />
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 )}
@@ -528,6 +551,11 @@ export default function ResultsDashboard({ assessmentResults }: ResultsDashboard
                 You've completed all {assessmentResults.length} sections of the Jeru Vantage Self-Discovery Assessment
               </p>
             </div>
+          )}
+
+          {/* University Matches Section - "Hidden Gem" */}
+          {allPartsComplete && userId && (
+            <UniversityMatchesWrapper studentId={userId} />
           )}
         </div>
 

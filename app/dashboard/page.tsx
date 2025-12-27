@@ -231,13 +231,13 @@ export default async function Dashboard() {
                   <p className="font-semibold">{profile.duolingoScore}</p>
                 </div>
               )}
-              {profile.satTotal && (
+              {profile.satTotal && profile.satTotal > 0 && (
                 <div>
                   <p className="text-sm text-gray-500">SAT Total</p>
                   <p className="font-semibold">{profile.satTotal}</p>
                 </div>
               )}
-              {profile.actComposite && (
+              {profile.actComposite && profile.actComposite > 0 && (
                 <div>
                   <p className="text-sm text-gray-500">ACT</p>
                   <p className="font-semibold">{profile.actComposite}</p>
@@ -248,7 +248,7 @@ export default async function Dashboard() {
                   <p className="font-semibold text-blue-600">📝 Applying Test Optional</p>
                 </div>
               )}
-              {!profile.nativeEnglish && !profile.ieltsScore && !profile.toeflScore && !profile.satTotal && !profile.testOptional && (
+              {!profile.nativeEnglish && !profile.ieltsScore && !profile.toeflScore && !(profile.satTotal && profile.satTotal > 0) && !profile.testOptional && (
                 <p className="text-gray-500">No test scores recorded</p>
               )}
             </div>

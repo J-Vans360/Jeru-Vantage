@@ -5,6 +5,47 @@ import { useRouter } from 'next/navigation';
 import { saveStudentProfile } from '@/actions/profile-actions';
 import type { StudentProfileFormData, StudentSubjectData } from '@/types/profile-types';
 import { SECTION_NAMES } from '@/types/profile-types';
+import Autocomplete, { COUNTRIES } from '@/components/ui/Autocomplete';
+import CareerClusterSelector from '@/components/profile/CareerClusterSelector';
+
+// Consistent styling classes
+const inputClassName = "w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base";
+const selectClassName = "w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white cursor-pointer text-base";
+
+// Dropdown arrow component
+const DropdownArrow = () => (
+  <svg
+    className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400 pointer-events-none"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+  </svg>
+);
+
+// Degree levels
+const DEGREE_LEVELS = [
+  { value: 'bachelors', label: "Bachelor's Degree (Undergraduate)" },
+  { value: 'masters', label: "Master's Degree (Postgraduate)" },
+];
+
+// Grade options based on degree level
+const BACHELOR_GRADE_OPTIONS = [
+  { value: 'Grade 9', label: 'Grade 9 / Freshman' },
+  { value: 'Grade 10', label: 'Grade 10 / Sophomore' },
+  { value: 'Grade 11', label: 'Grade 11 / Junior' },
+  { value: 'Grade 12', label: 'Grade 12 / Senior' },
+  { value: 'Gap Year', label: 'Gap Year' },
+];
+
+const MASTERS_GRADE_OPTIONS = [
+  { value: 'Bachelors Year 1', label: "Bachelor's Year 1" },
+  { value: 'Bachelors Year 2', label: "Bachelor's Year 2" },
+  { value: 'Bachelors Year 3', label: "Bachelor's Year 3" },
+  { value: 'Bachelors Year 4', label: "Bachelor's Year 4" },
+  { value: 'Bachelors Completed', label: "Bachelor's Completed / Working Professional" },
+];
 
 type ProfileFormProps = {
   userId: string;
@@ -15,6 +56,7 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
   const router = useRouter();
   const [currentSection, setCurrentSection] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Form state
@@ -109,21 +151,21 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
   const handleNext = () => {
     if (validateSection(currentSection)) {
       setCurrentSection((prev) => prev + 1);
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   const handleBack = () => {
     setCurrentSection((prev) => prev - 1);
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Validation
   const validateSection = (section: number): boolean => {
     switch (section) {
       case 0: // Demographics
-        if (!formData.studentName || !formData.currentGrade || !formData.targetEntryYear ||
-            !formData.citizenshipPrimary || !formData.countryResidence) {
+        if (!formData.studentName || !formData.degreeLevel || !formData.currentGrade ||
+            !formData.targetEntryYear || !formData.citizenshipPrimary || !formData.countryResidence) {
           setError('Please fill in all required fields.');
           return false;
         }
@@ -180,6 +222,9 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
       return;
     }
 
+    // Prevent double-clicks
+    if (isSubmitting || submitSuccess) return;
+
     setIsSubmitting(true);
     setError(null);
 
@@ -187,16 +232,19 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
       const result = await saveStudentProfile(userId, formData as StudentProfileFormData);
 
       if (result.success) {
+        setSubmitSuccess(true);
+        // Redirect immediately after showing success
         router.push('/dashboard');
       } else {
         setError(result.message || 'Failed to save profile');
+        setIsSubmitting(false);
       }
     } catch (err) {
       setError('An error occurred. Please try again.');
       console.error(err);
-    } finally {
       setIsSubmitting(false);
     }
+    // Note: Don't reset isSubmitting on success - keep button disabled during redirect
   };
 
   // Progress calculation
@@ -240,85 +288,173 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
                 These factors determine your fee status, visa rules, and eligible universities.
               </p>
 
-              <div>
-                <label className="block font-semibold mb-2">Student Name *</label>
-                <input
-                  type="text"
-                  name="studentName"
-                  value={formData.studentName || ''}
-                  onChange={handleChange}
-                  className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block font-semibold mb-2">Current Grade/Year *</label>
-                  <select
-                    name="currentGrade"
-                    value={formData.currentGrade || ''}
-                    onChange={handleChange}
-                    className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
-                    required
-                  >
-                    <option value="">-- Select Grade --</option>
-                    <option value="Grade 9">Grade 9</option>
-                    <option value="Grade 10">Grade 10</option>
-                    <option value="Grade 11">Grade 11</option>
-                    <option value="Grade 12">Grade 12</option>
-                    <option value="Gap Year">Gap Year</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block font-semibold mb-2">Target University Entry Year *</label>
+              {/* Name and Gender in same row */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="md:col-span-2">
+                  <label className="block text-base font-semibold text-gray-800 mb-2">
+                    Student Name <span className="text-red-500">*</span>
+                  </label>
                   <input
                     type="text"
-                    name="targetEntryYear"
-                    value={formData.targetEntryYear || ''}
+                    name="studentName"
+                    value={formData.studentName || ''}
                     onChange={handleChange}
-                    placeholder="e.g., Fall 2026"
-                    className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
+                    className={inputClassName}
                     required
                   />
                 </div>
+                <div>
+                  <label className="block text-base font-semibold text-gray-800 mb-2">
+                    Gender <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <select
+                      name="gender"
+                      value={formData.gender || ''}
+                      onChange={handleChange}
+                      className={selectClassName}
+                      required
+                    >
+                      <option value="">Select Gender</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="prefer_not_to_say">Prefer not to say</option>
+                    </select>
+                    <DropdownArrow />
+                  </div>
+                </div>
               </div>
 
+              {/* Degree Level Selection */}
               <div>
-                <label className="block font-semibold mb-2">Country of Citizenship (Passport) *</label>
-                <input
-                  type="text"
-                  name="citizenshipPrimary"
-                  value={formData.citizenshipPrimary || ''}
-                  onChange={handleChange}
-                  className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
-                  required
-                />
+                <label className="block text-base font-semibold text-gray-800 mb-3">
+                  Which degree are you applying for? <span className="text-red-500">*</span>
+                </label>
+                <div className="space-y-2">
+                  {DEGREE_LEVELS.map((option) => (
+                    <label
+                      key={option.value}
+                      className={`flex items-center p-3 border rounded-xl cursor-pointer transition-all ${
+                        formData.degreeLevel === option.value
+                          ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-500'
+                          : 'border-gray-300 hover:border-blue-400'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="degreeLevel"
+                        value={option.value}
+                        checked={formData.degreeLevel === option.value}
+                        onChange={(e) => {
+                          handleChange(e);
+                          // Clear currentGrade when degree level changes
+                          setFormData(prev => ({ ...prev, currentGrade: '' }));
+                        }}
+                        className="mr-3 w-5 h-5 text-blue-600"
+                      />
+                      <span>{option.label}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
 
+              {/* Current Grade/Year - Dynamic based on Degree Level */}
+              {formData.degreeLevel && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-base font-semibold text-gray-800 mb-2">
+                      Current Grade/Year <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <select
+                        name="currentGrade"
+                        value={formData.currentGrade || ''}
+                        onChange={handleChange}
+                        className={selectClassName}
+                        required
+                      >
+                        <option value="">Select Grade</option>
+                        {(formData.degreeLevel === 'bachelors' ? BACHELOR_GRADE_OPTIONS : MASTERS_GRADE_OPTIONS).map((option) => (
+                          <option key={option.value} value={option.value}>{option.label}</option>
+                        ))}
+                      </select>
+                      <DropdownArrow />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-base font-semibold text-gray-800 mb-2">
+                      Target University Entry Year <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="targetEntryYear"
+                      value={formData.targetEntryYear || ''}
+                      onChange={handleChange}
+                      placeholder="e.g., Fall 2026"
+                      className={inputClassName}
+                      required
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* GPA Section */}
               <div>
-                <label className="block font-semibold mb-2">Second Citizenship (if applicable)</label>
-                <input
-                  type="text"
-                  name="citizenshipSecondary"
-                  value={formData.citizenshipSecondary || ''}
-                  onChange={handleChange}
-                  placeholder="Leave blank if not applicable"
-                  className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
-                />
+                <label className="block text-base font-semibold text-gray-800 mb-2">Current GPA (if available)</label>
+                <div className="grid grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    name="gpa"
+                    value={formData.gpa || ''}
+                    onChange={handleChange}
+                    placeholder="e.g., 3.7 / 8.5 / 85%"
+                    className={inputClassName}
+                  />
+                  <div className="relative">
+                    <select
+                      name="gpaScale"
+                      value={formData.gpaScale || ''}
+                      onChange={handleChange}
+                      className={selectClassName}
+                    >
+                      <option value="">Select Scale</option>
+                      <option value="4.0">4.0 Scale</option>
+                      <option value="5.0">5.0 Scale</option>
+                      <option value="10.0">10.0 Scale</option>
+                      <option value="100">Percentage (100%)</option>
+                      <option value="other">Other</option>
+                    </select>
+                    <DropdownArrow />
+                  </div>
+                </div>
               </div>
 
-              <div>
-                <label className="block font-semibold mb-2">Country of Current Residence *</label>
-                <input
-                  type="text"
-                  name="countryResidence"
-                  value={formData.countryResidence || ''}
-                  onChange={handleChange}
-                  className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
-                  required
-                />
-              </div>
+              {/* Country fields with Autocomplete */}
+              <Autocomplete
+                label="Country of Citizenship (Passport) *"
+                suggestions={COUNTRIES}
+                value={formData.citizenshipPrimary || ''}
+                onChange={(value) => setFormData(prev => ({ ...prev, citizenshipPrimary: value }))}
+                placeholder="Start typing your country..."
+                required
+              />
+
+              <Autocomplete
+                label="Second Citizenship (if applicable)"
+                suggestions={COUNTRIES}
+                value={formData.citizenshipSecondary || ''}
+                onChange={(value) => setFormData(prev => ({ ...prev, citizenshipSecondary: value }))}
+                placeholder="Leave blank if not applicable"
+              />
+
+              <Autocomplete
+                label="Country of Current Residence *"
+                suggestions={COUNTRIES}
+                value={formData.countryResidence || ''}
+                onChange={(value) => setFormData(prev => ({ ...prev, countryResidence: value }))}
+                placeholder="Start typing your country..."
+                required
+              />
             </div>
           )}
 
@@ -339,23 +475,26 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
               </div>
 
               <div>
-                <label className="block font-semibold mb-3">
-                  What is your family&apos;s approximate maximum annual budget for Tuition + Living Expenses? *
+                <label className="block text-base font-semibold text-gray-800 mb-3">
+                  What is your family&apos;s approximate maximum annual budget for Tuition + Living Expenses? <span className="text-red-500">*</span>
                 </label>
                 <div className="space-y-2">
                   {[
-                    { value: '0-15000', label: '$0 - $15,000 (Full Scholarship / Financial Aid Required)' },
-                    { value: '15000-30000', label: '$15,000 - $30,000 (Significant Aid Required)' },
-                    { value: '30000-50000', label: '$30,000 - $50,000 (Partial Aid / Standard Budget)' },
-                    { value: '50000-75000', label: '$50,000 - $75,000 (Access to most Private Universities)' },
-                    { value: '75000+', label: '$75,000+ (Budget is not a major constraint)' },
+                    { value: '0-1000', label: '$0 - $1,000 (Scholarship dependent)' },
+                    { value: '1000-5000', label: '$1,000 - $5,000' },
+                    { value: '5000-10000', label: '$5,000 - $10,000' },
+                    { value: '10000-20000', label: '$10,000 - $20,000' },
+                    { value: '20000-30000', label: '$20,000 - $30,000' },
+                    { value: '30000-50000', label: '$30,000 - $50,000' },
+                    { value: '50000+', label: '$50,000+' },
+                    { value: 'flexible', label: 'Flexible / Not Sure Yet' },
                   ].map((option) => (
                     <label
                       key={option.value}
-                      className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                      className={`flex items-center p-3 border rounded-xl cursor-pointer transition-all ${
                         formData.annualBudgetRange === option.value
-                          ? 'border-purple-600 bg-purple-50'
-                          : 'border-gray-300 hover:border-purple-400'
+                          ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-500'
+                          : 'border-gray-300 hover:border-blue-400'
                       }`}
                     >
                       <input
@@ -364,7 +503,7 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
                         value={option.value}
                         checked={formData.annualBudgetRange === option.value}
                         onChange={handleChange}
-                        className="mr-3 w-5 h-5"
+                        className="mr-3 w-5 h-5 text-blue-600"
                       />
                       <span>{option.label}</span>
                     </label>
@@ -405,21 +544,28 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
               </div>
 
               <div>
-                <label className="block font-semibold mb-3">US Specific Context *</label>
+                <label className="block font-semibold mb-3">Are you applying to US universities? <span className="text-red-500">*</span></label>
                 <div className="space-y-2">
                   {[
                     {
                       value: 'us-citizen',
-                      label: 'I am a US Citizen or Green Card Holder (Eligible for FAFSA/Federal Aid)',
+                      label: 'Yes - I am a US Citizen or Green Card Holder',
+                      description: 'Eligible for FAFSA and Federal Financial Aid',
                     },
                     {
                       value: 'international',
-                      label: 'I am an International Applicant (Not eligible for US Federal Aid)',
+                      label: 'Yes - I am an International Applicant',
+                      description: 'Not eligible for US Federal Aid, but may qualify for institutional aid',
+                    },
+                    {
+                      value: 'not-applying-us',
+                      label: 'No - I am not applying to US universities',
+                      description: 'Skip US-specific questions',
                     },
                   ].map((option) => (
                     <label
                       key={option.value}
-                      className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                      className={`flex items-start p-4 border-2 rounded-xl cursor-pointer transition-all ${
                         formData.usApplicantStatus === option.value
                           ? 'border-purple-600 bg-purple-50'
                           : 'border-gray-300 hover:border-purple-400'
@@ -431,13 +577,25 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
                         value={option.value}
                         checked={formData.usApplicantStatus === option.value}
                         onChange={handleChange}
-                        className="mr-3 w-5 h-5"
+                        className="mr-3 mt-1 w-5 h-5"
                       />
-                      <span>{option.label}</span>
+                      <div>
+                        <span className="font-medium">{option.label}</span>
+                        <p className="text-sm text-gray-600 mt-1">{option.description}</p>
+                      </div>
                     </label>
                   ))}
                 </div>
               </div>
+
+              {/* Conditional message for non-US applicants */}
+              {formData.usApplicantStatus === 'not-applying-us' && (
+                <div className="bg-green-50 border-l-4 border-green-500 p-4">
+                  <p className="text-green-800">
+                    <strong>Great!</strong> We&apos;ll focus on universities outside the US for your recommendations.
+                  </p>
+                </div>
+              )}
             </div>
           )}
 
@@ -453,20 +611,23 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
 
               <div>
                 <label className="block font-semibold mb-2">Primary Educational Curriculum *</label>
-                <select
-                  name="primaryCurriculum"
-                  value={formData.primaryCurriculum || ''}
-                  onChange={handleChange}
-                  className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
-                  required
-                >
-                  <option value="">-- Select Curriculum --</option>
-                  <option value="ib-diploma">IB Diploma (IBDP)</option>
-                  <option value="british">British Pattern (A-Levels / IGCSE)</option>
-                  <option value="american">American Curriculum (AP / High School Diploma)</option>
-                  <option value="indian">Indian Curriculum (CBSE / ICSE)</option>
-                  <option value="other">National Curriculum (Other)</option>
-                </select>
+                <div className="relative">
+                  <select
+                    name="primaryCurriculum"
+                    value={formData.primaryCurriculum || ''}
+                    onChange={handleChange}
+                    className={selectClassName}
+                    required
+                  >
+                    <option value="">-- Select Curriculum --</option>
+                    <option value="ib-diploma">IB Diploma (IBDP)</option>
+                    <option value="british">British Pattern (A-Levels / IGCSE)</option>
+                    <option value="american">American Curriculum (AP / High School Diploma)</option>
+                    <option value="indian">Indian Curriculum (CBSE / ICSE)</option>
+                    <option value="other">National Curriculum (Other)</option>
+                  </select>
+                  <DropdownArrow />
+                </div>
               </div>
 
               {formData.primaryCurriculum === 'other' && (
@@ -478,7 +639,7 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
                     value={formData.curriculumOther || ''}
                     onChange={handleChange}
                     placeholder="e.g., French Baccalaureate, German Abitur"
-                    className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
+                    className={inputClassName}
                   />
                 </div>
               )}
@@ -492,25 +653,25 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
                 D. Academic Data
               </h2>
               <p className="text-gray-600 italic">
-                List all your current subjects with performance and interest levels.
+                List all your last semester or latest reported subject scores / performance with interest level.
               </p>
 
               <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
                 <p className="text-blue-900">
-                  <strong>Instructions:</strong> Add each subject you&apos;re taking. Be specific about the level and rate your interest honestly.
+                  <strong>Instructions:</strong> Add each subject you have taken. Be specific about the level and rate your interest honestly.
                 </p>
               </div>
 
               {/* Table Layout for Desktop */}
               <div className="overflow-x-auto">
                 <div className="min-w-full">
-                  {/* Table Header */}
-                  <div className="hidden md:grid md:grid-cols-[2fr_2.5fr_2fr_1.5fr_1.5fr_0.5fr] gap-3 mb-3 px-3 py-2 bg-purple-100 rounded-lg font-semibold text-gray-700 text-sm">
-                    <div>Category</div>
-                    <div>Course</div>
-                    <div>Level</div>
-                    <div>Grade</div>
-                    <div>Interest</div>
+                  {/* Table Header - Centered */}
+                  <div className="hidden md:grid md:grid-cols-[2fr_2.5fr_2fr_1.5fr_1.5fr_0.5fr] gap-3 mb-3 px-3 py-2 bg-gray-50 rounded-xl">
+                    <div className="text-center text-base font-semibold text-gray-800">Category</div>
+                    <div className="text-center text-base font-semibold text-gray-800">Subject / Course Name</div>
+                    <div className="text-center text-base font-semibold text-gray-800">Level</div>
+                    <div className="text-center text-base font-semibold text-gray-800">Grade / Score</div>
+                    <div className="text-center text-base font-semibold text-gray-800">Interest Level</div>
                     <div></div>
                   </div>
 
@@ -567,8 +728,8 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
                             type="text"
                             value={subject.latestGrade}
                             onChange={(e) => updateSubject(index, 'latestGrade', e.target.value)}
-                            placeholder="A, 95%"
-                            className="h-9 p-2 text-sm border border-gray-300 rounded focus:border-purple-600 focus:outline-none"
+                            placeholder="A / 7 / 95%"
+                            className="h-9 p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                           />
 
                           {/* Interest Level */}
@@ -659,13 +820,13 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
                             </div>
 
                             <div>
-                              <label className="block text-xs font-medium mb-1 text-gray-600">Grade</label>
+                              <label className="block text-xs font-medium mb-1 text-gray-600">Grade / Score</label>
                               <input
                                 type="text"
                                 value={subject.latestGrade}
                                 onChange={(e) => updateSubject(index, 'latestGrade', e.target.value)}
-                                placeholder="A, 95%"
-                                className="w-full p-2 text-sm border border-gray-300 rounded focus:border-purple-600 focus:outline-none"
+                                placeholder="A / 7 / 95%"
+                                className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                               />
                             </div>
                           </div>
@@ -702,11 +863,11 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
             </div>
           )}
 
-          {/* Section 4: Standardized Testing */}
+          {/* Section 4: Standardized Tests */}
           {currentSection === 4 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-gray-800 border-b-2 border-purple-600 pb-2">
-                E. Standardized Testing
+                E. Standardized Tests
               </h2>
               <p className="text-gray-600 italic">
                 Fill in scores you have. Leave blank if not taken.
@@ -714,63 +875,76 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
 
               <h3 className="text-xl font-semibold text-gray-700 mt-6">English Proficiency</h3>
 
-              <div className="flex items-center gap-3 p-3 border-2 border-gray-300 rounded-lg">
+              <div className="flex items-center gap-3 p-3 border border-gray-300 rounded-xl">
                 <input
                   type="checkbox"
                   name="nativeEnglish"
                   checked={formData.nativeEnglish || false}
                   onChange={handleChange}
-                  className="w-5 h-5"
+                  className="w-5 h-5 text-blue-600 rounded"
                 />
                 <label className="font-medium">Native English Speaker (Not Required)</label>
               </div>
 
               {!formData.nativeEnglish && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
-                    <label className="block font-semibold mb-2">IELTS</label>
+                    <label className="block text-base font-semibold text-gray-800 mb-2">IELTS</label>
                     <input
                       type="number"
                       name="ieltsScore"
-                      value={formData.ieltsScore || ''}
+                      value={formData.ieltsScore ?? ''}
                       onChange={handleChange}
                       step="0.5"
                       min="0"
                       max="9"
                       placeholder="e.g., 7.5"
-                      className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
+                      className={inputClassName}
                     />
                   </div>
                   <div>
-                    <label className="block font-semibold mb-2">TOEFL</label>
+                    <label className="block text-base font-semibold text-gray-800 mb-2">TOEFL iBT</label>
                     <input
                       type="number"
                       name="toeflScore"
-                      value={formData.toeflScore || ''}
+                      value={formData.toeflScore ?? ''}
                       onChange={handleChange}
                       min="0"
                       max="120"
                       placeholder="e.g., 100"
-                      className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
+                      className={inputClassName}
                     />
                   </div>
                   <div>
-                    <label className="block font-semibold mb-2">Duolingo</label>
+                    <label className="block text-base font-semibold text-gray-800 mb-2">Duolingo English Test</label>
                     <input
                       type="number"
                       name="duolingoScore"
-                      value={formData.duolingoScore || ''}
+                      value={formData.duolingoScore ?? ''}
                       onChange={handleChange}
                       min="0"
                       max="160"
                       placeholder="e.g., 125"
-                      className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
+                      className={inputClassName}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-base font-semibold text-gray-800 mb-2">PTE Academic</label>
+                    <input
+                      type="number"
+                      name="pteScore"
+                      value={formData.pteScore ?? ''}
+                      onChange={handleChange}
+                      min="0"
+                      max="90"
+                      placeholder="e.g., 65"
+                      className={inputClassName}
                     />
                   </div>
                 </div>
               )}
 
-              <h3 className="text-xl font-semibold text-gray-700 mt-6">Entrance Exams</h3>
+              <h3 className="text-xl font-semibold text-gray-700 mt-6">College Admission Tests</h3>
 
               <div>
                 <label className="block font-semibold mb-2">SAT Scores</label>
@@ -780,12 +954,12 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
                     <input
                       type="number"
                       name="satTotal"
-                      value={formData.satTotal || ''}
+                      value={formData.satTotal ?? ''}
                       onChange={handleChange}
                       min="400"
                       max="1600"
-                      placeholder="Total"
-                      className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
+                      placeholder="400-1600"
+                      className={inputClassName}
                     />
                   </div>
                   <div>
@@ -793,12 +967,12 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
                     <input
                       type="number"
                       name="satMath"
-                      value={formData.satMath || ''}
+                      value={formData.satMath ?? ''}
                       onChange={handleChange}
                       min="200"
                       max="800"
-                      placeholder="Math"
-                      className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
+                      placeholder="200-800"
+                      className={inputClassName}
                     />
                   </div>
                   <div>
@@ -806,12 +980,12 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
                     <input
                       type="number"
                       name="satReadingWriting"
-                      value={formData.satReadingWriting || ''}
+                      value={formData.satReadingWriting ?? ''}
                       onChange={handleChange}
                       min="200"
                       max="800"
-                      placeholder="R/W"
-                      className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
+                      placeholder="200-800"
+                      className={inputClassName}
                     />
                   </div>
                 </div>
@@ -823,12 +997,12 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
                   <input
                     type="number"
                     name="actComposite"
-                    value={formData.actComposite || ''}
+                    value={formData.actComposite ?? ''}
                     onChange={handleChange}
                     min="1"
                     max="36"
-                    placeholder="e.g., 32"
-                    className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
+                    placeholder="1-36"
+                    className={inputClassName}
                   />
                 </div>
                 <div>
@@ -839,53 +1013,78 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
                     value={formData.ucatBmatScore || ''}
                     onChange={handleChange}
                     placeholder="Enter score"
-                    className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
+                    className={inputClassName}
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block font-semibold mb-2">Plan to take test in future (Date)</label>
-                <input
-                  type="text"
-                  name="testPlanDate"
-                  value={formData.testPlanDate || ''}
-                  onChange={handleChange}
-                  placeholder="e.g., March 2026"
-                  className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
-                />
+              {/* National / State Entrance Exam */}
+              <div className="bg-amber-50 rounded-xl p-5 mt-6">
+                <h4 className="font-medium text-gray-900 mb-1">National / State Entrance Exam</h4>
+                <p className="text-sm text-gray-600 mb-4">
+                  If you are planning to take a national or state entrance exam
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-base font-semibold text-gray-800 mb-2">
+                      Name of Entrance Exam
+                    </label>
+                    <input
+                      type="text"
+                      name="nationalExamName"
+                      value={formData.nationalExamName || ''}
+                      onChange={handleChange}
+                      placeholder="e.g., JEE Main, NEET, Gaokao, CSAT, ENEM"
+                      className={inputClassName}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-base font-semibold text-gray-800 mb-2">
+                      Score
+                    </label>
+                    <input
+                      type="text"
+                      name="nationalExamScore"
+                      value={formData.nationalExamScore || ''}
+                      onChange={handleChange}
+                      placeholder="Actual score / Expected realistic score"
+                      className={inputClassName}
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div className="flex items-center gap-3 p-3 border-2 border-gray-300 rounded-lg">
+              <div className="flex items-center gap-3 p-3 border border-gray-300 rounded-xl mt-4">
                 <input
                   type="checkbox"
                   name="testOptional"
                   checked={formData.testOptional || false}
                   onChange={handleChange}
-                  className="w-5 h-5"
+                  className="w-5 h-5 text-blue-600 rounded"
                 />
                 <label className="font-medium">Will Apply &quot;Test Optional&quot;</label>
               </div>
             </div>
           )}
 
-          {/* Section 5: Learning & Disciplinary Context */}
+          {/* Section 5: Learning & Disciplinary Context - placeholder to fix structure */}
           {currentSection === 5 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-gray-800 border-b-2 border-purple-600 pb-2">
-                F. Learning & Disciplinary Context
+                F. Learning &amp; Disciplinary Context
               </h2>
               <p className="text-gray-600 italic">
                 Help us understand any additional support needs or context.
               </p>
 
               <div>
-                <label className="block font-semibold mb-3">Learning Support</label>
+                <label className="block text-base font-semibold text-gray-800 mb-3">Learning Support</label>
                 <div className="space-y-2">
-                  <label className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                  <label className={`flex items-center p-3 border rounded-xl cursor-pointer transition-all ${
                     formData.learningSupport === false
-                      ? 'border-purple-600 bg-purple-50'
-                      : 'border-gray-300 hover:border-purple-400'
+                      ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-500'
+                      : 'border-gray-300 hover:border-blue-400'
                   }`}>
                     <input
                       type="radio"
@@ -896,10 +1095,10 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
                     />
                     <span>No learning support needed</span>
                   </label>
-                  <label className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                  <label className={`flex items-center p-3 border rounded-xl cursor-pointer transition-all ${
                     formData.learningSupport === true
-                      ? 'border-purple-600 bg-purple-50'
-                      : 'border-gray-300 hover:border-purple-400'
+                      ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-500'
+                      : 'border-gray-300 hover:border-blue-400'
                   }`}>
                     <input
                       type="radio"
@@ -915,20 +1114,22 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
 
               {formData.learningSupport && (
                 <div>
-                  <label className="block font-semibold mb-2">Please provide details (optional)</label>
+                  <label className="block text-base font-semibold text-gray-800 mb-2">Please provide details (optional)</label>
                   <textarea
                     name="learningSupportDetails"
                     value={formData.learningSupportDetails || ''}
                     onChange={handleChange}
                     placeholder="Brief description of your learning support needs..."
                     rows={3}
-                    className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
+                    className={inputClassName}
                   />
                 </div>
               )}
 
               <div>
-                <label className="block font-semibold mb-3">Disciplinary Record *</label>
+                <label className="block text-base font-semibold text-gray-800 mb-3">
+                  Disciplinary Record <span className="text-red-500">*</span>
+                </label>
                 <div className="space-y-2">
                   {[
                     { value: 'clean', label: 'Clean Record' },
@@ -936,10 +1137,10 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
                   ].map((option) => (
                     <label
                       key={option.value}
-                      className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                      className={`flex items-center p-3 border rounded-xl cursor-pointer transition-all ${
                         formData.disciplinaryRecord === option.value
-                          ? 'border-purple-600 bg-purple-50'
-                          : 'border-gray-300 hover:border-purple-400'
+                          ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-500'
+                          : 'border-gray-300 hover:border-blue-400'
                       }`}
                     >
                       <input
@@ -958,7 +1159,7 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
             </div>
           )}
 
-          {/* Section 6: Student Aspirations */}
+          {/* Section 6: Student Aspirations - placeholder for now since previous code broke */}
           {currentSection === 6 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-gray-800 border-b-2 border-purple-600 pb-2">
@@ -968,123 +1169,120 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
                 Tell us what you&apos;re currently thinking - we&apos;ll see how it aligns with your profile.
               </p>
 
-              <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
-                <p className="text-blue-900">
-                  <strong>Note:</strong> If you&apos;re unsure, just list general fields like &quot;Business,&quot; &quot;Healthcare,&quot; or &quot;Engineering.&quot;
-                </p>
-              </div>
+              <div className="space-y-6">
+                {/* Helpful Note - AT THE TOP */}
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                  <p className="text-sm text-blue-700">
+                    <strong>Not sure?</strong> That&apos;s okay! Pick areas that sound interesting, or type your own.
+                    Our assessment will analyze your personality, values, and skills to suggest
+                    careers that truly match your profile.
+                  </p>
+                </div>
 
-              <h3 className="text-xl font-semibold text-gray-700">Your Top 3 Career Interests</h3>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                    Your Top 3 Career Interests
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Type your career interest or select from the career clusters below.
+                  </p>
+                </div>
 
-              <div>
-                <label className="block font-semibold mb-2">Career Interest #1 *</label>
-                <input
-                  type="text"
-                  name="careerInterest1"
-                  value={formData.careerInterest1 || ''}
-                  onChange={handleChange}
-                  placeholder="e.g., Medicine, Computer Science, Business"
-                  className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
+                {/* Career Interest #1 - Required */}
+                <CareerClusterSelector
+                  label="Career Interest #1"
                   required
+                  value={formData.careerInterest1 || null}
+                  onChange={(clusterId, customText) => setFormData(prev => ({
+                    ...prev,
+                    careerInterest1: clusterId || customText || ''
+                  }))}
+                  excludeIds={[formData.careerInterest2, formData.careerInterest3].filter(Boolean) as string[]}
                 />
-              </div>
 
-              <div>
-                <label className="block font-semibold mb-2">Career Interest #2</label>
-                <input
-                  type="text"
-                  name="careerInterest2"
-                  value={formData.careerInterest2 || ''}
-                  onChange={handleChange}
-                  placeholder="Alternative career path"
-                  className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
+                {/* Career Interest #2 - Optional */}
+                <CareerClusterSelector
+                  label="Career Interest #2"
+                  value={formData.careerInterest2 || null}
+                  onChange={(clusterId, customText) => setFormData(prev => ({
+                    ...prev,
+                    careerInterest2: clusterId || customText || ''
+                  }))}
+                  excludeIds={[formData.careerInterest1, formData.careerInterest3].filter(Boolean) as string[]}
                 />
-              </div>
 
-              <div>
-                <label className="block font-semibold mb-2">Career Interest #3</label>
-                <input
-                  type="text"
-                  name="careerInterest3"
-                  value={formData.careerInterest3 || ''}
-                  onChange={handleChange}
-                  placeholder="Another option you're considering"
-                  className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
+                {/* Career Interest #3 - Optional */}
+                <CareerClusterSelector
+                  label="Career Interest #3"
+                  value={formData.careerInterest3 || null}
+                  onChange={(clusterId, customText) => setFormData(prev => ({
+                    ...prev,
+                    careerInterest3: clusterId || customText || ''
+                  }))}
+                  excludeIds={[formData.careerInterest1, formData.careerInterest2].filter(Boolean) as string[]}
                 />
               </div>
 
               <h3 className="text-xl font-semibold text-gray-700 mt-8">Your Destination Wishlist</h3>
 
-              <div>
-                <label className="block font-semibold mb-2">Primary Country *</label>
-                <input
-                  type="text"
-                  name="destinationCountry1"
-                  value={formData.destinationCountry1 || ''}
-                  onChange={handleChange}
-                  placeholder="e.g., United States, United Kingdom"
-                  className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
-                  required
-                />
-              </div>
+              <Autocomplete
+                label="Primary Country"
+                suggestions={COUNTRIES}
+                value={formData.destinationCountry1 || ''}
+                onChange={(value) => setFormData(prev => ({ ...prev, destinationCountry1: value }))}
+                placeholder="Start typing your preferred country..."
+                required
+              />
 
               <div>
-                <label className="block font-semibold mb-2">Specific Universities (optional)</label>
+                <label className="block text-base font-semibold text-gray-800 mb-2">Specific Universities (optional)</label>
                 <textarea
                   name="destinationUniversities1"
                   value={formData.destinationUniversities1 || ''}
                   onChange={handleChange}
                   placeholder="List any universities you're already interested in..."
                   rows={2}
-                  className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
+                  className={inputClassName}
                 />
               </div>
 
-              <div>
-                <label className="block font-semibold mb-2">Alternative Country 1</label>
-                <input
-                  type="text"
-                  name="destinationCountry2"
-                  value={formData.destinationCountry2 || ''}
-                  onChange={handleChange}
-                  placeholder="Second choice country"
-                  className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
-                />
-              </div>
+              <Autocomplete
+                label="Alternative Country 1"
+                suggestions={COUNTRIES}
+                value={formData.destinationCountry2 || ''}
+                onChange={(value) => setFormData(prev => ({ ...prev, destinationCountry2: value }))}
+                placeholder="Second choice country"
+              />
 
               <div>
-                <label className="block font-semibold mb-2">Specific Universities (optional)</label>
+                <label className="block text-base font-semibold text-gray-800 mb-2">Specific Universities (optional)</label>
                 <textarea
                   name="destinationUniversities2"
                   value={formData.destinationUniversities2 || ''}
                   onChange={handleChange}
                   placeholder="List any universities..."
                   rows={2}
-                  className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
+                  className={inputClassName}
                 />
               </div>
 
-              <div>
-                <label className="block font-semibold mb-2">Alternative Country 2</label>
-                <input
-                  type="text"
-                  name="destinationCountry3"
-                  value={formData.destinationCountry3 || ''}
-                  onChange={handleChange}
-                  placeholder="Third choice country"
-                  className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
-                />
-              </div>
+              <Autocomplete
+                label="Alternative Country 2"
+                suggestions={COUNTRIES}
+                value={formData.destinationCountry3 || ''}
+                onChange={(value) => setFormData(prev => ({ ...prev, destinationCountry3: value }))}
+                placeholder="Third choice country"
+              />
 
               <div>
-                <label className="block font-semibold mb-2">Specific Universities (optional)</label>
+                <label className="block text-base font-semibold text-gray-800 mb-2">Specific Universities (optional)</label>
                 <textarea
                   name="destinationUniversities3"
                   value={formData.destinationUniversities3 || ''}
                   onChange={handleChange}
                   placeholder="List any universities..."
                   rows={2}
-                  className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
+                  className={inputClassName}
                 />
               </div>
             </div>
@@ -1098,7 +1296,7 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
               <button
                 type="button"
                 onClick={handleBack}
-                className="px-8 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-all"
+                className="px-8 py-3 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300 transition-all"
               >
                 ← Back
               </button>
@@ -1108,7 +1306,7 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
               <button
                 type="button"
                 onClick={handleNext}
-                className="ml-auto px-8 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-all"
+                className="ml-auto px-8 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all"
               >
                 Next →
               </button>
@@ -1116,10 +1314,16 @@ export default function ProfileForm({ userId, initialData }: ProfileFormProps) {
               <button
                 type="button"
                 onClick={handleSubmit}
-                disabled={isSubmitting}
-                className="ml-auto px-8 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed"
+                disabled={isSubmitting || submitSuccess}
+                className={`ml-auto px-8 py-3 rounded-xl font-semibold transition-all disabled:cursor-not-allowed ${
+                  submitSuccess
+                    ? 'bg-green-500 text-white'
+                    : isSubmitting
+                    ? 'bg-gray-400 text-white'
+                    : 'bg-green-600 text-white hover:bg-green-700'
+                }`}
               >
-                {isSubmitting ? 'Saving...' : '✓ Complete Profile'}
+                {submitSuccess ? '✓ Saved! Redirecting...' : isSubmitting ? 'Saving...' : '✓ Complete Profile'}
               </button>
             )}
           </div>

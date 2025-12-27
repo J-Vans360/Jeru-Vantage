@@ -1,0 +1,212 @@
+'use client';
+
+import { useState, useRef } from 'react';
+import { useUserId } from '@/lib/get-user-id';
+import { useRouter } from 'next/navigation';
+import assessmentData from '@/data/part-a-s3-holland.json';
+import { calculateHollandScores } from '@/lib/scoring';
+import HollandResultsDisplay from '@/components/assessment/HollandResultsDisplay';
+import QuestionCard from '@/components/assessment/QuestionCard';
+
+
+export default function PartAS3Page() {
+  const router = useRouter();
+  const userId = useUserId();
+  const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [isComplete, setIsComplete] = useState(false);
+  const [scores, setScores] = useState<any>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
+  const previousIndex = useRef(0);
+
+  if (!userId) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
+
+  const { section, questions, domains } = assessmentData;
+  const currentQuestion = questions[currentQuestionIndex];
+  const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+  const answeredCount = Object.keys(answers).length;
+
+  const handleAnswer = (value: number) => {
+    const newAnswers = { ...answers, [currentQuestion.id]: value };
+    setAnswers(newAnswers);
+
+    // Auto-advance to next question
+    if (currentQuestionIndex < questions.length - 1) {
+      setTimeout(() => {
+        setDirection('forward');
+        previousIndex.current = currentQuestionIndex;
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+      }, 300);
+    } else if (Object.keys(newAnswers).length === questions.length) {
+      // All questions answered, calculate scores
+      handleComplete(newAnswers);
+    }
+  };
+
+  const handleComplete = async (finalAnswers: Record<number, number>) => {
+    const calculatedScores = calculateHollandScores(finalAnswers, assessmentData);
+    setScores(calculatedScores);
+    setIsComplete(true);
+
+    // Save to database
+    setIsSaving(true);
+    try {
+      const response = await fetch('/api/assessment/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId,
+          sectionId: section.id,
+          answers: finalAnswers,
+          scores: calculatedScores,
+        }),
+      });
+
+      if (!response.ok) {
+        console.error('Failed to save assessment results');
+      }
+    } catch (error) {
+      console.error('Error saving assessment:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleBack = () => {
+    if (currentQuestionIndex > 0) {
+      setDirection('backward');
+      previousIndex.current = currentQuestionIndex;
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setDirection('forward');
+      previousIndex.current = currentQuestionIndex;
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    }
+  };
+
+  const isCurrentAnswered = answers[currentQuestion?.id] !== undefined;
+  const selectedValue = answers[currentQuestion?.id];
+
+  if (isComplete && scores) {
+    return (
+      <HollandResultsDisplay
+        section={section}
+        scores={scores}
+        domains={domains}
+        onContinue={() => router.push('/assessment/part-a-s4')}
+        continueButtonText="Continue to Part A: S4 (Multiple Intelligences) →"
+        isSaving={isSaving}
+      />
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-yellow-50">
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="text-4xl">{section.icon}</span>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">{section.title}</h1>
+              <p className="text-lg text-gray-600">{section.subtitle}</p>
+            </div>
+          </div>
+          <p className="text-gray-600 mb-4">{section.description}</p>
+          <p className="text-sm text-gray-500">⏱️ {section.estimatedTime}</p>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-medium text-gray-700">
+              Question {currentQuestionIndex + 1} of {questions.length}
+            </span>
+            <span className="text-sm text-gray-500">
+              {answeredCount} / {questions.length} answered
+            </span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-3">
+            <div
+              className="bg-gradient-to-r from-orange-600 to-yellow-600 h-3 rounded-full transition-all duration-300"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Question Card */}
+        <QuestionCard
+          questionId={currentQuestion.id}
+          questionText={currentQuestion.text}
+          direction={direction}
+          sectionNumber={3}
+        >
+          {/* Likert Scale Buttons */}
+          <div className="space-y-3">
+            {[1, 2, 3, 4, 5].map((value) => (
+              <button
+                key={value}
+                onClick={() => handleAnswer(value)}
+                className={`w-full p-4 rounded-xl border-2 transition-all duration-200 text-left ${
+                  selectedValue === value
+                    ? 'border-orange-600 bg-orange-50 shadow-md'
+                    : 'border-gray-200 hover:border-orange-300 hover:bg-gray-50'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-gray-700">
+                    {section.scale.labels[value.toString() as keyof typeof section.scale.labels]}
+                  </span>
+                  <div
+                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                      selectedValue === value
+                        ? 'border-orange-600 bg-orange-600'
+                        : 'border-gray-300'
+                    }`}
+                  >
+                    {selectedValue === value && (
+                      <div className="w-2 h-2 bg-white rounded-full" />
+                    )}
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </QuestionCard>
+
+        {/* Navigation */}
+        <div className="flex justify-between items-center">
+          <button
+            onClick={handleBack}
+            disabled={currentQuestionIndex === 0}
+            className="px-6 py-3 rounded-lg border-2 border-gray-300 text-gray-700 font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          >
+            ← Back
+          </button>
+
+          <button
+            onClick={handleNext}
+            disabled={currentQuestionIndex === questions.length - 1}
+            className="px-6 py-3 rounded-lg bg-orange-600 text-white font-medium hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          >
+            Next →
+          </button>
+        </div>
+
+        {/* Question answered indicator */}
+        {isCurrentAnswered && (
+          <div className="mt-4 text-center">
+            <p className="text-sm text-green-600 font-medium">✓ Answer saved</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

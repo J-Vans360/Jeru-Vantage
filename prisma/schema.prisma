@@ -9,19 +9,31 @@ datasource db {
 }
 
 model User {
-  id                String             @id @default(cuid())
-  email             String?            @unique
-  emailVerified     DateTime?
-  name              String?
-  image             String?
-  password          String?
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  accounts          Account[]
-  sessions          Session[]
-  assessmentResults AssessmentResult[]
-  studentProfile    StudentProfile?
-  jeruReports       JeruReport[]
+  id                     String                  @id @default(cuid())
+  email                  String?                 @unique
+  name                   String?
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  emailVerified          DateTime?
+  password               String?
+  image                  String?
+  role                   String                  @default("student")
+  accounts               Account[]
+  assessmentResults      AssessmentResult[]
+  fullAssessmentWaitlist FullAssessmentWaitlist?
+  jeruReports            JeruReport[]
+  pilotAssessment        PilotAssessment?
+  pilotCodeUsage         PilotCodeUsage?
+  pilotSurvey            PilotSurvey?
+  reportFeedback         ReportFeedback?
+  schoolAdmin            SchoolAdmin[]
+  schoolStudent          SchoolStudent[]
+  sessions               Session[]
+  sponsorAdmin           SponsorAdmin[]
+  sponsoredStudent       SponsoredStudent[]
+  studentProfile         StudentProfile?
+  superAdmin             SuperAdmin?
+  universityPreferences  UniversityPreference[]
 
   @@map("users")
 }
@@ -32,15 +44,14 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@map("accounts")
@@ -105,6 +116,7 @@ model StudentProfile {
   completed                Boolean          @default(false)
   createdAt                DateTime         @default(now())
   updatedAt                DateTime         @updatedAt
+  degreeLevel              String?
   user                     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   subjects                 StudentSubject[]
 
@@ -144,14 +156,446 @@ model AssessmentResult {
 model JeruReport {
   id                 String   @id @default(cuid())
   userId             String
-  reportContent      String   @db.Text
+  reportContent      String
   assessmentSnapshot Json
   generationNumber   Int      @default(1)
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("jeru_reports")
+}
+
+model School {
+  id               String          @id @default(cuid())
+  name             String
+  code             String          @unique
+  logo             String?
+  address          String?
+  country          String?
+  contactEmail     String
+  contactPhone     String?
+  website          String?
+  plan             String          @default("free")
+  studentLimit     Int             @default(50)
+  subscriptionEnd  DateTime?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  adminDesignation String?
+  adminLinkedIn    String?
+  adminPhone       String?
+  affiliation      String?
+  schoolType       String?
+  staffIdCard      String?
+  status           String          @default("pending")
+  studentStrength  String?
+  verifiedAt       DateTime?
+  verifiedBy       String?
+  schoolAddress    String?
+  schoolWebsite    String?
+  admins           SchoolAdmin[]
+  override         SchoolOverride?
+  students         SchoolStudent[]
+
+  @@map("schools")
+}
+
+model SchoolAdmin {
+  id        String   @id @default(cuid())
+  userId    String
+  schoolId  String
+  role      String   @default("counselor")
+  createdAt DateTime @default(now())
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, schoolId])
+  @@map("school_admins")
+}
+
+model SchoolStudent {
+  id         String   @id @default(cuid())
+  userId     String
+  schoolId   String
+  studentId  String?
+  grade      String?
+  section    String?
+  enrolledAt DateTime @default(now())
+  school     School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, schoolId])
+  @@map("school_students")
+}
+
+model Sponsor {
+  id                 String             @id @default(cuid())
+  name               String
+  type               String             @default("ngo")
+  code               String             @unique
+  logo               String?
+  contactName        String
+  contactEmail       String
+  contactPhone       String?
+  website            String?
+  country            String?
+  sponsoredSeats     Int                @default(100)
+  usedSeats          Int                @default(0)
+  validUntil         DateTime?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  status             String             @default("pending")
+  verifiedAt         DateTime?
+  verifiedBy         String?
+  address            String?
+  beneficiaries      String?
+  contactDesignation String?
+  contactLinkedIn    String?
+  estimatedStudents  String?
+  purpose            String?
+  registrationNumber String?
+  admins             SponsorAdmin[]
+  students           SponsoredStudent[]
+
+  @@map("sponsors")
+}
+
+model SponsorAdmin {
+  id        String   @id @default(cuid())
+  userId    String
+  sponsorId String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  sponsor   Sponsor  @relation(fields: [sponsorId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, sponsorId])
+  @@map("sponsor_admins")
+}
+
+model SponsoredStudent {
+  id         String   @id @default(cuid())
+  userId     String
+  sponsorId  String
+  enrolledAt DateTime @default(now())
+  sponsor    Sponsor  @relation(fields: [sponsorId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, sponsorId])
+  @@map("sponsored_students")
+}
+
+model SuperAdmin {
+  id           String    @id @default(cuid())
+  userId       String    @unique
+  role         String    @default("admin")
+  permissions  Json?
+  invitedBy    String?
+  invitedAt    DateTime  @default(now())
+  lastActiveAt DateTime?
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("super_admins")
+}
+
+model SystemSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       Json
+  description String?
+  updatedBy   String?
+  updatedAt   DateTime @updatedAt
+
+  @@map("system_settings")
+}
+
+model PricingPlan {
+  id              String   @id @default(cuid())
+  name            String
+  type            String
+  monthlyPrice    Float    @default(0)
+  yearlyPrice     Float    @default(0)
+  assessmentLimit Int      @default(50)
+  reportLimit     Int      @default(0)
+  features        Json
+  isActive        Boolean  @default(true)
+  displayOrder    Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("pricing_plans")
+}
+
+model PromoCode {
+  id               String    @id @default(cuid())
+  code             String    @unique
+  discountType     String
+  discountValue    Float
+  duration         String    @default("first_payment")
+  durationMonths   Int?
+  validFrom        DateTime  @default(now())
+  validUntil       DateTime?
+  usageLimit       Int?
+  usageCount       Int       @default(0)
+  appliesTo        Json
+  planRestrictions Json?
+  notes            String?
+  isActive         Boolean   @default(true)
+  createdBy        String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@map("promo_codes")
+}
+
+model SchoolOverride {
+  id                    String    @id @default(cuid())
+  schoolId              String    @unique
+  customAssessmentLimit Int?
+  customReportLimit     Int?
+  customMonthlyPrice    Float?
+  discountPercent       Float?
+  discountReason        String?
+  validUntil            DateTime?
+  notes                 String?
+  createdBy             String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  school                School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  @@map("school_overrides")
+}
+
+model AdminNote {
+  id         String   @id @default(cuid())
+  entityType String
+  entityId   String
+  note       String
+  createdBy  String
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@map("admin_notes")
+}
+
+model ReportFeedback {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  overallRating         Int
+  accuracyRating        Int
+  npsScore              Int
+  mostValuableInsight   String?
+  improvementSuggestion String?
+  canFeature            Boolean  @default(false)
+  featureAnonymously    Boolean  @default(true)
+  testimonialQuote      String?
+  isApproved            Boolean  @default(false)
+  isFeatured            Boolean  @default(false)
+  adminNotes            String?
+  completedAt           DateTime @default(now())
+  deviceType            String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("report_feedbacks")
+}
+
+model AnalyticsEvent {
+  id            String   @id @default(cuid())
+  eventName     String
+  eventCategory String
+  sessionId     String
+  userId        String?
+  studentId     String?
+  properties    Json?
+  pagePath      String?
+  pageTitle     String?
+  referrer      String?
+  deviceType    String?
+  browser       String?
+  os            String?
+  screenSize    String?
+  country       String?
+  region        String?
+  city          String?
+  timestamp     DateTime @default(now())
+
+  @@index([eventName, timestamp])
+  @@index([sessionId])
+  @@index([userId])
+  @@index([timestamp])
+  @@index([eventCategory])
+  @@map("analytics_events")
+}
+
+model DailyAnalyticsSummary {
+  id                    String   @id @default(cuid())
+  date                  DateTime @unique @db.Date
+  totalVisits           Int      @default(0)
+  uniqueVisitors        Int      @default(0)
+  registrations         Int      @default(0)
+  profilesCompleted     Int      @default(0)
+  assessmentsStarted    Int      @default(0)
+  assessmentsCompleted  Int      @default(0)
+  resultsViewed         Int      @default(0)
+  universityClicks      Int      @default(0)
+  universityConnections Int      @default(0)
+  avgSessionDuration    Float    @default(0)
+  avgAssessmentTime     Float    @default(0)
+  bounceRate            Float    @default(0)
+  feedbackCount         Int      @default(0)
+  avgOverallRating      Float    @default(0)
+  avgNpsScore           Float    @default(0)
+  mobileVisits          Int      @default(0)
+  desktopVisits         Int      @default(0)
+  tabletVisits          Int      @default(0)
+  topCountries          Json?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("daily_analytics_summaries")
+}
+
+model ActiveSession {
+  id              String   @id @default(cuid())
+  sessionId       String   @unique
+  userId          String?
+  studentId       String?
+  currentPage     String?
+  currentActivity String?
+  deviceType      String?
+  country         String?
+  startedAt       DateTime @default(now())
+  lastActiveAt    DateTime @default(now())
+
+  @@index([lastActiveAt])
+  @@map("active_sessions")
+}
+
+model PilotAssessment {
+  id               String                @id @default(cuid())
+  userId           String                @unique
+  status           PilotAssessmentStatus @default(NOT_STARTED)
+  startedAt        DateTime?
+  completedAt      DateTime?
+  responses        Json?
+  domainScores     Json?
+  subDomainScores  Json?
+  totalTimeSeconds Int?
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+  user             User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("pilot_assessments")
+}
+
+model UniversityPreference {
+  id               String             @id @default(cuid())
+  userId           String
+  universityName   String
+  country          String
+  category         PreferenceCategory
+  universityId     String?
+  consentToConnect Boolean            @default(false)
+  consentDate      DateTime?
+  contactedAt      DateTime?
+  partnershipLive  Boolean            @default(false)
+  createdAt        DateTime           @default(now())
+  user             User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("university_preferences")
+}
+
+model PilotSurvey {
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  referralSource   String?
+  referralOther    String?
+  biggestChallenge String?
+  challengeDetails String?
+  willingToPay     String?
+  priceRange       String?
+  desiredFeatures  String[]
+  otherFeatures    String?
+  generalFeedback  String?
+  createdAt        DateTime @default(now())
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("pilot_surveys")
+}
+
+model FullAssessmentWaitlist {
+  id                     String   @id @default(cuid())
+  userId                 String   @unique
+  interestedFeatures     String[]
+  notificationPreference String   @default("EMAIL")
+  createdAt              DateTime @default(now())
+  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("full_assessment_waitlist")
+}
+
+model PilotInviteCode {
+  id            String           @id @default(cuid())
+  code          String           @unique
+  name          String
+  description   String?
+  sourceType    PilotSourceType
+  sourceName    String?
+  sourceEmail   String?
+  sourceCountry String?
+  maxUses       Int?
+  currentUses   Int              @default(0)
+  isActive      Boolean          @default(true)
+  validFrom     DateTime         @default(now())
+  validUntil    DateTime?
+  createdBy     String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  usages        PilotCodeUsage[]
+
+  @@index([code])
+  @@index([sourceType])
+  @@index([isActive])
+  @@map("pilot_invite_codes")
+}
+
+model PilotCodeUsage {
+  id                    String          @id @default(cuid())
+  codeId                String
+  userId                String          @unique
+  registeredAt          DateTime        @default(now())
+  assessmentStartedAt   DateTime?
+  assessmentCompletedAt DateTime?
+  createdAt             DateTime        @default(now())
+  code                  PilotInviteCode @relation(fields: [codeId], references: [id])
+  user                  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("pilot_code_usages")
+}
+
+enum PilotAssessmentStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum PreferenceCategory {
+  DREAM
+  GOOD_FIT
+  BACKUP
+}
+
+enum PilotSourceType {
+  COUNSELOR
+  SCHOOL
+  VIP
+  TEST
+  OTHER
 }
