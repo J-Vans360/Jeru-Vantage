@@ -113,7 +113,7 @@ const getMockLeads = () => [
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { universityId: string } }
+  { params }: { params: Promise<{ universityId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -121,7 +121,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { universityId } = params;
+    const { universityId } = await params;
     const { searchParams } = new URL(request.url);
 
     const status = searchParams.get('status');

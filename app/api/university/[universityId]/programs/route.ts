@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { universityId: string } }
+  { params }: { params: Promise<{ universityId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -12,7 +12,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { universityId } = params;
+    const { universityId } = await params;
     const body = await request.json();
 
     // TODO: Replace with actual Prisma query when Program model exists
@@ -52,7 +52,7 @@ export async function POST(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { universityId: string } }
+  { params }: { params: Promise<{ universityId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -60,7 +60,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { universityId } = params;
+    const { universityId } = await params;
 
     // TODO: Replace with actual Prisma query when Program model exists
     // const programs = await prisma.program.findMany({

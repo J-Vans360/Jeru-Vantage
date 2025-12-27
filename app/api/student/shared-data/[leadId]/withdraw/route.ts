@@ -51,7 +51,7 @@ const mockLeads: Record<
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { leadId: string } }
+  { params }: { params: Promise<{ leadId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -59,7 +59,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { leadId } = params;
+    const { leadId } = await params;
 
     // TODO: Replace with actual Prisma queries when models exist
     // const lead = await prisma.studentLead.findUnique({

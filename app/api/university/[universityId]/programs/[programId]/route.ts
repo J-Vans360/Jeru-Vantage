@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { universityId: string; programId: string } }
+  { params }: { params: Promise<{ universityId: string; programId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -12,7 +12,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { universityId, programId } = params;
+    const { universityId, programId } = await params;
     const body = await request.json();
 
     // TODO: Replace with actual Prisma query when Program model exists
@@ -53,7 +53,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { universityId: string; programId: string } }
+  { params }: { params: Promise<{ universityId: string; programId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -61,7 +61,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { universityId, programId } = params;
+    const { universityId, programId } = await params;
 
     // TODO: Replace with actual Prisma query when Program model exists
     // await prisma.program.delete({
@@ -83,7 +83,7 @@ export async function DELETE(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { universityId: string; programId: string } }
+  { params }: { params: Promise<{ universityId: string; programId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -91,7 +91,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { programId } = params;
+    const { programId } = await params;
 
     // TODO: Replace with actual Prisma query when Program model exists
     // const program = await prisma.program.findUnique({

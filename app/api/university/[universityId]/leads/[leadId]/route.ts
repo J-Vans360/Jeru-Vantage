@@ -16,7 +16,7 @@ const mockLeads: Record<string, { id: string; status: string; notes: string }> =
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { universityId: string; leadId: string } }
+  { params }: { params: Promise<{ universityId: string; leadId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -24,7 +24,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { universityId, leadId } = params;
+    const { universityId, leadId } = await params;
 
     // TODO: Replace with actual Prisma query when StudentLead model exists
     // const lead = await prisma.studentLead.findUnique({
@@ -62,7 +62,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { universityId: string; leadId: string } }
+  { params }: { params: Promise<{ universityId: string; leadId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -70,7 +70,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { universityId, leadId } = params;
+    const { universityId, leadId } = await params;
     const body = await request.json();
 
     // Validate status if provided
@@ -120,7 +120,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { universityId: string; leadId: string } }
+  { params }: { params: Promise<{ universityId: string; leadId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -128,7 +128,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { universityId, leadId } = params;
+    const { universityId, leadId } = await params;
 
     // TODO: Replace with actual Prisma query when StudentLead model exists
     // Note: Consider soft delete for audit purposes
