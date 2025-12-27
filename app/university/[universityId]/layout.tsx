@@ -4,7 +4,7 @@ import UniversitySidebar from '@/components/university/UniversitySidebar';
 
 interface LayoutProps {
   children: ReactNode;
-  params: { universityId: string };
+  params: Promise<{ universityId: string }>;
 }
 
 // Mock function to get university data - replace with actual DB query
@@ -46,13 +46,15 @@ export default async function UniversityLayout({
   children,
   params,
 }: LayoutProps) {
+  const { universityId } = await params;
+
   // TODO: Add authentication check
   // const session = await getServerSession();
   // if (!session?.user) {
   //   redirect('/login');
   // }
 
-  const university = await getUniversity(params.universityId);
+  const university = await getUniversity(universityId);
 
   if (!university) {
     redirect('/unauthorized');
@@ -61,7 +63,7 @@ export default async function UniversityLayout({
   return (
     <div className="min-h-screen bg-gray-50 flex">
       <UniversitySidebar
-        universityId={params.universityId}
+        universityId={universityId}
         universityName={university.name}
         universityLogo={university.logo}
         partnerTier={university.partnerTier}

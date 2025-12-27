@@ -2,7 +2,7 @@ import { format, subMonths } from 'date-fns';
 import BillingDashboard from '@/components/university/BillingDashboard';
 
 interface BillingPageProps {
-  params: { universityId: string };
+  params: Promise<{ universityId: string }>;
 }
 
 // Mock data for development - replace with actual DB queries when Invoice model exists
@@ -81,7 +81,7 @@ async function getBillingData(universityId: string) {
 }
 
 export default async function BillingPage({ params }: BillingPageProps) {
-  const { universityId } = params;
+  const { universityId } = await params;
   const data = await getBillingData(universityId);
 
   // TODO: Replace mock data with actual Prisma queries when models exist:

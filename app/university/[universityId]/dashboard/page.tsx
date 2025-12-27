@@ -5,7 +5,7 @@ import { Eye, MousePointer, UserCheck, GraduationCap } from 'lucide-react';
 import Link from 'next/link';
 
 interface DashboardProps {
-  params: { universityId: string };
+  params: Promise<{ universityId: string }>;
 }
 
 // Mock data - replace with actual DB queries when models exist
@@ -81,7 +81,7 @@ async function getDashboardData(universityId: string) {
 }
 
 export default async function UniversityDashboard({ params }: DashboardProps) {
-  const { universityId } = params;
+  const { universityId } = await params;
   const { stats, recentLeads } = await getDashboardData(universityId);
 
   const { impressions, clicks, leads, enrolled } = stats;

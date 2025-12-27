@@ -1,19 +1,21 @@
 import { subDays } from 'date-fns';
 import LeadsManager from '@/components/university/LeadsManager';
 
+interface SearchParams {
+  status?: string;
+  country?: string;
+  program?: string;
+  search?: string;
+  sort?: string;
+}
+
 interface LeadsPageProps {
-  params: { universityId: string };
-  searchParams: {
-    status?: string;
-    country?: string;
-    program?: string;
-    search?: string;
-    sort?: string;
-  };
+  params: Promise<{ universityId: string }>;
+  searchParams: Promise<SearchParams>;
 }
 
 // Mock data for development - replace with actual DB queries when models exist
-async function getLeadsData(universityId: string, filters: LeadsPageProps['searchParams']) {
+async function getLeadsData(universityId: string, filters: SearchParams) {
   // Mock leads
   const allLeads = [
     {
@@ -162,8 +164,9 @@ async function getLeadsData(universityId: string, filters: LeadsPageProps['searc
 }
 
 export default async function LeadsPage({ params, searchParams }: LeadsPageProps) {
-  const { universityId } = params;
-  const data = await getLeadsData(universityId, searchParams);
+  const { universityId } = await params;
+  const resolvedSearchParams = await searchParams;
+  const data = await getLeadsData(universityId, resolvedSearchParams);
 
   // TODO: Replace mock data with actual Prisma queries when models exist:
   // const where: any = { universityId };
@@ -195,7 +198,7 @@ export default async function LeadsPage({ params, searchParams }: LeadsPageProps
       countries={data.countries}
       programs={data.programs}
       stats={data.stats}
-      filters={searchParams}
+      filters={resolvedSearchParams}
     />
   );
 }

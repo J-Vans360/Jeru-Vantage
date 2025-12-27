@@ -1,7 +1,7 @@
 import ProgramsManager from '@/components/university/ProgramsManager';
 
 interface ProgramsPageProps {
-  params: { universityId: string };
+  params: Promise<{ universityId: string }>;
 }
 
 // Mock data for development - replace with actual DB queries when Program model exists
@@ -89,7 +89,7 @@ async function getProgramsData(universityId: string) {
 }
 
 export default async function ProgramsPage({ params }: ProgramsPageProps) {
-  const { universityId } = params;
+  const { universityId } = await params;
   const { programs, faculties } = await getProgramsData(universityId);
 
   // TODO: Replace mock data with actual Prisma queries when models exist:

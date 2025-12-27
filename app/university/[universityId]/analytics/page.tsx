@@ -2,8 +2,8 @@ import { subDays, format, startOfDay, endOfDay } from 'date-fns';
 import AnalyticsDashboard from '@/components/university/AnalyticsDashboard';
 
 interface AnalyticsPageProps {
-  params: { universityId: string };
-  searchParams: { period?: string };
+  params: Promise<{ universityId: string }>;
+  searchParams: Promise<{ period?: string }>;
 }
 
 // Mock data for development - replace with actual DB queries when models exist
@@ -97,8 +97,9 @@ async function getAnalyticsData(universityId: string, daysBack: number) {
 }
 
 export default async function AnalyticsPage({ params, searchParams }: AnalyticsPageProps) {
-  const { universityId } = params;
-  const period = searchParams.period || '30';
+  const { universityId } = await params;
+  const resolvedSearchParams = await searchParams;
+  const period = resolvedSearchParams.period || '30';
   const daysBack = parseInt(period);
 
   const data = await getAnalyticsData(universityId, daysBack);
