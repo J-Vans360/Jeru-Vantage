@@ -24,16 +24,19 @@ export async function GET(request: Request) {
   const search = searchParams.get('search') || ''
   const type = searchParams.get('type') || 'all'
 
+  // Build where clause based on type filter
+  // User model connects to schools via SchoolStudent and sponsors via SponsoredStudent
   const whereClause: Record<string, unknown> = {}
 
-  // Filter by type
   if (type === 'school') {
-    whereClause.schoolId = { not: null }
+    whereClause.schoolStudent = { some: {} }
   } else if (type === 'sponsor') {
-    whereClause.sponsorId = { not: null }
+    whereClause.sponsoredStudent = { some: {} }
   } else if (type === 'individual') {
-    whereClause.schoolId = null
-    whereClause.sponsorId = null
+    whereClause.AND = [
+      { schoolStudent: { none: {} } },
+      { sponsoredStudent: { none: {} } }
+    ]
   }
 
   // Add search
@@ -51,27 +54,58 @@ export async function GET(request: Request) {
       name: true,
       email: true,
       createdAt: true,
-      school: {
-        select: { id: true, name: true }
+      role: true,
+      schoolStudent: {
+        select: {
+          school: {
+            select: { id: true, name: true }
+          }
+        },
+        take: 1
       },
-      sponsor: {
-        select: { id: true, name: true }
+      sponsoredStudent: {
+        select: {
+          sponsor: {
+            select: { id: true, name: true }
+          }
+        },
+        take: 1
       }
     },
     orderBy: { createdAt: 'desc' },
     take: 100
   })
 
-  // Get counts
+  // Transform the data to flatten school/sponsor info
+  const transformedStudents = students.map(student => ({
+    id: student.id,
+    name: student.name,
+    email: student.email,
+    createdAt: student.createdAt,
+    role: student.role,
+    school: student.schoolStudent[0]?.school || null,
+    sponsor: student.sponsoredStudent[0]?.sponsor || null
+  }))
+
+  // Get counts using the junction tables
   const totalCount = await prisma.user.count()
-  const schoolCount = await prisma.user.count({ where: { schoolId: { not: null } } })
-  const sponsorCount = await prisma.user.count({ where: { sponsorId: { not: null } } })
+  const schoolCount = await prisma.user.count({
+    where: { schoolStudent: { some: {} } }
+  })
+  const sponsorCount = await prisma.user.count({
+    where: { sponsoredStudent: { some: {} } }
+  })
   const individualCount = await prisma.user.count({
-    where: { schoolId: null, sponsorId: null }
+    where: {
+      AND: [
+        { schoolStudent: { none: {} } },
+        { sponsoredStudent: { none: {} } }
+      ]
+    }
   })
 
   return NextResponse.json({
-    students,
+    students: transformedStudents,
     counts: {
       total: totalCount,
       school: schoolCount,

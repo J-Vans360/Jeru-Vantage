@@ -11,7 +11,7 @@ async function verifySuperAdmin() {
   const access = await checkSuperAdmin(session.user.id || '', session.user.email)
   if (!access.isSuper) return null
 
-  return access
+  return { ...access, currentUserId: session.user.id }
 }
 
 export async function GET() {
@@ -21,10 +21,30 @@ export async function GET() {
   }
 
   const members = await prisma.superAdmin.findMany({
+    include: {
+      user: {
+        select: { id: true, name: true, email: true }
+      }
+    },
     orderBy: { createdAt: 'desc' }
   })
 
-  return NextResponse.json({ members })
+  // Transform to include user info at top level
+  const transformedMembers = members.map(member => ({
+    id: member.id,
+    userId: member.userId,
+    role: member.role,
+    permissions: member.permissions,
+    invitedBy: member.invitedBy,
+    invitedAt: member.invitedAt,
+    lastActiveAt: member.lastActiveAt,
+    isActive: member.isActive,
+    createdAt: member.createdAt,
+    name: member.user?.name,
+    email: member.user?.email
+  }))
+
+  return NextResponse.json({ members: transformedMembers })
 }
 
 export async function POST(request: Request) {
@@ -39,22 +59,51 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Email and role are required' }, { status: 400 })
   }
 
-  // Check if already exists
-  const existing = await prisma.superAdmin.findUnique({
+  // Find or create the user first
+  let user = await prisma.user.findUnique({
     where: { email }
   })
 
+  if (!user) {
+    // Create user with the email
+    user = await prisma.user.create({
+      data: {
+        email,
+        role: 'admin'
+      }
+    })
+  }
+
+  // Check if already a super admin
+  const existing = await prisma.superAdmin.findUnique({
+    where: { userId: user.id }
+  })
+
   if (existing) {
-    return NextResponse.json({ error: 'Email already has access' }, { status: 400 })
+    return NextResponse.json({ error: 'Email already has super admin access' }, { status: 400 })
   }
 
   const member = await prisma.superAdmin.create({
     data: {
-      email,
+      userId: user.id,
       role,
-      name: null
+      invitedBy: access.currentUserId
+    },
+    include: {
+      user: {
+        select: { id: true, name: true, email: true }
+      }
     }
   })
 
-  return NextResponse.json({ member })
+  return NextResponse.json({
+    member: {
+      id: member.id,
+      userId: member.userId,
+      role: member.role,
+      name: member.user?.name,
+      email: member.user?.email,
+      createdAt: member.createdAt
+    }
+  })
 }
