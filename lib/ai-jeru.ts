@@ -1,9 +1,10 @@
 import OpenAI from 'openai';
 import { prisma } from './prisma';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Only initialize OpenAI client if API key exists (prevents build failures)
+const openai = process.env.OPENAI_API_KEY
+  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  : null;
 
 const AI_JERU_SYSTEM_PROMPT = `
 You are Jeru, a Senior University and Career Guidance Counselor with 20+ years of experience. You are wise, empathetic, data-driven, and highly strategic.
@@ -283,6 +284,10 @@ Remember: This report should feel like a 1-hour consultation with a wise mentor,
 `;
 
 export async function getAIJeruRecommendations(userId: string, studentData: any) {
+  if (!openai) {
+    throw new Error('OpenAI API key not configured. Please set OPENAI_API_KEY environment variable.');
+  }
+
   const studentName = studentData.profile?.studentName || studentData.profile?.name || 'Student';
 
   // Get previous reports for context
