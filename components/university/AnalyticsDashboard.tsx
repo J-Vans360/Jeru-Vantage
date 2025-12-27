@@ -298,7 +298,7 @@ export default function AnalyticsDashboard({
                   cx="50%"
                   cy="50%"
                   outerRadius={80}
-                  label={({ range, count }) => `${range}: ${count}`}
+                  label={({ name, value }: { name?: string; value?: number }) => `${name ?? ''}: ${value ?? 0}`}
                 >
                   {scoreDistribution.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
