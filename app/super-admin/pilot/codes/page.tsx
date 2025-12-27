@@ -49,8 +49,8 @@ export default async function PilotCodesPage() {
       u.user.pilotAssessment?.status === 'COMPLETED'
     ).length,
     isActive: code.isActive,
-    validFrom: code.validFrom?.toISOString(),
-    validUntil: code.validUntil?.toISOString(),
+    validFrom: code.validFrom?.toISOString() ?? null,
+    validUntil: code.validUntil?.toISOString() ?? null,
     createdAt: code.createdAt.toISOString(),
   }));
 
