@@ -180,6 +180,12 @@ function SignUpContent() {
   }
 
   const handleUserTypeSelect = (type: UserType) => {
+    // Individual students (without code) should see pricing first
+    if (type === 'student') {
+      router.push('/pricing')
+      return
+    }
+
     setUserType(type)
     setStep('form')
     setError('')
@@ -460,7 +466,7 @@ function SignUpContent() {
                       maxLength={8}
                       value={formData.code}
                       onChange={(e) => handleCodeChange(e.target.value)}
-                      className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 uppercase font-mono text-lg tracking-widest"
+                      className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 uppercase font-mono text-lg tracking-widest bg-white text-gray-900 placeholder-gray-500"
                       placeholder="ENTER JOIN CODE"
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -511,7 +517,7 @@ function SignUpContent() {
                     <select
                       value={formData.grade}
                       onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 bg-white text-gray-900"
                     >
                       <option value="">Select</option>
                       {[9, 10, 11, 12].map(g => <option key={g} value={g}>Grade {g}</option>)}
@@ -523,7 +529,7 @@ function SignUpContent() {
                       type="text"
                       value={formData.section}
                       onChange={(e) => setFormData({ ...formData, section: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 bg-white text-gray-900 placeholder-gray-500"
                       placeholder="A"
                     />
                   </div>
@@ -543,7 +549,7 @@ function SignUpContent() {
                     autoComplete="off"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-500"
                     placeholder={userType === 'sponsor' ? 'Contact Person Name' : 'Your full name'}
                   />
                 </div>
@@ -561,7 +567,7 @@ function SignUpContent() {
                     autoComplete="new-email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-500"
                     placeholder="you@example.com"
                   />
                 </div>
@@ -579,7 +585,7 @@ function SignUpContent() {
                     autoComplete="new-password"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-500"
                     placeholder="Min 6 characters"
                   />
                   <button
@@ -604,7 +610,7 @@ function SignUpContent() {
                     autoComplete="new-password"
                     value={formData.confirmPassword}
                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-500"
                     placeholder="Confirm your password"
                   />
                 </div>
@@ -630,7 +636,7 @@ function SignUpContent() {
                         required
                         value={formData.designation}
                         onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 bg-white text-gray-900"
                       >
                         <option value="">Select Role</option>
                         <option value="principal">Principal</option>
@@ -653,7 +659,7 @@ function SignUpContent() {
                         required
                         value={formData.contactPhone}
                         onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 bg-white text-gray-900 placeholder-gray-500"
                         placeholder="+1 (555) 123-4567"
                       />
                     </div>
@@ -667,7 +673,7 @@ function SignUpContent() {
                       type="url"
                       value={formData.linkedIn}
                       onChange={(e) => setFormData({ ...formData, linkedIn: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 bg-white text-gray-900 placeholder-gray-500"
                       placeholder="https://linkedin.com/in/yourprofile"
                     />
                     <p className="text-xs text-gray-500 mt-1">Helps us verify your professional identity</p>
@@ -684,7 +690,7 @@ function SignUpContent() {
                       required
                       value={formData.schoolNameInput}
                       onChange={(e) => setFormData({ ...formData, schoolNameInput: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 bg-white text-gray-900 placeholder-gray-500"
                       placeholder="e.g., Lincoln High School"
                     />
                   </div>
@@ -698,7 +704,7 @@ function SignUpContent() {
                       required
                       value={formData.schoolWebsite}
                       onChange={(e) => setFormData({ ...formData, schoolWebsite: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 bg-white text-gray-900 placeholder-gray-500"
                       placeholder="https://www.lincolnhigh.edu"
                     />
                   </div>
@@ -711,7 +717,7 @@ function SignUpContent() {
                       required
                       value={formData.schoolAddress}
                       onChange={(e) => setFormData({ ...formData, schoolAddress: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 bg-white text-gray-900 placeholder-gray-500"
                       placeholder="Full school address"
                       rows={2}
                     />
@@ -724,7 +730,7 @@ function SignUpContent() {
                         required
                         value={formData.country}
                         onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 bg-white text-gray-900"
                       >
                         <option value="">Select Country</option>
                         {['USA', 'Canada', 'UK', 'Australia', 'India', 'Singapore', 'Malaysia', 'Indonesia', 'Thailand', 'Vietnam', 'Philippines', 'UAE', 'Saudi Arabia', 'Qatar', 'Kuwait', 'Oman', 'Bahrain', 'Other'].map(c =>
@@ -738,7 +744,7 @@ function SignUpContent() {
                         required
                         value={formData.schoolType}
                         onChange={(e) => setFormData({ ...formData, schoolType: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 bg-white text-gray-900"
                       >
                         <option value="">Select Type</option>
                         <option value="private">Private School</option>
@@ -757,7 +763,7 @@ function SignUpContent() {
                       <select
                         value={formData.affiliation}
                         onChange={(e) => setFormData({ ...formData, affiliation: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 bg-white text-gray-900"
                       >
                         <option value="">Select Board</option>
                         <option value="CBSE">CBSE</option>
@@ -774,7 +780,7 @@ function SignUpContent() {
                       <select
                         value={formData.studentStrength}
                         onChange={(e) => setFormData({ ...formData, studentStrength: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 bg-white text-gray-900"
                       >
                         <option value="">Select Range</option>
                         <option value="small">Under 500</option>
@@ -856,7 +862,7 @@ function SignUpContent() {
                         required
                         value={formData.sponsorDesignation}
                         onChange={(e) => setFormData({ ...formData, sponsorDesignation: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 bg-white text-gray-900"
                       >
                         <option value="">Select Role</option>
                         <option value="director">Director</option>
@@ -879,7 +885,7 @@ function SignUpContent() {
                         required
                         value={formData.sponsorPhone}
                         onChange={(e) => setFormData({ ...formData, sponsorPhone: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 bg-white text-gray-900 placeholder-gray-500"
                         placeholder="+1 (555) 123-4567"
                       />
                     </div>
@@ -893,7 +899,7 @@ function SignUpContent() {
                       type="url"
                       value={formData.sponsorLinkedIn}
                       onChange={(e) => setFormData({ ...formData, sponsorLinkedIn: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 bg-white text-gray-900 placeholder-gray-500"
                       placeholder="https://linkedin.com/in/yourprofile"
                     />
                     <p className="text-xs text-gray-500 mt-1">Helps us verify your professional identity</p>
@@ -913,7 +919,7 @@ function SignUpContent() {
                       required
                       value={formData.sponsorOrgName}
                       onChange={(e) => setFormData({ ...formData, sponsorOrgName: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 bg-white text-gray-900 placeholder-gray-500"
                       placeholder="e.g., United Way of America"
                     />
                   </div>
@@ -927,7 +933,7 @@ function SignUpContent() {
                         required
                         value={formData.sponsorOrgType}
                         onChange={(e) => setFormData({ ...formData, sponsorOrgType: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 bg-white text-gray-900"
                       >
                         <option value="">Select Type</option>
                         <option value="ngo">NGO / Non-Profit</option>
@@ -948,7 +954,7 @@ function SignUpContent() {
                         required
                         value={formData.sponsorCountry}
                         onChange={(e) => setFormData({ ...formData, sponsorCountry: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 bg-white text-gray-900"
                       >
                         <option value="">Select Country</option>
                         {['USA', 'Canada', 'UK', 'Australia', 'India', 'Singapore', 'Malaysia', 'Indonesia', 'Thailand', 'Vietnam', 'Philippines', 'UAE', 'Saudi Arabia', 'Other'].map(c =>
@@ -967,7 +973,7 @@ function SignUpContent() {
                       required
                       value={formData.sponsorWebsite}
                       onChange={(e) => setFormData({ ...formData, sponsorWebsite: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 bg-white text-gray-900 placeholder-gray-500"
                       placeholder="https://www.organization.org"
                     />
                   </div>
@@ -980,7 +986,7 @@ function SignUpContent() {
                       type="text"
                       value={formData.sponsorRegNumber}
                       onChange={(e) => setFormData({ ...formData, sponsorRegNumber: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 bg-white text-gray-900 placeholder-gray-500"
                       placeholder="e.g., EIN, 501(c)(3) number, etc."
                     />
                     <p className="text-xs text-gray-500 mt-1">Optional but helps speed up verification</p>
@@ -994,7 +1000,7 @@ function SignUpContent() {
                       required
                       value={formData.sponsorAddress}
                       onChange={(e) => setFormData({ ...formData, sponsorAddress: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 bg-white text-gray-900 placeholder-gray-500"
                       placeholder="Full organization address"
                       rows={2}
                     />
@@ -1013,7 +1019,7 @@ function SignUpContent() {
                       required
                       value={formData.sponsorPurpose}
                       onChange={(e) => setFormData({ ...formData, sponsorPurpose: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 bg-white text-gray-900"
                     >
                       <option value="">Select Purpose</option>
                       <option value="underprivileged">Support Underprivileged Students</option>
@@ -1034,7 +1040,7 @@ function SignUpContent() {
                     <textarea
                       value={formData.sponsorBeneficiaries}
                       onChange={(e) => setFormData({ ...formData, sponsorBeneficiaries: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 bg-white text-gray-900 placeholder-gray-500"
                       placeholder="Describe who will benefit (e.g., 'Grade 9-12 students from Title I schools in Chicago')"
                       rows={2}
                     />
@@ -1047,7 +1053,7 @@ function SignUpContent() {
                     <select
                       value={formData.sponsorEstimatedStudents}
                       onChange={(e) => setFormData({ ...formData, sponsorEstimatedStudents: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 bg-white text-gray-900"
                     >
                       <option value="">Select Range</option>
                       <option value="1-50">1 - 50 students</option>
