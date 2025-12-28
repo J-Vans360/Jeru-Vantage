@@ -19,8 +19,8 @@ import {
   DEFAULT_ASSESSMENTS,
   DEFAULT_ADDONS,
   formatPrice,
-  CURRENCY_SYMBOLS,
-  CURRENCY_NAMES,
+  getAvailableCurrencies,
+  getCurrencyByCode,
   type PricingItem,
   type PricingStatus,
 } from '@/lib/constants/pricing';
@@ -99,7 +99,9 @@ export default function PricingPage() {
                 className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 shadow-sm"
               >
                 <Globe className="w-4 h-4 text-gray-500" />
-                <span className="font-medium">{CURRENCY_SYMBOLS[currency]} {currency}</span>
+                <span className="font-medium">
+                  {getCurrencyByCode(currency)?.flag} {getCurrencyByCode(currency)?.symbol} {currency}
+                </span>
                 <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${showCurrencyDropdown ? 'rotate-180' : ''}`} />
               </button>
 
@@ -109,20 +111,20 @@ export default function PricingPage() {
                     className="fixed inset-0 z-10"
                     onClick={() => setShowCurrencyDropdown(false)}
                   />
-                  <div className="absolute top-full mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-20 max-h-64 overflow-y-auto">
-                    {Object.keys(CURRENCY_SYMBOLS).map((curr) => (
+                  <div className="absolute top-full mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-20 max-h-64 overflow-y-auto">
+                    {getAvailableCurrencies().map((curr) => (
                       <button
-                        key={curr}
+                        key={curr.code}
                         onClick={() => {
-                          setCurrency(curr);
+                          setCurrency(curr.code);
                           setShowCurrencyDropdown(false);
                         }}
                         className={`w-full px-4 py-2 text-left hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg flex items-center justify-between ${
-                          currency === curr ? 'bg-orange-50 text-orange-600' : ''
+                          currency === curr.code ? 'bg-orange-50 text-orange-600' : ''
                         }`}
                       >
-                        <span>{CURRENCY_SYMBOLS[curr]} {curr}</span>
-                        <span className="text-xs text-gray-500">{CURRENCY_NAMES[curr]}</span>
+                        <span>{curr.flag} {curr.symbol} {curr.code}</span>
+                        <span className="text-xs text-gray-500">{curr.name}</span>
                       </button>
                     ))}
                   </div>

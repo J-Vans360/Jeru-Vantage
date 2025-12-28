@@ -15,7 +15,7 @@ import {
   DEFAULT_ASSESSMENTS,
   DEFAULT_ADDONS,
   formatPrice,
-  CURRENCY_RATES,
+  getAvailableCurrencies,
   type PricingStatus,
 } from '@/lib/constants/pricing';
 
@@ -232,12 +232,12 @@ export default function PricingManagementPage() {
               <div className="mt-4 pt-4 border-t border-gray-100">
                 <p className="text-xs font-medium text-gray-500 mb-2">Price in other currencies:</p>
                 <div className="flex flex-wrap gap-2">
-                  {Object.keys(CURRENCY_RATES).slice(0, 6).map((curr) => (
+                  {getAvailableCurrencies().slice(0, 6).map((curr) => (
                     <span
-                      key={curr}
+                      key={curr.code}
                       className="px-2 py-1 bg-gray-100 rounded text-xs text-gray-600"
                     >
-                      {curr}: {formatPrice(assessment.basePrice, curr)}
+                      {curr.flag} {curr.code}: {formatPrice(assessment.basePrice, curr.code)}
                     </span>
                   ))}
                 </div>

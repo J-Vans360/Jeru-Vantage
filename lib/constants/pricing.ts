@@ -1,3 +1,12 @@
+import {
+  CURRENCIES,
+  getCurrencyByCode,
+  convertFromUSD,
+  formatCurrency as formatCurrencyBase,
+  getAllCurrencies,
+} from './currencies';
+import type { CurrencyOption } from './currencies';
+
 export type PricingStatus = 'active' | 'coming_soon' | 'not_available';
 
 export interface PricingItem {
@@ -82,71 +91,42 @@ export const DEFAULT_ADDONS: AddOnItem[] = [
   },
 ];
 
-// Currency conversion rates (updated periodically)
-export const CURRENCY_RATES: Record<string, number> = {
-  USD: 1,
-  KHR: 4100, // Cambodian Riel
-  SGD: 1.35,
-  INR: 83,
-  MYR: 4.7,
-  THB: 35,
-  PHP: 56,
-  VND: 24500,
-  IDR: 15700,
-  EUR: 0.92,
-  GBP: 0.79,
-};
+// Re-export currency utilities from currencies module
+export { CURRENCIES, getCurrencyByCode, getAllCurrencies, type CurrencyOption };
 
-export const CURRENCY_SYMBOLS: Record<string, string> = {
-  USD: '$',
-  KHR: '៛',
-  SGD: 'S$',
-  INR: '₹',
-  MYR: 'RM',
-  THB: '฿',
-  PHP: '₱',
-  VND: '₫',
-  IDR: 'Rp',
-  EUR: '€',
-  GBP: '£',
-};
+// Legacy compatibility - build CURRENCY_RATES, CURRENCY_SYMBOLS, CURRENCY_NAMES from CURRENCIES
+export const CURRENCY_RATES: Record<string, number> = Object.fromEntries(
+  CURRENCIES.map((c) => [c.code, c.exchangeRate])
+);
 
-export const CURRENCY_NAMES: Record<string, string> = {
-  USD: 'US Dollar',
-  KHR: 'Cambodian Riel',
-  SGD: 'Singapore Dollar',
-  INR: 'Indian Rupee',
-  MYR: 'Malaysian Ringgit',
-  THB: 'Thai Baht',
-  PHP: 'Philippine Peso',
-  VND: 'Vietnamese Dong',
-  IDR: 'Indonesian Rupiah',
-  EUR: 'Euro',
-  GBP: 'British Pound',
-};
+export const CURRENCY_SYMBOLS: Record<string, string> = Object.fromEntries(
+  CURRENCIES.map((c) => [c.code, c.symbol])
+);
 
-export function convertPrice(usdCents: number, currency: string): number {
-  const rate = CURRENCY_RATES[currency] || 1;
-  return Math.round((usdCents / 100) * rate * 100) / 100;
+export const CURRENCY_NAMES: Record<string, string> = Object.fromEntries(
+  CURRENCIES.map((c) => [c.code, c.name])
+);
+
+/**
+ * Convert USD cents to target currency amount
+ */
+export function convertPrice(usdCents: number, currencyCode: string): number {
+  const usdAmount = usdCents / 100;
+  return convertFromUSD(usdAmount, currencyCode);
 }
 
-export function formatPrice(usdCents: number, currency: string = 'USD'): string {
-  const converted = convertPrice(usdCents, currency);
-  const symbol = CURRENCY_SYMBOLS[currency] || '$';
-
-  // For currencies with large numbers, don't show decimals
-  if (currency === 'KHR' || currency === 'VND' || currency === 'IDR') {
-    return `${symbol}${Math.round(converted).toLocaleString()}`;
-  }
-
-  return `${symbol}${converted.toFixed(2)}`;
+/**
+ * Format USD cents as a currency string
+ */
+export function formatPrice(usdCents: number, currencyCode: string = 'USD'): string {
+  const usdAmount = usdCents / 100;
+  const convertedAmount = convertFromUSD(usdAmount, currencyCode);
+  return formatCurrencyBase(convertedAmount, currencyCode);
 }
 
-// Get all available currencies for dropdown
-export function getAvailableCurrencies(): { code: string; symbol: string; name: string }[] {
-  return Object.keys(CURRENCY_RATES).map(code => ({
-    code,
-    symbol: CURRENCY_SYMBOLS[code],
-    name: CURRENCY_NAMES[code],
-  }));
+/**
+ * Get all available currencies for dropdown (with flags)
+ */
+export function getAvailableCurrencies(): CurrencyOption[] {
+  return getAllCurrencies();
 }
