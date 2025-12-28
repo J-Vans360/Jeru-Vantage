@@ -5,9 +5,13 @@ export interface LanguageOption {
   name: string; // English name
   nativeName: string; // Native script
   status: LanguageStatus;
-  flag?: string; // Emoji flag
+  flag: string; // Emoji flag (required)
   region: string; // For grouping
 }
+
+// Region display order for grouping languages
+export const REGION_ORDER = ['Global', 'Southeast Asia', 'South Asia', 'East Asia'] as const;
+export type Region = (typeof REGION_ORDER)[number];
 
 export const LANGUAGES: LanguageOption[] = [
   // ========== AVAILABLE ==========
@@ -155,12 +159,26 @@ export const LANGUAGES: LanguageOption[] = [
   },
 ];
 
-// Helper functions
-export const getActiveLanguages = () => LANGUAGES.filter((l) => l.status === 'active');
+// ========== HELPER FUNCTIONS ==========
 
-export const getComingSoonLanguages = () => LANGUAGES.filter((l) => l.status === 'coming_soon');
+/**
+ * Get all active languages
+ */
+export const getActiveLanguages = (): LanguageOption[] => {
+  return LANGUAGES.filter((l) => l.status === 'active');
+};
 
-export const getLanguagesByRegion = () => {
+/**
+ * Get all coming soon languages
+ */
+export const getComingSoonLanguages = (): LanguageOption[] => {
+  return LANGUAGES.filter((l) => l.status === 'coming_soon');
+};
+
+/**
+ * Get languages grouped by region
+ */
+export const getLanguagesByRegion = (): Record<string, LanguageOption[]> => {
   const grouped: Record<string, LanguageOption[]> = {};
   LANGUAGES.forEach((lang) => {
     if (!grouped[lang.region]) grouped[lang.region] = [];
@@ -169,4 +187,35 @@ export const getLanguagesByRegion = () => {
   return grouped;
 };
 
-export const getLanguageByCode = (code: string) => LANGUAGES.find((l) => l.code === code);
+/**
+ * Get a language by its code
+ */
+export const getLanguageByCode = (code: string): LanguageOption | undefined => {
+  return LANGUAGES.find((l) => l.code === code);
+};
+
+/**
+ * Get the default language (Standard English)
+ */
+export const getDefaultLanguage = (): LanguageOption => {
+  return LANGUAGES.find((l) => l.code === 'en-b2') || LANGUAGES[0];
+};
+
+/**
+ * Check if a language is available
+ */
+export const isLanguageAvailable = (code: string): boolean => {
+  const lang = getLanguageByCode(code);
+  return lang?.status === 'active';
+};
+
+/**
+ * Get all languages sorted by region order
+ */
+export const getLanguagesSortedByRegion = (): LanguageOption[] => {
+  return [...LANGUAGES].sort((a, b) => {
+    const aIndex = REGION_ORDER.indexOf(a.region as Region);
+    const bIndex = REGION_ORDER.indexOf(b.region as Region);
+    return aIndex - bIndex;
+  });
+};
