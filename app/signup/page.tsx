@@ -19,10 +19,11 @@ import {
   XCircle,
   Loader2,
   HelpCircle,
-  MessageCircle
+  MessageCircle,
+  ClipboardList
 } from 'lucide-react'
 
-type UserType = 'student' | 'student-with-code' | 'school-admin' | 'sponsor' | null
+type UserType = 'student' | 'student-with-code' | 'counselor' | 'school-admin' | 'sponsor' | null
 
 interface CodeValidation {
   valid: boolean
@@ -200,6 +201,84 @@ function SignUpContent() {
     }, 500)
   }
 
+  // Validate counselor code - checks if code exists and is not already claimed
+  const validateCounselorCode = async (code: string) => {
+    if (code.length < 4) {
+      setCodeValidation({ valid: false, type: null, name: null, checking: false })
+      return
+    }
+
+    setCodeValidation(prev => ({ ...prev, checking: true }))
+
+    try {
+      const res = await fetch(`/api/codes/validate-counselor?code=${encodeURIComponent(code)}`)
+      const data = await res.json()
+
+      if (data.valid && !data.alreadyClaimed) {
+        setCodeValidation({
+          valid: true,
+          type: 'pilot',
+          name: data.name,
+          checking: false
+        })
+        // Pre-fill name from code if available
+        if (data.name && !formData.name) {
+          setFormData(prev => ({ ...prev, name: data.name }))
+        }
+        setError('')
+      } else if (data.alreadyClaimed) {
+        setCodeValidation({
+          valid: false,
+          type: null,
+          name: null,
+          checking: false
+        })
+        setError('This code has already been claimed. Please sign in instead.')
+      } else {
+        setCodeValidation({
+          valid: false,
+          type: null,
+          name: null,
+          checking: false
+        })
+        setError(data.error || 'Invalid counselor code')
+      }
+    } catch {
+      setCodeValidation({
+        valid: false,
+        type: null,
+        name: null,
+        checking: false
+      })
+      setError('Failed to validate code')
+    }
+  }
+
+  const handleCounselorCodeChange = (code: string) => {
+    const upperCode = code.toUpperCase()
+    setFormData(prev => ({ ...prev, code: upperCode }))
+    setError('')
+
+    // Clear previous timeout for debouncing
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current)
+    }
+
+    // Reset validation state while typing
+    if (upperCode.length < 4) {
+      setCodeValidation({ valid: false, type: null, name: null, checking: false })
+      return
+    }
+
+    // Set checking state immediately for visual feedback
+    setCodeValidation(prev => ({ ...prev, checking: true }))
+
+    // Debounce the actual API call (500ms)
+    debounceRef.current = setTimeout(() => {
+      validateCounselorCode(upperCode)
+    }, 500)
+  }
+
   const handleUserTypeSelect = (type: UserType) => {
     // Individual students (without code) should see pricing first
     if (type === 'student') {
@@ -238,9 +317,39 @@ function SignUpContent() {
       return
     }
 
+    if (userType === 'counselor' && !codeValidation.valid) {
+      setError('Please enter a valid counselor code')
+      return
+    }
+
     setLoading(true)
 
     try {
+      // Handle counselor registration separately
+      if (userType === 'counselor') {
+        const counselorRes = await fetch('/api/auth/register-counselor', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            code: formData.code,
+            name: formData.name,
+            email: formData.email,
+            password: formData.password
+          })
+        })
+
+        const counselorData = await counselorRes.json()
+
+        if (!counselorRes.ok) {
+          setError(counselorData.error || 'Failed to create counselor account')
+          setLoading(false)
+          return
+        }
+
+        router.push('/login?registered=counselor')
+        return
+      }
+
       const payload: Record<string, string | undefined> = {
         name: formData.name,
         email: formData.email,
@@ -335,10 +444,19 @@ function SignUpContent() {
       borderColor: 'border-green-200 hover:border-green-500'
     },
     {
+      type: 'counselor' as UserType,
+      icon: ClipboardList,
+      title: 'Counselor',
+      subtitle: 'Career guidance professional',
+      description: 'Have a counselor code? Register to manage your students',
+      color: 'from-indigo-500 to-indigo-600',
+      borderColor: 'border-indigo-200 hover:border-indigo-500'
+    },
+    {
       type: 'school-admin' as UserType,
       icon: Building2,
       title: 'School / Institution',
-      subtitle: 'For schools & counselors',
+      subtitle: 'For schools & institutions',
       description: 'Register your school and manage student assessments',
       color: 'from-purple-500 to-purple-600',
       borderColor: 'border-purple-200 hover:border-purple-500'
@@ -445,6 +563,15 @@ function SignUpContent() {
                   <p className="text-gray-600 mt-2">Enter your school or sponsor code</p>
                 </>
               )}
+              {userType === 'counselor' && (
+                <>
+                  <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <ClipboardList className="w-8 h-8 text-white" />
+                  </div>
+                  <h1 className="text-2xl font-bold text-gray-900">Counselor Registration</h1>
+                  <p className="text-gray-600 mt-2">Enter your counselor code to create your account</p>
+                </>
+              )}
               {userType === 'school-admin' && (
                 <>
                   <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -539,6 +666,68 @@ function SignUpContent() {
                       Invalid code. Please check and try again.
                     </p>
                   )}
+                </div>
+              )}
+
+              {/* CODE FIELD - Show first for counselor */}
+              {userType === 'counselor' && (
+                <div className="mb-6 p-4 bg-indigo-50 rounded-xl">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Counselor Code *
+                  </label>
+                  <div className="relative">
+                    <ClipboardList className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="text"
+                      required
+                      maxLength={20}
+                      value={formData.code}
+                      onChange={(e) => handleCounselorCodeChange(e.target.value)}
+                      className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 uppercase font-mono text-lg tracking-widest bg-white text-gray-900 placeholder-gray-500"
+                      placeholder="COUN-XXXX-XX"
+                    />
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      {codeValidation.checking && (
+                        <Loader2 className="w-5 h-5 text-gray-400 animate-spin" />
+                      )}
+                      {!codeValidation.checking && codeValidation.valid && (
+                        <CheckCircle className="w-5 h-5 text-green-500" />
+                      )}
+                      {!codeValidation.checking && formData.code.length >= 4 && !codeValidation.valid && (
+                        <XCircle className="w-5 h-5 text-red-500" />
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Code validation status messages */}
+                  {codeValidation.checking && (
+                    <p className="mt-2 text-sm text-gray-500 flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Verifying code...
+                    </p>
+                  )}
+
+                  {codeValidation.valid && codeValidation.name && (
+                    <div className="mt-3 p-3 bg-green-50 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <ClipboardList className="w-5 h-5 text-green-600" />
+                        <div>
+                          <p className="text-sm font-medium text-green-800">{codeValidation.name}</p>
+                          <p className="text-xs text-green-600">Counselor Program</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {formData.code.length >= 4 && !codeValidation.valid && !codeValidation.checking && (
+                    <p className="mt-2 text-sm text-red-500">
+                      {error || 'Invalid or already claimed code. Please check and try again.'}
+                    </p>
+                  )}
+
+                  <p className="mt-3 text-xs text-gray-500">
+                    Don&apos;t have a counselor code? <Link href="/contact" className="text-indigo-600 hover:underline">Contact us</Link> to become a partner counselor.
+                  </p>
                 </div>
               )}
 
@@ -1148,10 +1337,11 @@ function SignUpContent() {
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={loading || (userType === 'student-with-code' && !codeValidation.valid)}
+                disabled={loading || (userType === 'student-with-code' && !codeValidation.valid) || (userType === 'counselor' && !codeValidation.valid)}
                 className={`w-full py-3 rounded-lg font-semibold transition-colors disabled:opacity-50 mt-6 ${
                   userType === 'student' ? 'bg-blue-500 hover:bg-blue-600 text-white' :
                   userType === 'student-with-code' ? 'bg-green-500 hover:bg-green-600 text-white' :
+                  userType === 'counselor' ? 'bg-indigo-500 hover:bg-indigo-600 text-white' :
                   userType === 'school-admin' ? 'bg-purple-500 hover:bg-purple-600 text-white' :
                   'bg-pink-500 hover:bg-pink-600 text-white'
                 }`}

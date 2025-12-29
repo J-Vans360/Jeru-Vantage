@@ -42,7 +42,28 @@ export async function GET() {
       })
     }
 
-    // 2. Check school admin
+    // 2. Check if user is a counselor (has claimed a pilot code)
+    console.log('[check-role] Checking counselor...')
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { role: true }
+    })
+
+    if (user?.role === 'counselor') {
+      // Get the counselor's claimed code
+      const claimedCode = await prisma.pilotInviteCode.findFirst({
+        where: { claimedById: userId }
+      })
+
+      console.log('[check-role] ✅ User is counselor')
+      return NextResponse.json({
+        role: 'counselor',
+        codeId: claimedCode?.id,
+        redirect: '/counselor'
+      })
+    }
+
+    // 3. Check school admin
     console.log('[check-role] Checking school admin...')
     const schoolAdmin = await prisma.schoolAdmin.findFirst({
       where: { userId }
@@ -56,7 +77,7 @@ export async function GET() {
       })
     }
 
-    // 3. Check sponsor admin
+    // 4. Check sponsor admin
     console.log('[check-role] Checking sponsor admin...')
     const sponsorAdmin = await prisma.sponsorAdmin.findFirst({
       where: { userId }
@@ -70,14 +91,14 @@ export async function GET() {
       })
     }
 
-    // 4. Check if user has completed their student profile
+    // 5. Check if user has completed their student profile
     console.log('[check-role] Checking student profile...')
     const studentProfile = await prisma.studentProfile.findUnique({
       where: { userId },
       select: { completed: true }
     })
 
-    // 5. Check if user signed up with a pilot code
+    // 6. Check if user signed up with a pilot code
     console.log('[check-role] Checking pilot code usage...')
     const pilotCodeUsage = await prisma.pilotCodeUsage.findUnique({
       where: { userId },

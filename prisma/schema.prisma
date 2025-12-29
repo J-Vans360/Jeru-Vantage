@@ -35,6 +35,9 @@ model User {
   superAdmin             SuperAdmin?
   universityPreferences  UniversityPreference[]
 
+  // For counselors - the pilot code they claimed
+  claimedCounselorCode   PilotInviteCode?        @relation("CounselorCode")
+
   @@map("users")
 }
 
@@ -572,6 +575,11 @@ model PilotInviteCode {
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
   usages        PilotCodeUsage[]
+
+  // Counselor who claimed this code (for counselor-type codes)
+  claimedById   String?          @unique
+  claimedBy     User?            @relation("CounselorCode", fields: [claimedById], references: [id])
+  claimedAt     DateTime?
 
   @@index([code])
   @@index([sourceType])
