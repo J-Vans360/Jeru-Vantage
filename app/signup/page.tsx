@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import {
@@ -47,6 +47,7 @@ function SignUpContent() {
     name: null,
     checking: false
   })
+  const debounceRef = useRef<NodeJS.Timeout | null>(null)
 
   const [formData, setFormData] = useState({
     name: '',
@@ -178,7 +179,25 @@ function SignUpContent() {
   const handleCodeChange = (code: string) => {
     const upperCode = code.toUpperCase()
     setFormData(prev => ({ ...prev, code: upperCode }))
-    validateCode(upperCode)
+
+    // Clear previous timeout for debouncing
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current)
+    }
+
+    // Reset validation state while typing
+    if (upperCode.length < 4) {
+      setCodeValidation({ valid: false, type: null, name: null, checking: false })
+      return
+    }
+
+    // Set checking state immediately for visual feedback
+    setCodeValidation(prev => ({ ...prev, checking: true }))
+
+    // Debounce the actual API call (500ms)
+    debounceRef.current = setTimeout(() => {
+      validateCode(upperCode)
+    }, 500)
   }
 
   const handleUserTypeSelect = (type: UserType) => {
@@ -486,7 +505,14 @@ function SignUpContent() {
                     </div>
                   </div>
 
-                  {/* Code validation result */}
+                  {/* Code validation status messages */}
+                  {codeValidation.checking && (
+                    <p className="mt-2 text-sm text-gray-500 flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Verifying code...
+                    </p>
+                  )}
+
                   {codeValidation.valid && codeValidation.name && (
                     <div className="mt-3 p-3 bg-green-50 rounded-lg">
                       <div className="flex items-center gap-2">
