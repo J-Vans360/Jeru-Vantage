@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   ArrowLeft,
   Loader2,
@@ -77,6 +78,7 @@ const HOLLAND_DESCRIPTIONS: Record<string, { name: string; description: string; 
 
 export default function PilotResultsPage() {
   const { status } = useSession();
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [results, setResults] = useState<AssessmentResults | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -378,17 +380,20 @@ export default function PilotResultsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-8 text-center text-white"
+          className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 text-center text-white"
         >
           <Zap className="w-10 h-10 mx-auto mb-4" />
           <h3 className="text-xl font-bold mb-2">
-            Ready for the Full Experience?
+            Get Your AI Career Report
           </h3>
-          <p className="text-purple-100 mb-6 max-w-md mx-auto">
-            The full 510-question assessment provides deeper insights, university matching, and personalized career recommendations.
+          <p className="text-indigo-100 mb-6 max-w-md mx-auto">
+            Answer a few quick questions and unlock your personalized AI career report with university recommendations and career matches.
           </p>
-          <button className="px-8 py-3 bg-white text-purple-600 rounded-xl font-semibold hover:bg-purple-50 transition-colors flex items-center gap-2 mx-auto">
-            Join Waitlist
+          <button
+            onClick={() => router.push('/survey/assessment')}
+            className="px-8 py-3 bg-white text-indigo-600 rounded-xl font-semibold hover:bg-indigo-50 transition-colors flex items-center gap-2 mx-auto"
+          >
+            Get Your AI Career Report
             <ChevronRight className="w-5 h-5" />
           </button>
         </motion.div>

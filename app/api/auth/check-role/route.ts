@@ -70,12 +70,51 @@ export async function GET() {
       })
     }
 
-    // 4. Default to student
-    console.log('[check-role] Default: student')
+    // 4. Check if user has completed their student profile
+    console.log('[check-role] Checking student profile...')
+    const studentProfile = await prisma.studentProfile.findUnique({
+      where: { userId },
+      select: { completed: true }
+    })
+
+    // 5. Check if user signed up with a pilot code
+    console.log('[check-role] Checking pilot code usage...')
+    const pilotCodeUsage = await prisma.pilotCodeUsage.findUnique({
+      where: { userId },
+      include: {
+        code: {
+          select: {
+            sourceType: true
+          }
+        }
+      }
+    })
+
+    const isPilotUser = !!pilotCodeUsage
+    const hasCompletedProfile = studentProfile?.completed === true
+
+    console.log('[check-role] Profile completed:', hasCompletedProfile)
+    console.log('[check-role] Is pilot user:', isPilotUser)
+
+    // If profile is not complete, redirect to profile page first
+    if (!hasCompletedProfile) {
+      console.log('[check-role] ✅ Profile incomplete - redirecting to /profile')
+      return NextResponse.json({
+        role: isPilotUser ? 'pilot_student' : 'student',
+        pilotSourceType: pilotCodeUsage?.code.sourceType,
+        profileComplete: false,
+        redirect: '/profile'
+      })
+    }
+
+    // Profile is complete - redirect to dashboard
+    console.log('[check-role] ✅ Profile complete - redirecting to /dashboard')
     console.log('[check-role] ========== END ==========')
     return NextResponse.json({
-      role: 'student',
-      redirect: '/assessment'
+      role: isPilotUser ? 'pilot_student' : 'student',
+      pilotSourceType: pilotCodeUsage?.code.sourceType,
+      profileComplete: true,
+      redirect: '/dashboard'
     })
   } catch (error) {
     console.error('[check-role] ERROR:', error)

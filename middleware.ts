@@ -26,8 +26,12 @@ export default withAuth(
           pathname === '/signup' ||
           pathname === '/setup-sponsor' ||
           pathname === '/setup-admin' ||
+          pathname === '/pricing' ||
+          pathname === '/forgot-password' ||
+          pathname.startsWith('/reset-password') ||
           pathname.startsWith('/api/auth') ||
           pathname.startsWith('/api/schools/validate') ||
+          pathname.startsWith('/api/codes/validate') ||
           pathname.startsWith('/api/debug')
         ) {
           return true;

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Sparkles,
@@ -13,11 +14,14 @@ import {
   Trophy,
   Target,
   Zap,
+  Globe,
+  Check,
 } from 'lucide-react';
 import Link from 'next/link';
 import PilotAssessmentFlow from '@/components/pilot/PilotAssessmentFlow';
 import UniversityPreferencesStep from '@/components/pilot/UniversityPreferencesStep';
 import PilotSurveyStep from '@/components/pilot/PilotSurveyStep';
+import { LanguageMode } from '@/lib/pilot/pilotQuestions';
 
 type FlowStep = 'intro' | 'assessment' | 'university' | 'survey' | 'complete';
 
@@ -31,18 +35,56 @@ interface AssessmentData {
 
 export default function PilotAssessmentPage() {
   const { status } = useSession();
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState<FlowStep>('intro');
   const [loading, setLoading] = useState(true);
   const [assessmentData, setAssessmentData] = useState<AssessmentData | null>(null);
   const [scores, setScores] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [languageMode, setLanguageMode] = useState<LanguageMode>('standard');
 
-  // Fetch existing assessment on load
+  // Load language preference from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('pilot-assessment-language');
+    if (saved === 'esl' || saved === 'standard') {
+      setLanguageMode(saved);
+    }
+  }, []);
+
+  // Save language preference to localStorage
+  const handleLanguageChange = (mode: LanguageMode) => {
+    setLanguageMode(mode);
+    localStorage.setItem('pilot-assessment-language', mode);
+  };
+
+  // Check profile and fetch assessment on load
   useEffect(() => {
     if (status === 'authenticated') {
-      fetchAssessment();
+      checkProfileAndFetchAssessment();
     }
   }, [status]);
+
+  const checkProfileAndFetchAssessment = async () => {
+    try {
+      setLoading(true);
+
+      // Check if profile is complete
+      const roleRes = await fetch('/api/auth/check-role');
+      const roleData = await roleRes.json();
+
+      if (!roleData.profileComplete) {
+        // Profile not complete, redirect to profile page
+        router.replace('/profile');
+        return;
+      }
+
+      // Profile is complete, fetch assessment
+      await fetchAssessment();
+    } catch (err) {
+      console.error('Error checking profile:', err);
+      setError('Failed to load');
+    }
+  };
 
   const fetchAssessment = async () => {
     try {
@@ -284,6 +326,65 @@ export default function PilotAssessmentPage() {
                 </div>
               </div>
 
+              {/* Language Selector */}
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-8">
+                <div className="flex items-center gap-2 mb-4">
+                  <Globe className="w-5 h-5 text-purple-600" />
+                  <h3 className="font-semibold text-gray-900">Choose Your Language Style</h3>
+                </div>
+                <p className="text-sm text-gray-600 mb-4">
+                  Select the language style that&apos;s easiest for you to understand. Both versions measure the same things.
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Standard English Option */}
+                  <button
+                    onClick={() => handleLanguageChange('standard')}
+                    className={`relative p-4 rounded-xl border-2 text-left transition-all ${
+                      languageMode === 'standard'
+                        ? 'border-purple-500 bg-purple-50'
+                        : 'border-gray-200 hover:border-gray-300 bg-white'
+                    }`}
+                  >
+                    {languageMode === 'standard' && (
+                      <div className="absolute top-3 right-3">
+                        <Check className="w-5 h-5 text-purple-600" />
+                      </div>
+                    )}
+                    <div className="font-semibold text-gray-900 mb-2">Standard English</div>
+                    <div className="text-xs text-gray-500 mb-3">Academic vocabulary</div>
+                    <div className="bg-gray-50 rounded-lg p-3 text-sm text-gray-700 italic">
+                      &quot;I enjoy exploring new ideas and concepts, even if they seem unconventional.&quot;
+                    </div>
+                  </button>
+
+                  {/* Simple English (ESL) Option */}
+                  <button
+                    onClick={() => handleLanguageChange('esl')}
+                    className={`relative p-4 rounded-xl border-2 text-left transition-all ${
+                      languageMode === 'esl'
+                        ? 'border-purple-500 bg-purple-50'
+                        : 'border-gray-200 hover:border-gray-300 bg-white'
+                    }`}
+                  >
+                    {languageMode === 'esl' && (
+                      <div className="absolute top-3 right-3">
+                        <Check className="w-5 h-5 text-purple-600" />
+                      </div>
+                    )}
+                    <div className="font-semibold text-gray-900 mb-2">Simple English</div>
+                    <div className="text-xs text-gray-500 mb-3">Easier to understand</div>
+                    <div className="bg-gray-50 rounded-lg p-3 text-sm text-gray-700 italic">
+                      &quot;I like learning about new and different ideas.&quot;
+                    </div>
+                  </button>
+                </div>
+
+                <p className="text-xs text-gray-400 mt-4 text-center">
+                  You can change this anytime during the assessment
+                </p>
+              </div>
+
               {/* CTA */}
               <div className="space-y-4">
                 <button
@@ -339,6 +440,8 @@ export default function PilotAssessmentPage() {
               initialResponses={(assessmentData?.responses as Record<string, number>) || {}}
               onComplete={handleAssessmentComplete}
               onSave={handleSaveProgress}
+              languageMode={languageMode}
+              onLanguageChange={handleLanguageChange}
             />
           </motion.div>
         )}

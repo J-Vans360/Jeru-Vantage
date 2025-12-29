@@ -7,6 +7,14 @@ export default async function Dashboard() {
   const userId = await getCurrentUserId();
   const result = await getStudentProfile(userId);
 
+  // Check if user is a pilot user
+  const pilotCodeUsage = await prisma.pilotCodeUsage.findUnique({
+    where: { userId },
+    select: { id: true }
+  });
+  const isPilotUser = !!pilotCodeUsage;
+  const assessmentLink = isPilotUser ? '/pilot-assessment' : '/assessment';
+
   // Fetch assessment results
   let assessmentResults: any[] = [];
   try {
@@ -77,7 +85,7 @@ export default async function Dashboard() {
                 ✏️ Edit Profile
               </Link>
               <Link
-                href="/assessment"
+                href={assessmentLink}
                 className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all"
               >
                 🚀 Start Assessment
@@ -375,7 +383,7 @@ export default async function Dashboard() {
                 You haven't completed any assessment sections yet.
               </p>
               <Link
-                href="/assessment"
+                href={assessmentLink}
                 className="inline-block px-4 py-2 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-all text-sm"
               >
                 Start Assessment →
@@ -392,7 +400,7 @@ export default async function Dashboard() {
               Profile last updated: {new Date(profile.updatedAt).toLocaleDateString()}
             </p>
             <Link
-              href="/assessment"
+              href={assessmentLink}
               className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all"
             >
               Continue to Assessment →

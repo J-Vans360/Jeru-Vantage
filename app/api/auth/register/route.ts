@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs'
 
 export async function POST(request: Request) {
   try {
-    const { name, email, password, schoolCode, sponsorCode, grade, section } = await request.json()
+    const { name, email, password, schoolCode, sponsorCode, pilotCode, grade, section } = await request.json()
 
     if (!name || !email || !password) {
       return NextResponse.json(
@@ -75,12 +75,54 @@ export async function POST(request: Request) {
       }
     }
 
+    // Validate pilot invite code if provided
+    let pilotInviteCode = null
+    if (pilotCode) {
+      pilotInviteCode = await prisma.pilotInviteCode.findUnique({
+        where: { code: pilotCode.toUpperCase() }
+      })
+
+      if (!pilotInviteCode) {
+        return NextResponse.json(
+          { error: 'Invalid invite code. Please check and try again.' },
+          { status: 400 }
+        )
+      }
+
+      // Check if active
+      if (!pilotInviteCode.isActive) {
+        return NextResponse.json(
+          { error: 'This invite code is no longer active.' },
+          { status: 400 }
+        )
+      }
+
+      // Check validity dates
+      const now = new Date()
+      if (pilotInviteCode.validUntil && now > pilotInviteCode.validUntil) {
+        return NextResponse.json(
+          { error: 'This invite code has expired.' },
+          { status: 400 }
+        )
+      }
+
+      // Check capacity
+      if (pilotInviteCode.maxUses && pilotInviteCode.currentUses >= pilotInviteCode.maxUses) {
+        return NextResponse.json(
+          { error: 'This invite code has reached its usage limit.' },
+          { status: 400 }
+        )
+      }
+    }
+
     // Determine role based on codes
     let role = 'student'
     if (schoolCode && school) {
       role = 'school_student'
     } else if (sponsorCode && sponsor) {
       role = 'sponsored_student'
+    } else if (pilotCode && pilotInviteCode) {
+      role = 'pilot_student'
     }
 
     // Hash password
@@ -122,6 +164,23 @@ export async function POST(request: Request) {
         await tx.sponsor.update({
           where: { id: sponsor.id },
           data: { usedSeats: { increment: 1 } }
+        })
+      }
+
+      // Link to pilot invite code if provided
+      if (pilotInviteCode) {
+        await tx.pilotCodeUsage.create({
+          data: {
+            userId: newUser.id,
+            codeId: pilotInviteCode.id,
+            registeredAt: new Date()
+          }
+        })
+
+        // Increment pilot code usage count
+        await tx.pilotInviteCode.update({
+          where: { id: pilotInviteCode.id },
+          data: { currentUses: { increment: 1 } }
         })
       }
 

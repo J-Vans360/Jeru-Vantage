@@ -4,7 +4,7 @@ import { useState } from 'react';
 import {
   Plus, Search, Download,
   Users, CheckCircle, Clock, Ticket, Copy, Check,
-  Edit2, Trash2, Eye, ToggleRight
+  Edit2, Trash2, ToggleRight, AlertTriangle
 } from 'lucide-react';
 
 interface PilotCode {
@@ -40,6 +40,9 @@ export default function PilotCodesAdmin({ codes, stats }: PilotCodesAdminProps) 
   const [filterType, setFilterType] = useState<string>('all');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  const [editingCode, setEditingCode] = useState<PilotCode | null>(null);
+  const [deletingCode, setDeletingCode] = useState<PilotCode | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const filteredCodes = codes.filter(code => {
     const matchesSearch =
@@ -56,6 +59,41 @@ export default function PilotCodesAdmin({ codes, stats }: PilotCodesAdminProps) 
     await navigator.clipboard.writeText(code);
     setCopiedCode(code);
     setTimeout(() => setCopiedCode(null), 2000);
+  };
+
+  const handleDelete = async (code: PilotCode) => {
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`/api/super-admin/pilot/codes/${code.id}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        setDeletingCode(null);
+        window.location.reload();
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Failed to delete code');
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+      alert('Failed to delete code');
+    }
+    setIsDeleting(false);
+  };
+
+  const handleToggleActive = async (code: PilotCode) => {
+    try {
+      const res = await fetch(`/api/super-admin/pilot/codes/${code.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isActive: !code.isActive }),
+      });
+      if (res.ok) {
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('Toggle error:', error);
+    }
   };
 
   const completionRate = stats.totalUsed > 0
@@ -241,13 +279,25 @@ export default function PilotCodesAdmin({ codes, stats }: PilotCodesAdminProps) 
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-2">
-                      <button className="p-1 text-gray-400 hover:text-blue-600">
-                        <Eye className="w-4 h-4" />
+                      <button
+                        onClick={() => handleToggleActive(code)}
+                        className={`p-1 ${code.isActive ? 'text-green-500 hover:text-red-600' : 'text-gray-400 hover:text-green-600'}`}
+                        title={code.isActive ? 'Deactivate' : 'Activate'}
+                      >
+                        <ToggleRight className="w-4 h-4" />
                       </button>
-                      <button className="p-1 text-gray-400 hover:text-gray-600">
+                      <button
+                        onClick={() => setEditingCode(code)}
+                        className="p-1 text-gray-400 hover:text-blue-600"
+                        title="Edit"
+                      >
                         <Edit2 className="w-4 h-4" />
                       </button>
-                      <button className="p-1 text-gray-400 hover:text-red-600">
+                      <button
+                        onClick={() => setDeletingCode(code)}
+                        className="p-1 text-gray-400 hover:text-red-600"
+                        title="Delete"
+                      >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -268,6 +318,52 @@ export default function PilotCodesAdmin({ codes, stats }: PilotCodesAdminProps) 
       {/* Create Modal */}
       {showCreateModal && (
         <CreateCodeModal onClose={() => setShowCreateModal(false)} />
+      )}
+
+      {/* Edit Modal */}
+      {editingCode && (
+        <EditCodeModal
+          code={editingCode}
+          onClose={() => setEditingCode(null)}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deletingCode && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                <AlertTriangle className="w-5 h-5 text-red-600" />
+              </div>
+              <h2 className="text-xl font-bold text-gray-900">Delete Code</h2>
+            </div>
+            <p className="text-gray-600 mb-2">
+              Are you sure you want to delete the code <strong>{deletingCode.code}</strong>?
+            </p>
+            {deletingCode.currentUses > 0 && (
+              <p className="text-amber-600 text-sm mb-4">
+                Warning: This code has been used {deletingCode.currentUses} time(s). Deleting it will remove all usage records.
+              </p>
+            )}
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setDeletingCode(null)}
+                className="flex-1 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDelete(deletingCode)}
+                disabled={isDeleting}
+                className="flex-1 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+              >
+                {isDeleting ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -489,6 +585,178 @@ function CreateCodeModal({ onClose }: { onClose: () => void }) {
               className="flex-1 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
             >
               {creating ? 'Creating...' : 'Create Code'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function EditCodeModal({ code, onClose }: { code: PilotCode; onClose: () => void }) {
+  const [form, setForm] = useState({
+    name: code.name,
+    sourceType: code.sourceType,
+    sourceName: code.sourceName || '',
+    sourceEmail: code.sourceEmail || '',
+    sourceCountry: code.sourceCountry || '',
+    maxUses: code.maxUses || 50,
+    validUntil: code.validUntil ? code.validUntil.split('T')[0] : '',
+    isActive: code.isActive,
+  });
+  const [saving, setSaving] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+
+    try {
+      const res = await fetch(`/api/super-admin/pilot/codes/${code.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+
+      if (res.ok) {
+        onClose();
+        window.location.reload();
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Failed to update code');
+      }
+    } catch (error) {
+      console.error('Failed to update code:', error);
+      alert('Failed to update code');
+    }
+
+    setSaving(false);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
+        <h2 className="text-xl font-bold text-gray-900 mb-4">Edit Code: {code.code}</h2>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Name
+            </label>
+            <input
+              type="text"
+              value={form.name}
+              onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Source Type
+            </label>
+            <select
+              value={form.sourceType}
+              onChange={(e) => setForm(prev => ({ ...prev, sourceType: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            >
+              <option value="COUNSELOR">Counselor</option>
+              <option value="SCHOOL">School</option>
+              <option value="VIP">VIP</option>
+              <option value="TEST">Test</option>
+              <option value="OTHER">Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Source Name
+            </label>
+            <input
+              type="text"
+              value={form.sourceName}
+              onChange={(e) => setForm(prev => ({ ...prev, sourceName: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Email
+              </label>
+              <input
+                type="email"
+                value={form.sourceEmail}
+                onChange={(e) => setForm(prev => ({ ...prev, sourceEmail: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Country
+              </label>
+              <input
+                type="text"
+                value={form.sourceCountry}
+                onChange={(e) => setForm(prev => ({ ...prev, sourceCountry: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Max Uses
+              </label>
+              <input
+                type="number"
+                value={form.maxUses}
+                onChange={(e) => setForm(prev => ({ ...prev, maxUses: parseInt(e.target.value) }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Valid Until
+              </label>
+              <input
+                type="date"
+                value={form.validUntil}
+                onChange={(e) => setForm(prev => ({ ...prev, validUntil: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="isActive"
+              checked={form.isActive}
+              onChange={(e) => setForm(prev => ({ ...prev, isActive: e.target.checked }))}
+              className="w-4 h-4 rounded border-gray-300"
+            />
+            <label htmlFor="isActive" className="text-sm font-medium text-gray-700">
+              Active
+            </label>
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={saving}
+              className="flex-1 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            >
+              {saving ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </form>

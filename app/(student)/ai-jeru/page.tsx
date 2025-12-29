@@ -2,9 +2,16 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
+import { MessageCircle, Send, Loader2, X, ChevronRight, Lock } from 'lucide-react';
 
 // Types
+type ChatMessage = {
+  role: 'user' | 'assistant';
+  content: string;
+};
+
 type Report = {
   id: string;
   generationNumber: number;
@@ -61,10 +68,59 @@ export default function AIJeruPage() {
   const [showSavedMessage, setShowSavedMessage] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
+  // Chat state
+  const [showChat, setShowChat] = useState(false);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [chatInput, setChatInput] = useState('');
+  const [chatLoading, setChatLoading] = useState(false);
+  const [questionsUsed, setQuestionsUsed] = useState(0);
+  const [maxQuestions, setMaxQuestions] = useState(3);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Download status
+  const router = useRouter();
+  const [canDownload, setCanDownload] = useState(false);
+  const [survey1Completed, setSurvey1Completed] = useState(false);
+  const [survey2Completed, setSurvey2Completed] = useState(false);
+  const [universityConsentCompleted, setUniversityConsentCompleted] = useState(false);
+  const [isPilotUser, setIsPilotUser] = useState(true); // Default to pilot for stricter requirements
+
+  // Report generation limits
+  const [reportsGenerated, setReportsGenerated] = useState(0);
+  const [maxReports, setMaxReports] = useState(1);
+  const [canGenerateReport, setCanGenerateReport] = useState(true);
+
   // Fetch previous reports on load
   useEffect(() => {
     fetchPreviousReports();
+    fetchChatHistory();
+    fetchStudentStatus();
   }, []);
+
+  const fetchStudentStatus = async () => {
+    try {
+      const response = await fetch('/api/student/status');
+      const data = await response.json();
+      if (data) {
+        setCanDownload(data.canDownload || false);
+        setSurvey1Completed(data.survey1Completed || false);
+        setSurvey2Completed(data.survey2Completed || false);
+        setUniversityConsentCompleted(data.universityConsentCompleted || false);
+        setIsPilotUser(data.isPilotUser ?? true);
+        // Report limits
+        setReportsGenerated(data.reportsGenerated || 0);
+        setMaxReports(data.maxReports || 1);
+        setCanGenerateReport(data.canGenerateReport ?? true);
+      }
+    } catch (err) {
+      console.error('Error fetching student status:', err);
+    }
+  };
+
+  // Scroll chat to bottom when messages change
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages]);
 
   // Track scroll position for active section and scroll-to-top button
   useEffect(() => {
@@ -99,6 +155,50 @@ export default function AIJeruPage() {
       console.error('Error fetching reports:', err);
     } finally {
       setIsLoadingReports(false);
+    }
+  };
+
+  const fetchChatHistory = async () => {
+    try {
+      const response = await fetch('/api/ai-chat/history');
+      const data = await response.json();
+      if (data.messages) {
+        setChatMessages(data.messages);
+        setQuestionsUsed(data.questionsUsed || 0);
+        setMaxQuestions(data.maxQuestions || 3);
+      }
+    } catch (err) {
+      console.error('Error fetching chat history:', err);
+    }
+  };
+
+  const sendMessage = async () => {
+    if (!chatInput.trim() || chatLoading || questionsUsed >= maxQuestions) return;
+
+    const userMessage = chatInput.trim();
+    setChatInput('');
+    setChatMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+    setChatLoading(true);
+
+    try {
+      const response = await fetch('/api/ai-chat/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userMessage }),
+      });
+      const data = await response.json();
+
+      if (data.error) {
+        setChatMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' }]);
+      } else {
+        setChatMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
+        setQuestionsUsed(data.questionsUsed);
+      }
+    } catch (err) {
+      console.error('Chat error:', err);
+      setChatMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' }]);
+    } finally {
+      setChatLoading(false);
     }
   };
 
@@ -191,6 +291,8 @@ export default function AIJeruPage() {
       setTimeout(() => setShowSavedMessage(false), 5000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
+      // Refresh status in case limit was reached
+      fetchStudentStatus();
     } finally {
       setIsLoading(false);
     }
@@ -298,21 +400,49 @@ export default function AIJeruPage() {
               )}
               {recommendations && (
                 <>
-                  <button
-                    onClick={() => window.print()}
-                    className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg font-semibold transition-all text-sm flex items-center gap-2"
-                  >
-                    📄 Print
-                  </button>
-                  <button
-                    onClick={() => {
-                      setRecommendations(null);
-                      setReportId(null);
-                    }}
-                    className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg font-semibold transition-all text-sm"
-                  >
-                    + New Report
-                  </button>
+                  {canDownload ? (
+                    <button
+                      onClick={() => window.print()}
+                      className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg font-semibold transition-all text-sm flex items-center gap-2"
+                    >
+                      📄 Print
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => router.push(survey2Completed ? '/consent/university' : '/survey/ai-report')}
+                      className="px-4 py-2 bg-white/10 rounded-lg font-semibold transition-all text-sm flex items-center gap-2 opacity-75 hover:opacity-100"
+                      title={isPilotUser
+                        ? (survey1Completed
+                          ? (survey2Completed
+                            ? 'Complete university preferences to unlock'
+                            : 'Complete survey to unlock')
+                          : 'Complete surveys to unlock')
+                        : (universityConsentCompleted ? 'Processing...' : 'Complete preferences to unlock')
+                      }
+                    >
+                      <Lock className="w-4 h-4" />
+                      Print
+                    </button>
+                  )}
+                  {canGenerateReport ? (
+                    <button
+                      onClick={() => {
+                        setRecommendations(null);
+                        setReportId(null);
+                      }}
+                      className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg font-semibold transition-all text-sm"
+                    >
+                      + New Report
+                    </button>
+                  ) : (
+                    <button
+                      disabled
+                      className="px-4 py-2 bg-white/10 rounded-lg font-semibold text-sm opacity-50 cursor-not-allowed"
+                      title={`Report limit reached (${reportsGenerated}/${maxReports})`}
+                    >
+                      + New Report
+                    </button>
+                  )}
                 </>
               )}
             </div>
@@ -370,14 +500,48 @@ export default function AIJeruPage() {
                 </div>
               </div>
 
-              <button
-                onClick={getRecommendations}
-                className="px-10 py-4 bg-gradient-to-r from-purple-600 to-amber-600 text-white text-xl font-bold rounded-xl hover:shadow-xl transition-all transform hover:scale-105"
-              >
-                {previousReports.length > 0 ? 'Generate New Report' : 'Generate My Report'}
-              </button>
-
-              <p className="text-sm text-gray-500 mt-4">Takes approximately 90-120 seconds to generate</p>
+              {canGenerateReport ? (
+                <>
+                  <button
+                    onClick={getRecommendations}
+                    className="px-10 py-4 bg-gradient-to-r from-purple-600 to-amber-600 text-white text-xl font-bold rounded-xl hover:shadow-xl transition-all transform hover:scale-105"
+                  >
+                    {previousReports.length > 0 ? 'Generate New Report' : 'Generate My Report'}
+                  </button>
+                  <p className="text-sm text-gray-500 mt-4">Takes approximately 90-120 seconds to generate</p>
+                  {reportsGenerated > 0 && (
+                    <p className="text-xs text-gray-400 mt-2">
+                      Reports used: {reportsGenerated}/{maxReports}
+                    </p>
+                  )}
+                </>
+              ) : (
+                <div className="text-center">
+                  <button
+                    disabled
+                    className="px-10 py-4 bg-gray-300 text-gray-500 text-xl font-bold rounded-xl cursor-not-allowed"
+                  >
+                    Report Limit Reached
+                  </button>
+                  <p className="text-sm text-gray-500 mt-4">
+                    You've used {reportsGenerated}/{maxReports} report{maxReports > 1 ? 's' : ''}.
+                  </p>
+                  {!isPilotUser ? null : (
+                    <div className="mt-4 p-4 bg-gradient-to-r from-purple-50 to-amber-50 rounded-xl border border-purple-200">
+                      <p className="text-purple-800 font-medium mb-2">Want more reports?</p>
+                      <p className="text-sm text-purple-600 mb-3">
+                        Upgrade to the full assessment to unlock 2 AI Jeru reports and deeper insights!
+                      </p>
+                      <Link
+                        href="/pricing"
+                        className="inline-block px-6 py-2 bg-gradient-to-r from-purple-600 to-amber-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all"
+                      >
+                        View Upgrade Options
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -440,18 +604,35 @@ export default function AIJeruPage() {
         {/* Error State */}
         {error && (
           <div className="max-w-2xl mx-auto">
-            <div className="bg-red-50 border border-red-200 rounded-2xl p-8">
+            <div className={`${error.includes('limit') ? 'bg-amber-50 border-amber-200' : 'bg-red-50 border-red-200'} border rounded-2xl p-8`}>
               <div className="flex items-start gap-4">
-                <div className="text-4xl">⚠️</div>
+                <div className="text-4xl">{error.includes('limit') ? '📊' : '⚠️'}</div>
                 <div>
-                  <h3 className="font-bold text-red-900 text-xl mb-2">Something went wrong</h3>
-                  <p className="text-red-800 mb-4">{error}</p>
-                  <button
-                    onClick={getRecommendations}
-                    className="px-6 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-all"
-                  >
-                    Try Again
-                  </button>
+                  <h3 className={`font-bold ${error.includes('limit') ? 'text-amber-900' : 'text-red-900'} text-xl mb-2`}>
+                    {error.includes('limit') ? 'Report Limit Reached' : 'Something went wrong'}
+                  </h3>
+                  <p className={`${error.includes('limit') ? 'text-amber-800' : 'text-red-800'} mb-4`}>{error}</p>
+                  {error.includes('limit') && isPilotUser ? (
+                    <div className="mt-4 p-4 bg-gradient-to-r from-purple-50 to-amber-50 rounded-xl border border-purple-200">
+                      <p className="text-purple-800 font-medium mb-2">Want more reports?</p>
+                      <p className="text-sm text-purple-600 mb-3">
+                        Upgrade to the full assessment to unlock 2 AI Jeru reports and deeper insights!
+                      </p>
+                      <Link
+                        href="/pricing"
+                        className="inline-block px-6 py-2 bg-gradient-to-r from-purple-600 to-amber-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all"
+                      >
+                        View Upgrade Options
+                      </Link>
+                    </div>
+                  ) : !error.includes('limit') && (
+                    <button
+                      onClick={getRecommendations}
+                      className="px-6 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-all"
+                    >
+                      Try Again
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -585,35 +766,72 @@ export default function AIJeruPage() {
 
                 {/* Report Footer */}
                 <div className="mt-12 pt-8 border-t-2 border-purple-100 no-print">
-                  <div className="flex flex-wrap gap-4 justify-center">
-                    <button
-                      onClick={() => window.print()}
-                      className="px-6 py-3 bg-gradient-to-r from-purple-600 to-amber-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all flex items-center gap-2"
-                    >
-                      📄 Print / Save as PDF
-                    </button>
-                    <button
-                      onClick={() => {
-                        setRecommendations(null);
-                        setReportId(null);
-                      }}
-                      className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-all"
-                    >
-                      Generate New Report
-                    </button>
-                    <Link
-                      href="/my-reports"
-                      className="px-6 py-3 bg-purple-100 text-purple-700 rounded-lg font-semibold hover:bg-purple-200 transition-all"
-                    >
-                      View All Reports
-                    </Link>
-                    <Link
-                      href="/results"
-                      className="px-6 py-3 bg-amber-100 text-amber-700 rounded-lg font-semibold hover:bg-amber-200 transition-all"
-                    >
-                      Assessment Results
-                    </Link>
-                  </div>
+                  {canDownload ? (
+                    <div className="flex flex-wrap gap-4 justify-center">
+                      <button
+                        onClick={() => window.print()}
+                        className="px-6 py-3 bg-gradient-to-r from-purple-600 to-amber-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all flex items-center gap-2"
+                      >
+                        📄 Print / Save as PDF
+                      </button>
+                      <button
+                        onClick={() => {
+                          setRecommendations(null);
+                          setReportId(null);
+                        }}
+                        className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-all"
+                      >
+                        Generate New Report
+                      </button>
+                      <Link
+                        href="/my-reports"
+                        className="px-6 py-3 bg-purple-100 text-purple-700 rounded-lg font-semibold hover:bg-purple-200 transition-all"
+                      >
+                        View All Reports
+                      </Link>
+                      <Link
+                        href="/results"
+                        className="px-6 py-3 bg-amber-100 text-amber-700 rounded-lg font-semibold hover:bg-amber-200 transition-all"
+                      >
+                        Assessment Results
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="text-center">
+                      <p className="text-gray-600 mb-4">
+                        {!survey2Completed
+                          ? 'Complete the feedback survey to unlock download'
+                          : !universityConsentCompleted
+                            ? 'Complete university preferences to unlock download'
+                            : 'Processing your status...'
+                        }
+                      </p>
+                      <button
+                        onClick={() => router.push(survey2Completed ? '/consent/university' : '/survey/ai-report')}
+                        className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all flex items-center justify-center gap-2 mx-auto"
+                      >
+                        <Lock className="w-5 h-5" />
+                        {survey2Completed ? 'Complete University Preferences' : 'Complete Survey to Unlock Download'}
+                      </button>
+                      <div className="flex flex-wrap gap-4 justify-center mt-4">
+                        <button
+                          onClick={() => {
+                            setRecommendations(null);
+                            setReportId(null);
+                          }}
+                          className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-all"
+                        >
+                          Generate New Report
+                        </button>
+                        <Link
+                          href="/my-reports"
+                          className="px-6 py-3 bg-purple-100 text-purple-700 rounded-lg font-semibold hover:bg-purple-200 transition-all"
+                        >
+                          View All Reports
+                        </Link>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -625,11 +843,111 @@ export default function AIJeruPage() {
       {showScrollTop && recommendations && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-8 right-8 w-14 h-14 bg-purple-600 text-white rounded-full shadow-lg hover:bg-purple-700 hover:shadow-xl transition-all flex items-center justify-center text-2xl no-print z-50"
+          className="fixed bottom-8 right-24 w-14 h-14 bg-purple-600 text-white rounded-full shadow-lg hover:bg-purple-700 hover:shadow-xl transition-all flex items-center justify-center text-2xl no-print z-50"
           title="Scroll to top"
         >
           ↑
         </button>
+      )}
+
+      {/* Chat Button - Always visible when report is shown */}
+      {recommendations && (
+        <button
+          onClick={() => setShowChat(!showChat)}
+          className="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center no-print z-50"
+          title="Chat with Jeru"
+        >
+          {showChat ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
+        </button>
+      )}
+
+      {/* Chat Panel */}
+      {showChat && recommendations && (
+        <div className="fixed bottom-24 right-8 w-96 bg-white rounded-2xl shadow-2xl overflow-hidden no-print z-50 border border-gray-200">
+          {/* Chat Header */}
+          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 text-white">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <MessageCircle className="w-5 h-5" />
+                <h3 className="font-semibold">Chat with Jeru</h3>
+              </div>
+              <button onClick={() => setShowChat(false)} className="hover:bg-white/20 rounded-lg p-1">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <p className="text-sm text-indigo-100 mt-1">
+              {questionsUsed}/{maxQuestions} questions used
+            </p>
+          </div>
+
+          {/* Chat Messages */}
+          <div className="h-80 overflow-y-auto p-4 space-y-4 bg-gray-50">
+            {chatMessages.length === 0 && (
+              <div className="text-center text-gray-500 py-8">
+                <MessageCircle className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                <p className="text-sm">Ask me anything about your results!</p>
+                <p className="text-xs text-gray-400 mt-1">You have {maxQuestions} free questions</p>
+              </div>
+            )}
+            {chatMessages.map((msg, idx) => (
+              <div
+                key={idx}
+                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div
+                  className={`max-w-[85%] p-3 rounded-xl text-sm ${
+                    msg.role === 'user'
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-white text-gray-800 border border-gray-200'
+                  }`}
+                >
+                  {msg.content}
+                </div>
+              </div>
+            ))}
+            {chatLoading && (
+              <div className="flex justify-start">
+                <div className="bg-white border border-gray-200 p-3 rounded-xl">
+                  <Loader2 className="w-4 h-4 animate-spin text-purple-500" />
+                </div>
+              </div>
+            )}
+            <div ref={chatEndRef} />
+          </div>
+
+          {/* Chat Input */}
+          <div className="p-4 border-t bg-white">
+            {questionsUsed >= maxQuestions ? (
+              <div className="text-center py-2">
+                <p className="text-sm text-gray-500 mb-2">Question limit reached</p>
+                <Link
+                  href="/survey/ai-report"
+                  className="text-sm text-indigo-600 hover:underline flex items-center justify-center gap-1"
+                >
+                  Complete survey for more features <ChevronRight className="w-4 h-4" />
+                </Link>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+                  placeholder="Ask a question..."
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm"
+                />
+                <button
+                  onClick={sendMessage}
+                  disabled={!chatInput.trim() || chatLoading}
+                  className="p-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Send className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       )}
 
       {/* Footer Navigation */}

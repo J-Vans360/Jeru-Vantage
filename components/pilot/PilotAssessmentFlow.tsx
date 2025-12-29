@@ -8,14 +8,17 @@ import {
   Clock,
   CheckCircle,
   Save,
+  Globe,
 } from 'lucide-react';
-import { PILOT_DOMAINS, PILOT_QUESTIONS, PilotQuestion } from '@/lib/pilot/pilotQuestions';
+import { PILOT_DOMAINS, PILOT_QUESTIONS, PilotQuestion, LanguageMode, getQuestionText } from '@/lib/pilot/pilotQuestions';
 import { getProgressByDomain } from '@/lib/pilot/pilotScoring';
 
 interface PilotAssessmentFlowProps {
   initialResponses?: Record<string, number>;
   onComplete: (responses: Record<string, number>) => void;
   onSave: (responses: Record<string, number>) => void;
+  languageMode: LanguageMode;
+  onLanguageChange: (mode: LanguageMode) => void;
 }
 
 const QUESTIONS_PER_PAGE = 5;
@@ -24,9 +27,24 @@ export default function PilotAssessmentFlow({
   initialResponses = {},
   onComplete,
   onSave,
+  languageMode,
+  onLanguageChange,
 }: PilotAssessmentFlowProps) {
   const [responses, setResponses] = useState<Record<string, number>>(initialResponses);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(() => {
+    // If resuming with saved responses, find the first unanswered question's page
+    if (Object.keys(initialResponses).length > 0) {
+      const firstUnansweredIndex = PILOT_QUESTIONS.findIndex(
+        (q) => initialResponses[q.id] === undefined
+      );
+      if (firstUnansweredIndex === -1) {
+        // All answered, go to last page
+        return Math.ceil(PILOT_QUESTIONS.length / QUESTIONS_PER_PAGE) - 1;
+      }
+      return Math.floor(firstUnansweredIndex / QUESTIONS_PER_PAGE);
+    }
+    return 0;
+  });
   const [startTime] = useState(() => Date.now());
   const [saving, setSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -66,6 +84,11 @@ export default function PilotAssessmentFlow({
     return () => clearInterval(interval);
   }, [responses, handleSave]);
 
+  // Scroll to top when page changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentPage]);
+
   const handleAnswer = (questionId: string, value: number) => {
     setResponses((prev) => ({
       ...prev,
@@ -81,7 +104,6 @@ export default function PilotAssessmentFlow({
   const handleNext = () => {
     if (currentPage < totalPages - 1) {
       setCurrentPage((prev) => prev + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else if (answeredCount === questions.length) {
       // All questions answered, complete assessment
       onComplete(responses);
@@ -91,7 +113,6 @@ export default function PilotAssessmentFlow({
   const handlePrevious = () => {
     if (currentPage > 0) {
       setCurrentPage((prev) => prev - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -123,6 +144,30 @@ export default function PilotAssessmentFlow({
             </div>
           </div>
           <div className="flex items-center gap-3">
+            {/* Language Toggle */}
+            <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+              <button
+                onClick={() => onLanguageChange('standard')}
+                className={`flex items-center gap-1 px-2 py-1 text-xs font-medium rounded transition-colors ${
+                  languageMode === 'standard'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <Globe className="w-3 h-3" />
+                Standard
+              </button>
+              <button
+                onClick={() => onLanguageChange('esl')}
+                className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
+                  languageMode === 'esl'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Simple
+              </button>
+            </div>
             {lastSaved && (
               <span className="text-xs text-gray-400">
                 Saved {lastSaved.toLocaleTimeString()}
@@ -202,6 +247,7 @@ export default function PilotAssessmentFlow({
               questionNumber={currentPage * QUESTIONS_PER_PAGE + idx + 1}
               value={responses[question.id]}
               onChange={(value) => handleAnswer(question.id, value)}
+              languageMode={languageMode}
             />
           ))}
         </AnimatePresence>
@@ -314,12 +360,15 @@ function QuestionCard({
   questionNumber,
   value,
   onChange,
+  languageMode,
 }: {
   question: PilotQuestion;
   questionNumber: number;
   value: number | undefined;
   onChange: (value: number) => void;
+  languageMode: LanguageMode;
 }) {
+  const questionText = getQuestionText(question, languageMode);
   const likertOptions = [
     { value: 1, label: 'Strongly Disagree' },
     { value: 2, label: 'Disagree' },
@@ -342,7 +391,7 @@ function QuestionCard({
           {questionNumber}
         </span>
         <div className="flex-1">
-          <p className="text-gray-900 font-medium mb-4">{question.text}</p>
+          <p className="text-gray-900 font-medium mb-4">{questionText}</p>
 
           {/* Likert Scale */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">

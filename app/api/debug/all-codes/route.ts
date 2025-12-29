@@ -10,9 +10,22 @@ export async function GET() {
     select: { id: true, name: true, code: true }
   })
 
+  const pilotCodes = await prisma.pilotInviteCode.findMany({
+    select: {
+      id: true,
+      code: true,
+      name: true,
+      isActive: true,
+      currentUses: true,
+      maxUses: true,
+      validUntil: true
+    }
+  })
+
   return NextResponse.json({
     schools,
     sponsors,
+    pilotCodes,
     message: 'Use these codes to test join functionality'
   })
 }
