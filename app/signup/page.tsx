@@ -26,9 +26,10 @@ type UserType = 'student' | 'student-with-code' | 'school-admin' | 'sponsor' | n
 
 interface CodeValidation {
   valid: boolean
-  type: 'school' | 'sponsor' | null
+  type: 'school' | 'sponsor' | 'pilot' | null
   name: string | null
   checking: boolean
+  pilotCodeId?: string
 }
 
 function SignUpContent() {
@@ -153,7 +154,8 @@ function SignUpContent() {
           valid: true,
           type: data.type,
           name: data.name,
-          checking: false
+          checking: false,
+          pilotCodeId: data.pilotCodeId
         })
       } else {
         setCodeValidation({
@@ -233,6 +235,8 @@ function SignUpContent() {
           payload.section = formData.section || undefined
         } else if (codeValidation.type === 'sponsor') {
           payload.sponsorCode = formData.code
+        } else if (codeValidation.type === 'pilot') {
+          payload.pilotCode = formData.code
         }
       }
 
@@ -463,7 +467,7 @@ function SignUpContent() {
                     <input
                       type="text"
                       required
-                      maxLength={8}
+                      maxLength={20}
                       value={formData.code}
                       onChange={(e) => handleCodeChange(e.target.value)}
                       className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 uppercase font-mono text-lg tracking-widest bg-white text-gray-900 placeholder-gray-500"
@@ -488,13 +492,16 @@ function SignUpContent() {
                       <div className="flex items-center gap-2">
                         {codeValidation.type === 'school' ? (
                           <Building2 className="w-5 h-5 text-green-600" />
-                        ) : (
+                        ) : codeValidation.type === 'sponsor' ? (
                           <Heart className="w-5 h-5 text-green-600" />
+                        ) : (
+                          <Ticket className="w-5 h-5 text-green-600" />
                         )}
                         <div>
                           <p className="text-sm font-medium text-green-800">{codeValidation.name}</p>
                           <p className="text-xs text-green-600">
-                            {codeValidation.type === 'school' ? 'School Program' : 'Sponsor Program'}
+                            {codeValidation.type === 'school' ? 'School Program' :
+                             codeValidation.type === 'sponsor' ? 'Sponsor Program' : 'Pilot Program'}
                           </p>
                         </div>
                       </div>
